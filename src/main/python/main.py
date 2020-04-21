@@ -13,6 +13,8 @@ class appWindow(QMainWindow):
     def __init__(self, parent=None):
         super(appWindow, self).__init__(parent)      
         self.resize(1280, 720)
+        self._defaultPPI = 72
+        self._defaultCanvasSize = "A0"
         
         titleMenu = self.menuBar()
         self.mainWidget = QWidget(self)
@@ -30,7 +32,7 @@ class appWindow(QMainWindow):
         # QObject.connect(self.tabber, pyqtSignal(QTabWidget.tabCloseRequested(int)), self, pyqtSlot(QTabWidget.closetab(int)))
         # add close action to tabs
         self.createToolbar()
-        mainLayout.addLayout(self.toolbar, 0, 0, -1, 2)
+        mainLayout.addLayout(self.toolbar, 0, 0, -1, 1)
         mainLayout.addWidget(self.tabber, 0, 2, -1, 10)
         
         self.mainWidget.setLayout(mainLayout)
@@ -57,13 +59,19 @@ class appWindow(QMainWindow):
         self.toolbar.setWidget(1, QFormLayout.FieldRole, ppiComboBox)
     
     def setCanvasSize(self, size):
-        self.tabber.currentWidget().canvasSize = size
+        self._defaultCanvasSize = size
+        activeCanvas = self.tabber.currentWidget()
+        if activeCanvas:
+            activeCanvas.canvasSize = size
     
-    def setCanvasPPI(self, ppi):  
-        self.tabber.currentWidget().ppi = ppi
+    def setCanvasPPI(self, ppi):
+        self._defaultPPI = ppi
+        activeCanvas = self.tabber.currentWidget()
+        if activeCanvas:
+            activeCanvas.ppi = ppi
     
     def newDiagram(self):
-        diagram = canvas()
+        diagram = canvas(size = self._defaultCanvasSize, ppi = self._defaultPPI)
         self.tabber.addTab(diagram, "New")
     
     def saveImage(self):
