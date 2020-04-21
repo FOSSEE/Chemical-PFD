@@ -1,76 +1,77 @@
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QObject
 from PyQt5.QtGui import (QBrush, QColor, QImage, QPainter,
                          QPalette)
-from PyQt5.QtWidgets import (QApplication, QComboBox, QDialog, QGraphicsScene,
+from PyQt5.QtWidgets import (QWidget, QComboBox, QMainWindow, QGraphicsScene,
                              QGraphicsView, QGridLayout, QHBoxLayout, QLabel,
-                             QMessageBox, QPushButton, QStyleFactory)
-from utils.sizes import paperSizes
+                             QPushButton, QMenuBar, QMenu, QFormLayout, QTabWidget)
+
+from utils.canvas import canvas
 import sys
-class appWindow(QDialog):
+
+class appWindow(QMainWindow):
     def __init__(self, parent=None):
-        super(appWindow, self).__init__(parent)
-        
-        self._ppi = 72
-        self._canvasSize = "A0"
+        super(appWindow, self).__init__(parent)      
         self.resize(1280, 720)
-           
         
-        self.painter = QGraphicsScene(0, 0, *paperSizes[self.canvasSize][self.ppi])
-        self.painter.setBackgroundBrush(QBrush(Qt.white))
+        titleMenu = self.menuBar()
+        self.mainWidget = QWidget(self)
         
+        self.menuFile = titleMenu.addMenu('File') #File Menu
+        self.menuFile.addAction("new", self.newDiagram)
+        self.menuGenerate = titleMenu.addMenu('Generate') #Generate menu
+        self.menuGenerate.addAction("Image", self.saveImage)
+        self.menuGenerate.addAction("Report", self.generateReport)
+        
+                
+        mainLayout = QGridLayout(self.mainWidget)
+        self.tabber = QTabWidget(self.mainWidget)
+        self.tabber.setTabsClosable(True)    
+        # QObject.connect(self.tabber, pyqtSignal(QTabWidget.tabCloseRequested(int)), self, pyqtSlot(QTabWidget.closetab(int)))
+        # add close action to tabs
         self.createToolbar()
-        self.canvas = QGraphicsView(self.painter)
-        mainLayout = QGridLayout()
-        mainLayout.addLayout(self.topLayout, 0, 0, 1, -1)
-        mainLayout.addWidget(self.canvas, 1, 0, -1, -1)
-        self.setLayout(mainLayout)
+        mainLayout.addLayout(self.toolbar, 0, 0, -1, 2)
+        mainLayout.addWidget(self.tabber, 0, 2, -1, 10)
+        
+        self.mainWidget.setLayout(mainLayout)
+        self.setCentralWidget(self.mainWidget)
         
     def createToolbar(self):
-        self.topLayout = QHBoxLayout()
+        self.toolbar = QFormLayout(self.mainWidget)
         sizeComboBox = QComboBox()
         sizeComboBox.addItems([f'A{i}' for i in range(5)])
+        # sizeComboBox.activated[str].connect(lambda: self.tabber.currentWidget().setCanvasSize)
         sizeComboBox.activated[str].connect(self.setCanvasSize)
         sizeLabel = QLabel("Canvas Size")
         sizeLabel.setBuddy(sizeComboBox)
-        self.topLayout.addWidget(sizeLabel)
-        self.topLayout.addWidget(sizeComboBox)
+        self.toolbar.setWidget(0, QFormLayout.LabelRole, sizeLabel)
+        self.toolbar.setWidget(0, QFormLayout.FieldRole, sizeComboBox)
         
         ppiComboBox = QComboBox()
         ppiComboBox.addItems(["72", "96", "150", "300"])
+        # ppiComboBox.activated[str].connect(lambda: self.tabber.currentWidget().setCanvasPPI)
         ppiComboBox.activated[str].connect(self.setCanvasPPI)
         ppiLabel = QLabel("Canvas ppi")
         ppiLabel.setBuddy(ppiComboBox)
-        self.topLayout.addWidget(ppiLabel)
-        self.topLayout.addWidget(ppiComboBox)
+        self.toolbar.setWidget(1, QFormLayout.LabelRole, ppiLabel)
+        self.toolbar.setWidget(1, QFormLayout.FieldRole, ppiComboBox)
     
     def setCanvasSize(self, size):
-        self.canvasSize = size
+        self.tabber.currentWidget().canvasSize = size
     
     def setCanvasPPI(self, ppi):  
-        self.ppi = ppi
+        self.tabber.currentWidget().ppi = ppi
     
-    @property
-    def canvasSize(self):
-        return self._canvasSize
-    @property
-    def ppi(self):
-        return self._ppi
+    def newDiagram(self):
+        diagram = canvas()
+        self.tabber.addTab(diagram, "New")
     
-    @canvasSize.setter
-    def canvasSize(self, size):
-        self._canvasSize = size
-        if self.painter:
-            self.painter.setSceneRect(0, 0, *paperSizes[self.canvasSize][self.ppi])
-        print(*paperSizes[self.canvasSize][self.ppi]) 
+    def saveImage(self):
+        pass
+    
+    def generateReport(self):
+        pass
 
-    @ppi.setter
-    def ppi(self, ppi):
-        self._ppi = int(ppi)
-        if self.painter:
-            self.painter.setSceneRect(0, 0, *paperSizes[self.canvasSize][self.ppi])
-        print(*paperSizes[self.canvasSize][self.ppi]) 
-           
 if __name__ == '__main__':
     app = ApplicationContext()       # 1. Instantiate ApplicationContext
     test = appWindow()
