@@ -29,7 +29,7 @@ class appWindow(QMainWindow):
         mainLayout = QGridLayout(self.mainWidget)
         self.tabber = QTabWidget(self.mainWidget)
         self.tabber.setTabsClosable(True)    
-        # QObject.connect(self.tabber, pyqtSignal(QTabWidget.tabCloseRequested(int)), self, pyqtSlot(QTabWidget.closetab(int)))
+        self.tabber.tabCloseRequested.connect(self.closeTab)
         # add close action to tabs
         self.createToolbar()
         mainLayout.addLayout(self.toolbar, 0, 0, -1, 1)
@@ -37,7 +37,12 @@ class appWindow(QMainWindow):
         
         self.mainWidget.setLayout(mainLayout)
         self.setCentralWidget(self.mainWidget)
-        
+    
+    def closeTab(self, currentIndex):
+        #todo add save alert
+        self.tabber.widget(currentIndex).deleteLater()
+        self.tabber.removeTab(currentIndex)   
+
     def createToolbar(self):
         self.toolbar = QFormLayout(self.mainWidget)
         sizeComboBox = QComboBox()
