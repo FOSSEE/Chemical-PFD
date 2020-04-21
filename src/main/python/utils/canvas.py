@@ -3,11 +3,11 @@ from PyQt5.QtGui import QBrush
 from PyQt5.QtWidgets import QWidget, QGraphicsScene, QGraphicsView, QHBoxLayout
 from .sizes import paperSizes
 class canvas(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, size= "A0", ppi= 72):
         super(canvas, self).__init__(parent)
         
-        self._ppi = 72
-        self._canvasSize = "A0"
+        self._ppi = ppi
+        self._canvasSize = size
         self.resize(1280, 720)
            
         
