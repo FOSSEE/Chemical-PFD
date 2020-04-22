@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (QWidget, QComboBox, QMainWindow, QGraphicsScene,
                              QPushButton, QMenuBar, QMenu, QFormLayout, QTabWidget)
 
 from utils.canvas import canvas
+from utils.sizes import sheetDimensionList, ppiList
 import sys
 
 class appWindow(QMainWindow):
@@ -18,50 +19,62 @@ class appWindow(QMainWindow):
         
         titleMenu = self.menuBar()
         self.mainWidget = QWidget(self)
+        self.mainWidget.setObjectName("Main Widget")
         
         self.menuFile = titleMenu.addMenu('File') #File Menu
-        self.menuFile.addAction("new", self.newDiagram)
+        self.menuFile.addAction("New", self.newDiagram)
+        self.menuFile.addAction("Open", self.openDiagram)
+        self.menuFile.addAction("Save", self.saveDiagram)
         self.menuGenerate = titleMenu.addMenu('Generate') #Generate menu
         self.menuGenerate.addAction("Image", self.saveImage)
         self.menuGenerate.addAction("Report", self.generateReport)
-        
                 
         mainLayout = QGridLayout(self.mainWidget)
+        mainLayout.setObjectName("Main Layout")
+        
         self.tabber = QTabWidget(self.mainWidget)
+        self.tabber.setObjectName("Tab windows")
         self.tabber.setTabsClosable(True)    
         self.tabber.tabCloseRequested.connect(self.closeTab)
+        self.tabber.currentChanged.connect(self.changeTab)
         # add close action to tabs
         self.createToolbar()
-        mainLayout.addLayout(self.toolbar, 0, 0, -1, 1)
+        mainLayout.addWidget(self.toolbar, 0, 0, -1, 1)
         mainLayout.addWidget(self.tabber, 0, 2, -1, 10)
         
         self.mainWidget.setLayout(mainLayout)
         self.setCentralWidget(self.mainWidget)
     
+    def changeTab(self, currentIndex):
+        activeTab = self.tabber.widget(currentIndex)
+        self.sizeComboBox.setCurrentIndex(int(activeTab._canvasSize[1]))
+        self.ppiComboBox.setCurrentIndex(ppiList.index(str(activeTab._ppi)))
+        
     def closeTab(self, currentIndex):
         #todo add save alert
         self.tabber.widget(currentIndex).deleteLater()
         self.tabber.removeTab(currentIndex)   
 
     def createToolbar(self):
-        self.toolbar = QFormLayout(self.mainWidget)
-        sizeComboBox = QComboBox()
-        sizeComboBox.addItems([f'A{i}' for i in range(5)])
-        # sizeComboBox.activated[str].connect(lambda: self.tabber.currentWidget().setCanvasSize)
-        sizeComboBox.activated[str].connect(self.setCanvasSize)
+        self.toolbar = QWidget(self.mainWidget)
+        self.toolbar.setObjectName("Toolbar")
+        toolbarLayout = QFormLayout(self.toolbar)
+        self.sizeComboBox = QComboBox()
+        self.sizeComboBox.addItems(sheetDimensionList)
+        self.sizeComboBox.activated[str].connect(self.setCanvasSize)
         sizeLabel = QLabel("Canvas Size")
-        sizeLabel.setBuddy(sizeComboBox)
-        self.toolbar.setWidget(0, QFormLayout.LabelRole, sizeLabel)
-        self.toolbar.setWidget(0, QFormLayout.FieldRole, sizeComboBox)
+        sizeLabel.setBuddy(self.sizeComboBox)
+        toolbarLayout.setWidget(0, QFormLayout.LabelRole, sizeLabel)
+        toolbarLayout.setWidget(0, QFormLayout.FieldRole, self.sizeComboBox)
         
-        ppiComboBox = QComboBox()
-        ppiComboBox.addItems(["72", "96", "150", "300"])
-        # ppiComboBox.activated[str].connect(lambda: self.tabber.currentWidget().setCanvasPPI)
-        ppiComboBox.activated[str].connect(self.setCanvasPPI)
+        self.ppiComboBox = QComboBox()
+        self.ppiComboBox.addItems(ppiList)
+        self.ppiComboBox.activated[str].connect(self.setCanvasPPI)
         ppiLabel = QLabel("Canvas ppi")
-        ppiLabel.setBuddy(ppiComboBox)
-        self.toolbar.setWidget(1, QFormLayout.LabelRole, ppiLabel)
-        self.toolbar.setWidget(1, QFormLayout.FieldRole, ppiComboBox)
+        ppiLabel.setBuddy(self.ppiComboBox)
+        toolbarLayout.setWidget(1, QFormLayout.LabelRole, ppiLabel)
+        toolbarLayout.setWidget(1, QFormLayout.FieldRole, self.ppiComboBox)
+        self.toolbar.setLayout(toolbarLayout)
     
     def setCanvasSize(self, size):
         self._defaultCanvasSize = size
@@ -76,11 +89,20 @@ class appWindow(QMainWindow):
             activeCanvas.ppi = ppi
     
     def newDiagram(self):
-        diagram = canvas(size = self._defaultCanvasSize, ppi = self._defaultPPI)
+        diagram = canvas(size = self.sizeComboBox.currentIndex(), ppi = self.ppiComboBox.currentIndex())
+        diagram.setObjectName("New")
         self.tabber.addTab(diagram, "New")
     
-    def saveImage(self):
+    def openDiagram(self):
         pass
+    
+    def saveDiagram(self):
+        pass
+    
+    def saveImage(self):
+        # activeDiagram = QGraphicsScene()
+        activeDiagram = self.tabber.currentWidget()
+        activeDiagram.painter.addEllipse(10, 10, 100, 100)
     
     def generateReport(self):
         pass
