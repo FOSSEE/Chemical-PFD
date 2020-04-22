@@ -73,4 +73,5 @@ class canvas(QWidget):
         self.setObjectName(dict['ObjectName'])
         for item in dict['items']:
             graphic = getattr(graphics, dict['_classname_'])
-            self.painter.addItem(item)
+            graphic.setstate(item)
+            self.painter.addItem(graphic)
