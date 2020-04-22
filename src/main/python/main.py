@@ -32,26 +32,35 @@ class appWindow(QMainWindow):
         self.menuGenerate.addAction("Image", self.saveImage)
         self.menuGenerate.addAction("Report", self.generateReport)
                 
-        mainLayout = QGridLayout(self.mainWidget)
+        # mainLayout = QGridLayout(self.mainWidget)
+        mainLayout = QHBoxLayout(self.mainWidget)
         mainLayout.setObjectName("Main Layout")
         
+        #Implement tabs
         self.tabber = QTabWidget(self.mainWidget)
         self.tabber.setObjectName("Tab windows")
         self.tabber.setTabsClosable(True)    
         self.tabber.tabCloseRequested.connect(self.closeTab)
         self.tabber.currentChanged.connect(self.changeTab)
         # add close action to tabs
-        self.createToolbar()
-        mainLayout.addWidget(self.toolbar, 0, 0, -1, 1)
-        mainLayout.addWidget(self.tabber, 0, 2, -1, 10)
         
+        
+        self.createToolbar()
+        # mainLayout.addWidget(self.toolbar, 0, 0, -1, 1)
+        # mainLayout.addWidget(self.tabber, 0, 2, -1, 6)
+        mainLayout.addWidget(self.toolbar)
+        mainLayout.addWidget(self.tabber)
+        #declare main window layout
         self.mainWidget.setLayout(mainLayout)
         self.setCentralWidget(self.mainWidget)
     
     def changeTab(self, currentIndex):
         activeTab = self.tabber.widget(currentIndex)
-        self.sizeComboBox.setCurrentIndex(int(activeTab._canvasSize[1]))
-        self.ppiComboBox.setCurrentIndex(ppiList.index(str(activeTab._ppi)))
+        if activeTab:
+            self.sizeComboBox.setCurrentIndex(sheetDimensionList.index(activeTab._canvasSize))
+            self.ppiComboBox.setCurrentIndex(ppiList.index(str(activeTab._ppi)))
+            print(activeTab.dimensions)
+            self.tabber.resize(*activeTab.dimensions)
         
     def closeTab(self, currentIndex):
         #todo add save alert
@@ -61,6 +70,7 @@ class appWindow(QMainWindow):
     def createToolbar(self):
         self.toolbar = QWidget(self.mainWidget)
         self.toolbar.setObjectName("Toolbar")
+        self.toolbar.setFixedWidth(200)
         toolbarLayout = QFormLayout(self.toolbar)
         self.sizeComboBox = QComboBox()
         self.sizeComboBox.addItems(sheetDimensionList)
@@ -84,31 +94,42 @@ class appWindow(QMainWindow):
         activeCanvas = self.tabber.currentWidget()
         if activeCanvas:
             activeCanvas.canvasSize = size
+            self.tabber.resize(*activeCanvas.dimensions)
     
     def setCanvasPPI(self, ppi):
         self._defaultPPI = ppi
         activeCanvas = self.tabber.currentWidget()
         if activeCanvas:
             activeCanvas.ppi = ppi
+            self.tabber.resize(*activeCanvas.dimensions)            
     
     def newDiagram(self):
         diagram = canvas(size = self.sizeComboBox.currentIndex(), ppi = self.ppiComboBox.currentIndex())
         diagram.setObjectName("New")
+        self.tabber.resize(*diagram.dimensions)
         self.tabber.addTab(diagram, "New")
     
     def openDiagram(self):
-        pass
+        name = QFileDialog.getOpenFileNames(self, 'Open File(s)', '', 'Process Flow Diagram (*pfd)')
+        if name:
+            tabs = []
+            for files in name[0]:
+                with open(files,'rb') as file:
+                    tabs += pickle.load(file)
+        for i in tabs:
+            self.tabber.addTab(i, i.objectName())
     
     def saveDiagram(self):
         name = QFileDialog.getSaveFileName(self, 'Save File', 'New Diagram', 'Process Flow Diagram (*.pfd)')
-        with open(name[0],'w') as file:
-            for i in range(self.tabber.count()):
-                file.write(self.tabber.widget(i))
+        if name:
+            with open(name[0],'wb') as file:
+                tabs = []
+                for i in range(self.tabber.count()):
+                    tabs.append(self.tabber.widget(i))
+                pickle.dump(tabs, file)
     
     def saveImage(self):
-        # activeDiagram = QGraphicsScene()
-        activeDiagram = self.tabber.currentWidget()
-        activeDiagram.painter.addEllipse(10, 10, 100, 100)
+        pass
     
     def generateReport(self):
         pass
