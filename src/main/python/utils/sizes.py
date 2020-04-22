@@ -31,6 +31,5 @@ paperSizes = {
     }
 }
 
-sheetDimensionList = [f'A{i}' for i in range(5)]
-
+sheetDimensionList = paperSizes.keys()
 ppiList = ["72", "96", "150", "300"]
