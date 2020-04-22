@@ -1,14 +1,17 @@
+import pickle
+import sys
+
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QObject
-from PyQt5.QtGui import (QBrush, QColor, QImage, QPainter,
-                         QPalette)
-from PyQt5.QtWidgets import (QWidget, QComboBox, QMainWindow, QGraphicsScene,
-                             QGraphicsView, QGridLayout, QHBoxLayout, QLabel,
-                             QPushButton, QMenuBar, QMenu, QFormLayout, QTabWidget)
+from PyQt5.QtCore import QObject, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QBrush, QColor, QImage, QPainter, QPalette
+from PyQt5.QtWidgets import (QComboBox, QFileDialog, QFormLayout,
+                             QGraphicsScene, QGraphicsView, QGridLayout,
+                             QHBoxLayout, QLabel, QMainWindow, QMenu, QMenuBar,
+                             QPushButton, QTabWidget, QWidget)
 
 from utils.canvas import canvas
-from utils.sizes import sheetDimensionList, ppiList
-import sys
+from utils.sizes import ppiList, sheetDimensionList
+
 
 class appWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -97,7 +100,10 @@ class appWindow(QMainWindow):
         pass
     
     def saveDiagram(self):
-        pass
+        name = QFileDialog.getSaveFileName(self, 'Save File', 'New Diagram', 'Process Flow Diagram (*.pfd)')
+        with open(name[0],'w') as file:
+            for i in range(self.tabber.count()):
+                file.write(self.tabber.widget(i))
     
     def saveImage(self):
         # activeDiagram = QGraphicsScene()
