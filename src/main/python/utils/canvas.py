@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QBrush
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsView, QHBoxLayout, QWidget
 
-import graphics
+from . import graphics
 from .sizes import paperSizes, ppiList, sheetDimensionList
 
 

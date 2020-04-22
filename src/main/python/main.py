@@ -16,7 +16,7 @@ from utils.sizes import ppiList, sheetDimensionList
 class appWindow(QMainWindow):
     def __init__(self, parent=None):
         super(appWindow, self).__init__(parent)      
-        self.resize(1280, 720)
+        # self.resize(1280, 720)
         self._defaultPPI = 72
         self._defaultCanvasSize = "A0"
         
