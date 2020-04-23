@@ -7,27 +7,28 @@ from PyQt5.QtGui import QBrush, QColor, QImage, QPainter, QPalette
 from PyQt5.QtWidgets import (QComboBox, QFileDialog, QFormLayout,
                              QGraphicsScene, QGraphicsView, QGridLayout,
                              QHBoxLayout, QLabel, QMainWindow, QMenu, QMenuBar,
-                             QPushButton, QTabWidget, QWidget)
+                             QPushButton, QTabWidget, QWidget, QMdiArea)
 
-from utils.canvas import canvas
+from utils.canvas import canvas, fileWindow
 from utils.sizes import ppiList, sheetDimensionList
 
 
 class appWindow(QMainWindow):
     def __init__(self, parent=None):
         super(appWindow, self).__init__(parent)      
-        # self.resize(1280, 720)
+        self.resize(1280, 720)
+        # self.setWindowState(Qt.WindowMaximized)
         self._defaultPPI = 72
-        self._defaultCanvasSize = "A0"
+        self._defaultCanvasSize = "A4"
         
         titleMenu = self.menuBar()
         self.mainWidget = QWidget(self)
         self.mainWidget.setObjectName("Main Widget")
         
         self.menuFile = titleMenu.addMenu('File') #File Menu
-        self.menuFile.addAction("New", self.newDiagram)
-        self.menuFile.addAction("Open", self.openDiagram)
-        self.menuFile.addAction("Save", self.saveDiagram)
+        self.menuFile.addAction("New", self.newProject)
+        self.menuFile.addAction("Open", self.openProject)
+        self.menuFile.addAction("Save", self.saveProject)
         self.menuGenerate = titleMenu.addMenu('Generate') #Generate menu
         self.menuGenerate.addAction("Image", self.saveImage)
         self.menuGenerate.addAction("Report", self.generateReport)
@@ -36,36 +37,18 @@ class appWindow(QMainWindow):
         mainLayout = QHBoxLayout(self.mainWidget)
         mainLayout.setObjectName("Main Layout")
         
-        #Implement tabs
-        self.tabber = QTabWidget(self.mainWidget)
-        self.tabber.setObjectName("Tab windows")
-        self.tabber.setTabsClosable(True)    
-        self.tabber.tabCloseRequested.connect(self.closeTab)
-        self.tabber.currentChanged.connect(self.changeTab)
+        #ImpsaveProject
+        self.mdi = QMdiArea(self)
+        # self.mdi.closeEvent().connect(self.closeProject)
         # add close action to tabs
         
         
         self.createToolbar()
-        # mainLayout.addWidget(self.toolbar, 0, 0, -1, 1)
-        # mainLayout.addWidget(self.tabber, 0, 2, -1, 6)
         mainLayout.addWidget(self.toolbar)
-        mainLayout.addWidget(self.tabber)
+        mainLayout.addWidget(self.mdi)
         #declare main window layout
         self.mainWidget.setLayout(mainLayout)
         self.setCentralWidget(self.mainWidget)
-    
-    def changeTab(self, currentIndex):
-        activeTab = self.tabber.widget(currentIndex)
-        if activeTab:
-            self.sizeComboBox.setCurrentIndex(sheetDimensionList.index(activeTab._canvasSize))
-            self.ppiComboBox.setCurrentIndex(ppiList.index(str(activeTab._ppi)))
-            print(activeTab.dimensions)
-            self.tabber.resize(*activeTab.dimensions)
-        
-    def closeTab(self, currentIndex):
-        #todo add save alert
-        self.tabber.widget(currentIndex).deleteLater()
-        self.tabber.removeTab(currentIndex)   
 
     def createToolbar(self):
         self.toolbar = QWidget(self.mainWidget)
@@ -74,6 +57,7 @@ class appWindow(QMainWindow):
         toolbarLayout = QFormLayout(self.toolbar)
         self.sizeComboBox = QComboBox()
         self.sizeComboBox.addItems(sheetDimensionList)
+        self.sizeComboBox.setCurrentIndex(4)
         self.sizeComboBox.activated[str].connect(self.setCanvasSize)
         sizeLabel = QLabel("Canvas Size")
         sizeLabel.setBuddy(self.sizeComboBox)
@@ -94,39 +78,38 @@ class appWindow(QMainWindow):
         activeCanvas = self.tabber.currentWidget()
         if activeCanvas:
             activeCanvas.canvasSize = size
-            self.tabber.resize(*activeCanvas.dimensions)
+            # self.tabber.resize(*activeCanvas.dimensions)
+            print(activeCanvas.dimensions)
     
     def setCanvasPPI(self, ppi):
         self._defaultPPI = ppi
         activeCanvas = self.tabber.currentWidget()
         if activeCanvas:
             activeCanvas.ppi = ppi
-            self.tabber.resize(*activeCanvas.dimensions)            
+            # self.tabber.resize(*activeCanvas.dimensions)            
     
-    def newDiagram(self):
-        diagram = canvas(size = self.sizeComboBox.currentIndex(), ppi = self.ppiComboBox.currentIndex())
-        diagram.setObjectName("New")
-        self.tabber.resize(*diagram.dimensions)
-        self.tabber.addTab(diagram, "New")
+    def newProject(self):
+        project = fileWindow(self.mdi)
+        project.setObjectName("New Project")
+        self.mdi.addSubWindow(project)
+        if not project.tabList:
+            project.newDiagram()
+        project.show()
     
-    def openDiagram(self):
+    def openProject(self):
         name = QFileDialog.getOpenFileNames(self, 'Open File(s)', '', 'Process Flow Diagram (*pfd)')
         if name:
-            tabs = []
             for files in name[0]:
                 with open(files,'rb') as file:
-                    tabs += pickle.load(file)
-        for i in tabs:
-            self.tabber.addTab(i, i.objectName())
+                    project = pickle.load(file)
+                    self.mdi.addSubWindow(project)
+                    project.show()
     
-    def saveDiagram(self):
-        name = QFileDialog.getSaveFileName(self, 'Save File', 'New Diagram', 'Process Flow Diagram (*.pfd)')
-        if name:
-            with open(name[0],'wb') as file:
-                tabs = []
-                for i in range(self.tabber.count()):
-                    tabs.append(self.tabber.widget(i))
-                pickle.dump(tabs, file)
+    def saveProject(self):
+        for j, i in enumerate(self.mdi.subWindowList()):
+            if i.tabCount:
+                name = QFileDialog.getSaveFileName(self, 'Save File', f'New Diagram {j}', 'Process Flow Diagram (*.pfd)')
+                i.saveProject(name)
     
     def saveImage(self):
         pass
