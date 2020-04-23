@@ -7,7 +7,7 @@ from PyQt5.QtGui import QBrush, QColor, QImage, QPainter, QPalette
 from PyQt5.QtWidgets import (QComboBox, QFileDialog, QFormLayout,
                              QGraphicsScene, QGraphicsView, QGridLayout,
                              QHBoxLayout, QLabel, QMainWindow, QMenu, QMenuBar,
-                             QPushButton, QTabWidget, QWidget, QMdiArea)
+                             QPushButton, QTabWidget, QWidget, QMdiArea, QMessageBox)
 
 from utils.canvas import canvas, fileWindow
 from utils.sizes import ppiList, sheetDimensionList
@@ -39,9 +39,7 @@ class appWindow(QMainWindow):
         
         #ImpsaveProject
         self.mdi = QMdiArea(self)
-        # self.mdi.closeEvent().connect(self.closeProject)
         # add close action to tabs
-        
         
         self.createToolbar()
         mainLayout.addWidget(self.toolbar)
@@ -75,7 +73,8 @@ class appWindow(QMainWindow):
     
     def setCanvasSize(self, size):
         self._defaultCanvasSize = size
-        activeCanvas = self.tabber.currentWidget()
+        activeCanvas = self.mdi.currentSubWindow()
+        activeCanvas._defaultCanvasSize = size
         if activeCanvas:
             activeCanvas.canvasSize = size
             # self.tabber.resize(*activeCanvas.dimensions)
@@ -83,18 +82,20 @@ class appWindow(QMainWindow):
     
     def setCanvasPPI(self, ppi):
         self._defaultPPI = ppi
-        activeCanvas = self.tabber.currentWidget()
+        activeCanvas = self.mdi.currentSubWindow()
+        activeCanvas._defaultPPI = ppi        
         if activeCanvas:
             activeCanvas.ppi = ppi
             # self.tabber.resize(*activeCanvas.dimensions)            
     
     def newProject(self):
-        project = fileWindow(self.mdi)
+        project = fileWindow(self.mdi, size = self._defaultCanvasSize, ppi = self._defaultPPI)
         project.setObjectName("New Project")
         self.mdi.addSubWindow(project)
         if not project.tabList:
             project.newDiagram()
         project.show()
+        project.resizeHandler(self.mdi)
     
     def openProject(self):
         name = QFileDialog.getOpenFileNames(self, 'Open File(s)', '', 'Process Flow Diagram (*pfd)')
@@ -104,6 +105,8 @@ class appWindow(QMainWindow):
                     project = pickle.load(file)
                     self.mdi.addSubWindow(project)
                     project.show()
+                    project.resizeHandler(self.mdi)
+                    
     
     def saveProject(self):
         for j, i in enumerate(self.mdi.subWindowList()):
@@ -116,6 +119,27 @@ class appWindow(QMainWindow):
     
     def generateReport(self):
         pass
+    
+    def resizeEvent(self, event):
+        self.mdi.activeSubWindow().resizeHandler(self.mdi)
+        super(appWindow, self).resizeEvent(event)
+        
+    def closeEvent(self, event):
+        if self.saveEvent():
+            event.accept()
+        else:
+            event.ignore()
+
+    def saveEvent(self, event):
+        alert = QMessageBox.question(self, self.objectName(), "All unsaved progress will be LOST!",
+                                     QMessageBox.StandardButtons(QMessageBox.Save|QMessageBox.Ignore|QMessageBox.Cancel), QMessageBox.Save)
+        if alert == QMessageBox.Cancel:
+            return False
+        else:
+            if alert == QMessageBox.Save:
+                if not self.saveProject():
+                    return False
+        return True
 
 if __name__ == '__main__':
     app = ApplicationContext()       # 1. Instantiate ApplicationContext

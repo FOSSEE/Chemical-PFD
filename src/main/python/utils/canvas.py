@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QBrush
 from PyQt5.QtWidgets import (QFileDialog, QGraphicsScene, QGraphicsView,
                              QHBoxLayout, QMainWindow, QMdiSubWindow,
-                             QMessageBox, QTabWidget, QWidget, QMenuBar, QVBoxLayout)
+                             QMessageBox, QTabWidget, QWidget, QMenuBar, QHBoxLayout)
 
 from . import graphics
 from .sizes import paperSizes, ppiList, sheetDimensionList
@@ -81,11 +81,13 @@ class canvas(QWidget):
             self.painter.addItem(graphic)
 
 class fileWindow(QMdiSubWindow):
-    def __init__(self, parent = None, title = 'New Project'):
+    def __init__(self, parent = None, title = 'New Project', size = 4, ppi = 1):
         super(fileWindow, self).__init__(parent)
         
+        self._ppi = ppiList[ppi]
+        self._canvasSize = sheetDimensionList[size]
         self.widget = QWidget(self)
-        layout = QVBoxLayout(self.widget)
+        layout = QHBoxLayout(self.widget)
         
         self.tabber = QTabWidget(self.widget)
         self.tabber.setObjectName(title)
@@ -98,11 +100,10 @@ class fileWindow(QMdiSubWindow):
         menuFile = titleMenu.addMenu('File') #File Menu
         menuFile.addAction("New", self.newDiagram)
         layout.setMenuBar(titleMenu)
-        
         self.widget.setLayout(layout)
         self.setWidget(self.widget)
         self.setWindowTitle(title)
-
+        
     def changeTab(self, currentIndex):
         pass
     
@@ -112,9 +113,17 @@ class fileWindow(QMdiSubWindow):
             self.tabber.removeTab(currentIndex)
         
     def newDiagram(self):
-        diagram = canvas()
+        diagram = canvas(self.tabber, size = self._canvasSize, ppi = self._ppi)
         diagram.setObjectName("New")
         self.tabber.addTab(diagram, "New")
+    
+    def resizeHandler(self, parent = None):
+        parentRect = parent.rect() if parent else self.parent().rect()
+        self.resize(parentRect().width(), parentRect().height())
+        self.setMaximumHeight(parentRect().height())
+        self.tabber.setMaximumHeight(parentRect().height())
+        for i in self.tabList:
+            i.setMaximumHeight(parentRect().height())
     
     @property
     def tabList(self):
@@ -128,13 +137,15 @@ class fileWindow(QMdiSubWindow):
         return {
             "_classname_": self.__class__.__name__,
             "ObjectName": self.objectName(),
+            "ppi": self._ppi,
+            "canvasSize": self._canvasSize,
             "tabs": [i.__getstate__() for i in self.tabList]
         }
     
     def __setstate__(self, dict):
         self.__init__(title = dict['ObjectName'])
         for i in dict['tabs']:
-            diagram = canvas()
+            diagram = canvas(self.tabber, size = dict['canvasSize'], ppi = dict['ppi'])
             diagram.__setstate__(i)
             self.tabber.addTab(diagram, i['ObjectName'])
     
@@ -152,7 +163,7 @@ class fileWindow(QMdiSubWindow):
             event.accept()
         else:
             event.ignore()
-        # super(fileWindow, self).closeEvent(event)
+            
     def saveEvent(self):
         alert = QMessageBox.question(self, self.objectName(), "All unsaved progress will be LOST!",
                                      QMessageBox.StandardButtons(QMessageBox.Save|QMessageBox.Ignore|QMessageBox.Cancel), QMessageBox.Save)
