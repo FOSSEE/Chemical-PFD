@@ -15,10 +15,9 @@ from utils.sizes import ppiList, sheetDimensionList
 
 class appWindow(QMainWindow):
     def __init__(self, parent=None):
-        super(appWindow, self).__init__(parent)      
-        self.resize(1280, 720)
+        super(appWindow, self).__init__(parent)
         # self.setWindowState(Qt.WindowMaximized)
-        self._defaultPPI = 72
+        self._defaultPPI = '72'
         self._defaultCanvasSize = "A4"
         
         titleMenu = self.menuBar()
@@ -47,6 +46,7 @@ class appWindow(QMainWindow):
         #declare main window layout
         self.mainWidget.setLayout(mainLayout)
         self.setCentralWidget(self.mainWidget)
+        self.resize(1280, 720)        
 
     def createToolbar(self):
         self.toolbar = QWidget(self.mainWidget)
@@ -74,19 +74,14 @@ class appWindow(QMainWindow):
     def setCanvasSize(self, size):
         self._defaultCanvasSize = size
         activeCanvas = self.mdi.currentSubWindow()
-        activeCanvas._defaultCanvasSize = size
         if activeCanvas:
             activeCanvas.canvasSize = size
-            # self.tabber.resize(*activeCanvas.dimensions)
-            print(activeCanvas.dimensions)
     
     def setCanvasPPI(self, ppi):
         self._defaultPPI = ppi
         activeCanvas = self.mdi.currentSubWindow()
-        activeCanvas._defaultPPI = ppi        
         if activeCanvas:
-            activeCanvas.ppi = ppi
-            # self.tabber.resize(*activeCanvas.dimensions)            
+            activeCanvas.ppi = ppi        
     
     def newProject(self):
         project = fileWindow(self.mdi, size = self._defaultCanvasSize, ppi = self._defaultPPI)
@@ -121,7 +116,8 @@ class appWindow(QMainWindow):
         pass
     
     def resizeEvent(self, event):
-        self.mdi.activeSubWindow().resizeHandler(self.mdi)
+        if self.mdi.activeSubWindow():
+            self.mdi.activeSubWindow().resizeHandler(self.mdi)
         super(appWindow, self).resizeEvent(event)
         
     def closeEvent(self, event):
@@ -130,15 +126,17 @@ class appWindow(QMainWindow):
         else:
             event.ignore()
 
-    def saveEvent(self, event):
-        alert = QMessageBox.question(self, self.objectName(), "All unsaved progress will be LOST!",
-                                     QMessageBox.StandardButtons(QMessageBox.Save|QMessageBox.Ignore|QMessageBox.Cancel), QMessageBox.Save)
-        if alert == QMessageBox.Cancel:
-            return False
-        else:
-            if alert == QMessageBox.Save:
-                if not self.saveProject():
-                    return False
+    def saveEvent(self):
+        if self.mdi.subWindowList():
+            alert = QMessageBox.question(self, self.objectName(), "All unsaved progress will be LOST!",
+                                        QMessageBox.StandardButtons(QMessageBox.Save|QMessageBox.Ignore|QMessageBox.Cancel),
+                                        QMessageBox.Save)
+            if alert == QMessageBox.Cancel:
+                return False
+            else:
+                if alert == QMessageBox.Save:
+                    if not self.saveProject():
+                        return False
         return True
 
 if __name__ == '__main__':

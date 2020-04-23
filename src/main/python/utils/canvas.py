@@ -11,11 +11,11 @@ from .sizes import paperSizes, ppiList, sheetDimensionList
 
 
 class canvas(QWidget):
-    def __init__(self, parent=None, size= 4, ppi= 1):
+    def __init__(self, parent=None, size= 'A4', ppi= '72'):
         super(canvas, self).__init__(parent)
         
-        self._ppi = ppiList[ppi]
-        self._canvasSize = sheetDimensionList[size]
+        self._ppi = ppi
+        self._canvasSize = size
         
         self.painter = QGraphicsScene()
         self.painter.setSceneRect(0, 0, *paperSizes[self.canvasSize][self.ppi])
@@ -81,11 +81,11 @@ class canvas(QWidget):
             self.painter.addItem(graphic)
 
 class fileWindow(QMdiSubWindow):
-    def __init__(self, parent = None, title = 'New Project', size = 4, ppi = 1):
+    def __init__(self, parent = None, title = 'New Project', size = 'A4', ppi = '72'):
         super(fileWindow, self).__init__(parent)
         
-        self._ppi = ppiList[ppi]
-        self._canvasSize = sheetDimensionList[size]
+        self._ppi = ppi
+        self._canvasSize = size
         self.widget = QWidget(self)
         layout = QHBoxLayout(self.widget)
         
@@ -104,6 +104,28 @@ class fileWindow(QMdiSubWindow):
         self.setWidget(self.widget)
         self.setWindowTitle(title)
         
+    @property
+    def canvasSize(self):
+        return self._canvasSize
+    @property
+    def ppi(self):
+        return self._ppi
+    
+    @canvasSize.setter
+    def canvasSize(self, size):
+        self._canvasSize = sheetDimensionList.index(size)
+        if self.tabCount:
+            activeTab = self.tabber.currentWidget()
+            activeTab.canvasSize = size
+    
+    @ppi.setter
+    def ppi(self, ppi):
+        self._ppi = ppiList.index(ppi)
+        if self.tabCount:
+            activeTab = self.tabber.currentWidget()
+            activeTab.ppi = ppi
+            
+
     def changeTab(self, currentIndex):
         pass
     
