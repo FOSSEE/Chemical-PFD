@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="4.0285068mm"
+   height="7.7581735mm"
+   viewBox="0 0 4.0285068 7.7581735"
+   version="1.1"
+   id="svg14149"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="VerticalVessel.svg">
+  <defs
+     id="defs14143" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="-225.24422"
+     inkscape:cy="-225.33888"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="705"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata14146">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-42.586937,-81.454247)">
+    <g
+       id="use22940"
+       transform="matrix(0.26458333,0,0,0.26458333,-4.7680241,98.557287)">
+      <g
+         inkscape:label="#Vertical vessel"
+         transform="matrix(0.68957921,0,0,0.68957921,152.36539,-1319.7056)"
+         id="g14711">
+        <desc
+           id="desc14705">Vertical Vessel</desc>
+        <title
+           id="title14707">Vertical vessel</title>
+        <path
+           inkscape:connector-curvature="0"
+           id="path14709"
+           style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.70891881;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+           d="m 38.949,1859.539 c 2.824,1.711 6.672,2.672 10.684,2.672 4.015,0 7.863,-0.961 10.687,-2.672 v -36.469 c -2.824,-1.711 -6.672,-2.672 -10.687,-2.672 -4.012,0 -7.86,0.961 -10.684,2.672 z" />
+      </g>
+    </g>
+  </g>
+</svg>

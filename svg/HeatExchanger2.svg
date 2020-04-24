@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="6.072896mm"
+   height="6.072896mm"
+   viewBox="0 0 6.072896 6.072896"
+   version="1.1"
+   id="svg2957"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="HeatExchanger2.svg">
+  <defs
+     id="defs2951" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="-224.23795"
+     inkscape:cy="-125.66652"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="705"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata2954">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-42.320695,-109.51117)">
+    <g
+       id="use29154"
+       transform="matrix(0.26458333,0,0,0.26458333,-13.485057,83.762761)">
+      <desc
+         id="desc3514">Heat exchanger 2</desc>
+      <title
+         id="title3516">Heat exchanger 2</title>
+      <path
+         d="m 211.15635,108.79315 c 0,-6.20703 5.03235,-11.239366 11.23941,-11.239366 6.20705,0 11.23938,5.032336 11.23938,11.239366 0,6.20703 -5.03233,11.23943 -11.23938,11.23943 -6.20706,0 -11.23941,-5.0324 -11.23941,-11.23943 z"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.66862381"
+         id="path3518"
+         inkscape:connector-curvature="0" />
+      <g
+         style="stroke-width:0.86003679"
+         id="g3522"
+         transform="matrix(0.77743625,0,0,0.77743625,74.910621,-2203.7034)">
+        <path
+           d="m 175.25,2974.137 h 3.613 l 7.231,-6.848 7.949,14.457 6.508,-7.609 h 3.613 m -28.914,0.379 c 0,-7.985 6.473,-14.457 14.457,-14.457 7.984,0 14.457,6.472 14.457,14.457 0,7.984 -6.473,14.457 -14.457,14.457 -7.984,0 -14.457,-6.473 -14.457,-14.457 z"
+           style="fill:none;stroke:#000000;stroke-width:0.60955107;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+           id="path3520"
+           inkscape:connector-curvature="0" />
+      </g>
+    </g>
+  </g>
+</svg>

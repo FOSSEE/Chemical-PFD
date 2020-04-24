@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="6.623394mm"
+   height="7.0741811mm"
+   viewBox="0 0 6.623394 7.0741811"
+   version="1.1"
+   id="svg6551"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="Compressor.svg">
+  <defs
+     id="defs6545" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="-311.76906"
+     inkscape:cy="-180.91719"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="705"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata6548">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-65.479969,-93.89148)">
+    <g
+       id="use21865"
+       transform="matrix(0.26458333,0,0,0.26458333,61.563211,123.80449)">
+      <g
+         transform="matrix(0.92704539,0,0,0.92646127,-18.548668,-1292.1257)"
+         id="g7110">
+        <title
+           id="title7106">Compressor</title>
+        <path
+           inkscape:connector-curvature="0"
+           id="path7108"
+           style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.51134121;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+           d="m 36.594,1285.801 c 0,7.117 5.769,12.887 12.883,12.887 7.117,0 12.886,-5.77 12.886,-12.887 0,-7.117 -5.769,-12.887 -12.886,-12.887 -7.114,0 -12.883,5.77 -12.883,12.887 z m 5.152,10.308 -5.152,5.153 h 25.769 l -5.152,-5.153 c -4.984,3.434 -10.484,3.434 -15.465,0 z" />
+      </g>
+    </g>
+  </g>
+</svg>

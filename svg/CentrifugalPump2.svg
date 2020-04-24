@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="6.8296285mm"
+   height="6.6897473mm"
+   viewBox="0 0 6.8296285 6.6897473"
+   version="1.1"
+   id="svg4748"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="CentrifugalPump2.svg">
+  <defs
+     id="defs4742" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="-342.8079"
+     inkscape:cy="-81.64368"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="705"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata4745">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-73.692329,-120.54203)">
+    <g
+       id="use23873"
+       transform="matrix(0.26458333,0,0,0.26458333,47.488779,123.69993)">
+      <desc
+         id="desc5310">Centrifugal pump - 2</desc>
+      <title
+         id="title5312">Centrifugal pump - 2</title>
+      <g
+         style="stroke-width:0.81061256"
+         transform="matrix(0.824814,0,0,-0.82486148,345.13945,3600.0907)"
+         id="g5328">
+        <g
+           style="stroke-width:0.81061256"
+           transform="matrix(1,0,0,-1,-473.68922,5717.9934)"
+           id="g5316">
+          <path
+             inkscape:connector-curvature="0"
+             id="path5314"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.57452166;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 178.332,1369.41 h 26.387 l -13.192,-15.672 z" />
+        </g>
+        <g
+           style="stroke-width:0.81061256"
+           transform="matrix(1,0,0,-1,-473.68922,5717.9934)"
+           id="g5320">
+          <path
+             inkscape:connector-curvature="0"
+             id="path5318"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.57452166;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 201.926,1350.254 c 0,0 1.375,11.976 -10.367,14.086 -11.485,2.062 -14.762,-10.133 -14.762,-10.133 0,0 -1.871,-11.484 10.68,-14.875 h 18.847 v 10.922 z" />
+        </g>
+        <path
+           inkscape:connector-curvature="0"
+           id="path5322"
+           style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.81061256"
+           d="m -298.37322,4368.1808 h 5.012 v -7.727 h -5.012 z" />
+        <g
+           style="stroke-width:0.81061256"
+           transform="matrix(1,-1,-1,-1,-473.68922,5717.9934)"
+           id="g5326">
+          <path
+             inkscape:connector-curvature="0"
+             id="path5324"
+             style="fill:none;stroke:#000000;stroke-width:0.40624821;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 767.932,581.689 c 0.002,-1.552 1.26,-2.81 2.81,-2.81 1.551,0 2.809,1.258 2.809,2.812 0.002,1.549 -1.256,2.811 -2.811,2.811" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

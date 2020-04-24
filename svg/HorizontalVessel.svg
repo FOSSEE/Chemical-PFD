@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="7.5223832mm"
+   height="3.9060559mm"
+   viewBox="0 0 7.5223832 3.9060559"
+   version="1.1"
+   id="svg13568"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="HorizontalVessel.svg">
+  <defs
+     id="defs13562" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="-290.07019"
+     inkscape:cy="-224.04704"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="705"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata13565">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-59.738808,-85.648165)">
+    <g
+       id="use23109"
+       transform="matrix(0.26458333,0,0,0.26458333,3.1938735,100.53082)">
+      <g
+         inkscape:label="#Horizontal vessel"
+         id="g14130"
+         transform="matrix(0,0.66862381,-0.66862381,0,1459.0687,-82.054689)">
+        <desc
+           id="desc14124">Horizontal vessel</desc>
+        <title
+           id="title14126">Horizontal vessel</title>
+        <path
+           d="m 38.949,1859.539 c 2.824,1.711 6.672,2.672 10.684,2.672 4.015,0 7.863,-0.961 10.687,-2.672 v -36.469 c -2.824,-1.711 -6.672,-2.672 -10.687,-2.672 -4.012,0 -7.86,0.961 -10.684,2.672 z"
+           style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.70875001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+           id="path14128"
+           inkscape:connector-curvature="0" />
+      </g>
+    </g>
+  </g>
+</svg>

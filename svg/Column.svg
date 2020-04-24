@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="29.681765mm"
+   height="50.584301mm"
+   viewBox="0 0 29.681765 50.584301"
+   version="1.1"
+   id="svg1553"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="Column.svg">
+  <defs
+     id="defs1547" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="-53.758603"
+     inkscape:cy="95.455126"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1304"
+     inkscape:window-height="745"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata1550">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-144.63496,-116.2188)">
+    <g
+       id="use23287"
+       transform="matrix(1.9494464,0,0,1.7251648,-371.93598,227.29603)">
+      <g
+         id="g1584"
+         transform="matrix(0.68957937,0,0,-0.68957937,351.75302,3137.4373)">
+        <desc
+           id="desc1570">Column</desc>
+        <title
+           id="title1572">Column</title>
+        <path
+           d="m -125.4754,4606.3318 c 0.938,-3.094 5.438,-5.344 10.684,-5.344 5.25,0 9.746,2.25 10.687,5.344 v 31.129 c -0.941,3.094 -5.437,5.34 -10.687,5.34 -5.246,0 -9.746,-2.246 -10.684,-5.34 z"
+           style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+           id="path1574"
+           inkscape:connector-curvature="0" />
+        <g
+           id="g1578"
+           transform="matrix(1,0,0,-1,-164.4244,6574.5584)">
+          <path
+             d="m 38.949,1968.227 c 0.938,3.093 5.438,5.343 10.684,5.343 5.25,0 9.746,-2.25 10.687,-5.343 v -31.129 c -0.941,-3.094 -5.437,-5.34 -10.687,-5.34 -5.246,0 -9.746,2.246 -10.684,5.34 z m 0,0 H 60.32 M 38.949,1937.098 H 60.32"
+             style="fill:none;stroke:#000000;stroke-width:0.70875001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             id="path1576"
+             inkscape:connector-curvature="0" />
+        </g>
+        <g
+           transform="matrix(1,0,0,-1,-164.4244,6574.5584)"
+           id="g1582">
+          <path
+             inkscape:connector-curvature="0"
+             id="path1580"
+             style="fill:none;stroke:#000000;stroke-width:0.70875001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+             d="m 38.949,1968.227 c 0.938,3.093 5.438,5.343 10.684,5.343 5.25,0 9.746,-2.25 10.687,-5.343 v -31.129 c -0.941,-3.094 -5.437,-5.34 -10.687,-5.34 -5.246,0 -9.746,2.246 -10.684,5.34 z m 0,0 H 60.32 M 38.949,1937.098 H 60.32" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

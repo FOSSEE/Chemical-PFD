@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="5.8764515mm"
+   height="5.1060538mm"
+   viewBox="0 0 5.8764515 5.1060538"
+   version="1.1"
+   id="svg919"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="Centrifugal Pump.svg">
+  <defs
+     id="defs913" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="11.105106"
+     inkscape:cy="9.6492281"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1304"
+     inkscape:window-height="745"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata916">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-102.89511,-146.2803)">
+    <g
+       id="use23667"
+       transform="matrix(0.26458333,0,0,0.26458333,87.26164,148.76091)">
+      <desc
+         id="desc937">Centrifugal pump</desc>
+      <title
+         id="title939">Centrifugal pump</title>
+      <path
+         d="m 63.461437,0.93302941 c 0,-4.83160421 3.917761,-8.74995261 8.751431,-8.74995261 4.831585,0 8.749327,3.9183484 8.749327,8.74995261 0,4.83440929 -3.917742,8.75275769 -8.749327,8.75275769 -4.83367,0 -8.751431,-3.9183484 -8.751431,-8.75275769 z"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.66862381"
+         id="path941"
+         inkscape:connector-curvature="0" />
+      <g
+         style="stroke-width:0.96060389"
+         id="g945"
+         transform="matrix(0.69599386,0,0,0.6960967,-60.599463,-916.20963)">
+        <path
+           d="m 178.25,1317.551 c 0,-6.942 5.629,-12.571 12.574,-12.571 6.942,0 12.571,5.629 12.571,12.571 0,6.945 -5.629,12.574 -12.571,12.574 -6.945,0 -12.574,-5.629 -12.574,-12.574 z m -6.285,0 h 18.859 m 0,-12.571 h 12.571"
+           style="fill:none;stroke:#000000;stroke-width:0.68082803;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+           id="path943"
+           inkscape:connector-curvature="0" />
+      </g>
+      <g
+         style="stroke-width:0.96060389"
+         id="g949"
+         transform="matrix(0.69599386,0,0,0.6960967,-60.599463,-916.20963)">
+        <path
+           d="m 189.406,1316.133 1.418,1.418 -1.418,1.418 z"
+           style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.68082803;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+           id="path947"
+           inkscape:connector-curvature="0" />
+      </g>
+      <g
+         style="stroke-width:0.96060389"
+         id="g953"
+         transform="matrix(0.69599386,0,0,0.6960967,-60.599463,-916.20963)">
+        <path
+           d="m 201.977,1303.563 1.418,1.417 -1.418,1.418 z"
+           style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.68082803;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+           id="path951"
+           inkscape:connector-curvature="0" />
+      </g>
+    </g>
+  </g>
+</svg>
