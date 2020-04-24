@@ -8,9 +8,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QGraphicsVie
 from PyQt5.QtCore import QRectF, QFileInfo, QPoint, QRect, QSize,Qt
 
 from canvas import Canvas
-from file import NodeItem
-# from circle import NodeItem
-from connectingline import ConnectingLine
+from shapes import NodeItem
+
 
 
 class Window(QMainWindow):
