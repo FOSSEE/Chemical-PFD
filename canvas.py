@@ -1,8 +1,8 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QGraphicsScene, QMenu, QGraphicsView
 
-from connectingline import ConnectingLine
-from circle import NodeItem
+
+from shapes import NodeItem
 
 
 class Canvas(QGraphicsScene):
