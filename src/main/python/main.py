@@ -16,7 +16,6 @@ from utils.sizes import ppiList, sheetDimensionList
 class appWindow(QMainWindow):
     def __init__(self, parent=None):
         super(appWindow, self).__init__(parent)
-        # self.setWindowState(Qt.WindowMaximized)
         self._defaultPPI = '72'
         self._defaultCanvasSize = "A4"
         
@@ -46,30 +45,16 @@ class appWindow(QMainWindow):
         #declare main window layout
         self.mainWidget.setLayout(mainLayout)
         self.setCentralWidget(self.mainWidget)
-        self.resize(1280, 720)        
+        self.resize(1280, 720)
+        self.setWindowState(Qt.WindowMaximized)        
 
     def createToolbar(self):
         self.toolbar = QWidget(self.mainWidget)
         self.toolbar.setObjectName("Toolbar")
         self.toolbar.setFixedWidth(200)
         toolbarLayout = QFormLayout(self.toolbar)
-        self.sizeComboBox = QComboBox()
-        self.sizeComboBox.addItems(sheetDimensionList)
-        self.sizeComboBox.setCurrentIndex(4)
-        self.sizeComboBox.activated[str].connect(self.setCanvasSize)
-        sizeLabel = QLabel("Canvas Size")
-        sizeLabel.setBuddy(self.sizeComboBox)
-        toolbarLayout.setWidget(0, QFormLayout.LabelRole, sizeLabel)
-        toolbarLayout.setWidget(0, QFormLayout.FieldRole, self.sizeComboBox)
-        
-        self.ppiComboBox = QComboBox()
-        self.ppiComboBox.addItems(ppiList)
-        self.ppiComboBox.activated[str].connect(self.setCanvasPPI)
-        ppiLabel = QLabel("Canvas ppi")
-        ppiLabel.setBuddy(self.ppiComboBox)
-        toolbarLayout.setWidget(1, QFormLayout.LabelRole, ppiLabel)
-        toolbarLayout.setWidget(1, QFormLayout.FieldRole, self.ppiComboBox)
         self.toolbar.setLayout(toolbarLayout)
+       
     
     def setCanvasSize(self, size):
         self._defaultCanvasSize = size

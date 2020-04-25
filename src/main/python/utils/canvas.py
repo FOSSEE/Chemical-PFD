@@ -2,12 +2,14 @@ import pickle
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QBrush
-from PyQt5.QtWidgets import (QFileDialog, QGraphicsScene, QGraphicsView,
-                             QHBoxLayout, QMainWindow, QMdiSubWindow,
-                             QMessageBox, QTabWidget, QWidget, QMenuBar, QHBoxLayout)
+from PyQt5.QtWidgets import (QComboBox, QDialog, QFileDialog, QFormLayout,
+                             QGraphicsScene, QGraphicsView, QHBoxLayout,
+                             QLabel, QMainWindow, QMdiSubWindow, QMenu,
+                             QMessageBox, QTabWidget, QWidget)
 
 from . import graphics
 from .sizes import paperSizes, ppiList, sheetDimensionList
+from .tabs import customTabWidget
 
 
 class canvas(QWidget):
@@ -29,6 +31,9 @@ class canvas(QWidget):
         self.layout = QHBoxLayout(self)
         self.layout.addWidget(self.view)  
         self.setLayout(self.layout)
+        
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.contextMenu)
         
     def setCanvasSize(self, size):
         self.canvasSize = size
@@ -61,6 +66,36 @@ class canvas(QWidget):
     def dimensions(self):
         return self.painter.sceneRect().width(), self.painter.sceneRect().height()
     
+    def contextMenu(self, point):
+        menu = QMenu("Context Menu", self)
+        menu.addAction("Adjust Canvas", self.adjustCanvasDialog)
+        menu.exec_(self.mapToGlobal(point))
+        
+    def adjustCanvasDialog(self):
+        dialogBox = QDialog(self)
+        dialogBoxLayout = QFormLayout(dialogBox)
+        sizeComboBox = QComboBox()
+        sizeComboBox.addItems(sheetDimensionList)
+        sizeComboBox.setCurrentIndex(4)
+        sizeComboBox.activated[str].connect(self.setCanvasSize)
+        sizeLabel = QLabel("Canvas Size")
+        sizeLabel.setBuddy(sizeComboBox)
+        sizeComboBox.setCurrentIndex(sheetDimensionList.index(self.canvasSize))
+        dialogBoxLayout.setWidget(0, QFormLayout.LabelRole, sizeLabel)
+        dialogBoxLayout.setWidget(0, QFormLayout.FieldRole, sizeComboBox)
+        
+        ppiComboBox = QComboBox()
+        ppiComboBox.addItems(ppiList)
+        ppiComboBox.activated[str].connect(self.setCanvasPPI)
+        ppiLabel = QLabel("Canvas ppi")
+        ppiLabel.setBuddy(ppiComboBox)
+        ppiComboBox.setCurrentIndex(ppiList.index(self.ppi))
+        dialogBoxLayout.setWidget(1, QFormLayout.LabelRole, ppiLabel)
+        dialogBoxLayout.setWidget(1, QFormLayout.FieldRole, ppiComboBox)
+        dialogBox.setLayout(dialogBoxLayout)
+
+        dialogBox.show()
+
     def __getstate__(self) -> dict:
         return {
             "_classname_": self.__class__.__name__,
@@ -86,22 +121,14 @@ class fileWindow(QMdiSubWindow):
         
         self._ppi = ppi
         self._canvasSize = size
-        self.widget = QWidget(self)
-        layout = QHBoxLayout(self.widget)
         
-        self.tabber = QTabWidget(self.widget)
+        self.tabber = customTabWidget(self)
         self.tabber.setObjectName(title)
-        self.tabber.setTabsClosable(True)    
         self.tabber.tabCloseRequested.connect(self.closeTab)
         self.tabber.currentChanged.connect(self.changeTab)
-        layout.addWidget(self.tabber)
+        self.tabber.tab.plusClicked.connect(self.newDiagram)
         
-        titleMenu = QMenuBar(self)
-        menuFile = titleMenu.addMenu('File') #File Menu
-        menuFile.addAction("New", self.newDiagram)
-        layout.setMenuBar(titleMenu)
-        self.widget.setLayout(layout)
-        self.setWidget(self.widget)
+        self.setWidget(self.tabber)
         self.setWindowTitle(title)
         
     @property
@@ -141,11 +168,11 @@ class fileWindow(QMdiSubWindow):
     
     def resizeHandler(self, parent = None):
         parentRect = parent.rect() if parent else self.parent().rect()
-        self.resize(parentRect().width(), parentRect().height())
-        self.setMaximumHeight(parentRect().height())
-        self.tabber.setMaximumHeight(parentRect().height())
+        self.resize(parentRect.width(), parentRect.height())
+        self.setMaximumHeight(parentRect.height())
+        self.tabber.setMaximumHeight(parentRect.height())
         for i in self.tabList:
-            i.setMaximumHeight(parentRect().height())
+            i.setMaximumHeight(parentRect.height())
     
     @property
     def tabList(self):
@@ -195,4 +222,4 @@ class fileWindow(QMdiSubWindow):
             if alert == QMessageBox.Save:
                 if not self.saveProject():
                     return False
-        return True          
+        return True
