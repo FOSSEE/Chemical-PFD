@@ -21,21 +21,19 @@ class customTabWidget(QTabWidget):
         self.setTabBar(self.tab)
         
         self.plusButton = QPushButton('+', self)
-        self.plusButton.setFixedSize(20, 20)
+        self.plusButton.setFixedSize(35, 25)
         self.plusButton.clicked.connect(self.plusClicked.emit)
         self.setMovable(True)
         self.setTabsClosable(True)
 
         self.tab.layoutChanged.connect(self.movePlusButton)
-        # self.tab.tabMoved.connect(self.moveTab)
-        # self.tabCloseRequested.connect(self.removeTab)
     
     def movePlusButton(self):
         size = sum([self.tab.tabRect(i).width() for i in range(self.tab.count())])
-        h = max(self.tab.geometry().bottom() - 20, 0)
+        h = max(self.tab.geometry().bottom() - 24, 0)
         w = self.tab.width()
         print(size, w, h)
         if size > w:
             self.plusButton.move(w-self.plusButton.width(), h)
         else:
-            self.plusButton.move(size, h)
+            self.plusButton.move(size-3, h)
