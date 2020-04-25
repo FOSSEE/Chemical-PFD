@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (QComboBox, QFileDialog, QFormLayout,
                              QGraphicsScene, QGraphicsView, QGridLayout,
                              QHBoxLayout, QLabel, QMainWindow, QMenu, QMenuBar,
                              QPushButton, QTabWidget, QWidget, QMdiArea, QMessageBox)
-
+# 
 from utils.canvas import canvas, fileWindow
 from utils.sizes import ppiList, sheetDimensionList
 
@@ -53,8 +53,7 @@ class appWindow(QMainWindow):
         self.toolbar.setObjectName("Toolbar")
         self.toolbar.setFixedWidth(200)
         toolbarLayout = QFormLayout(self.toolbar)
-        self.toolbar.setLayout(toolbarLayout)
-       
+        self.toolbar.setLayout(toolbarLayout)  
     
     def setCanvasSize(self, size):
         self._defaultCanvasSize = size
@@ -85,8 +84,7 @@ class appWindow(QMainWindow):
                     project = pickle.load(file)
                     self.mdi.addSubWindow(project)
                     project.show()
-                    project.resizeHandler(self.mdi)
-                    
+                    project.resizeHandler(self.mdi)             
     
     def saveProject(self):
         for j, i in enumerate(self.mdi.subWindowList()):
@@ -112,7 +110,7 @@ class appWindow(QMainWindow):
             event.ignore()
 
     def saveEvent(self):
-        if self.mdi.subWindowList():
+        if len(self.activeFiles):
             alert = QMessageBox.question(self, self.objectName(), "All unsaved progress will be LOST!",
                                         QMessageBox.StandardButtons(QMessageBox.Save|QMessageBox.Ignore|QMessageBox.Cancel),
                                         QMessageBox.Save)
@@ -123,7 +121,11 @@ class appWindow(QMainWindow):
                     if not self.saveProject():
                         return False
         return True
-
+    
+    @property
+    def activeFiles(self):
+        return filter(lambda x: x.tabCount()>=1, self.mdi.subWindowList())
+    
 if __name__ == '__main__':
     app = ApplicationContext()       # 1. Instantiate ApplicationContext
     test = appWindow()

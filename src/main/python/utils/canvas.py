@@ -73,6 +73,7 @@ class canvas(QWidget):
         
     def adjustCanvasDialog(self):
         dialogBox = QDialog(self)
+        dialogBox.setWindowTitle(self.objectName()+":Canvas Size")
         dialogBoxLayout = QFormLayout(dialogBox)
         sizeComboBox = QComboBox()
         sizeComboBox.addItems(sheetDimensionList)
@@ -94,7 +95,7 @@ class canvas(QWidget):
         dialogBoxLayout.setWidget(1, QFormLayout.FieldRole, ppiComboBox)
         dialogBox.setLayout(dialogBoxLayout)
 
-        dialogBox.show()
+        dialogBox.exec_()
 
     def __getstate__(self) -> dict:
         return {
@@ -126,7 +127,7 @@ class fileWindow(QMdiSubWindow):
         self.tabber.setObjectName(title)
         self.tabber.tabCloseRequested.connect(self.closeTab)
         self.tabber.currentChanged.connect(self.changeTab)
-        self.tabber.tab.plusClicked.connect(self.newDiagram)
+        self.tabber.plusClicked.connect(self.newDiagram)
         
         self.setWidget(self.tabber)
         self.setWindowTitle(title)
@@ -208,7 +209,7 @@ class fileWindow(QMdiSubWindow):
             return False
 
     def closeEvent(self, event):
-        if self.saveEvent():
+        if self.tabCount or self.saveEvent():
             event.accept()
         else:
             event.ignore()
