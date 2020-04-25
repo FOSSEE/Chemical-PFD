@@ -209,7 +209,7 @@ class fileWindow(QMdiSubWindow):
             return False
 
     def closeEvent(self, event):
-        if self.tabCount or self.saveEvent():
+        if self.tabCount==0 or self.saveEvent():
             event.accept()
             self.deleteLater()
         else:
