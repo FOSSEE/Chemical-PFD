@@ -8,16 +8,15 @@ from PyQt5.QtWidgets import (QComboBox, QFileDialog, QFormLayout,
                              QGraphicsScene, QGraphicsView, QGridLayout,
                              QHBoxLayout, QLabel, QMainWindow, QMenu, QMenuBar,
                              QPushButton, QTabWidget, QWidget, QMdiArea, QMessageBox)
-# 
+
 from utils.canvas import canvas, fileWindow
 from utils.sizes import ppiList, sheetDimensionList
+from utils import dialogs
 
 
 class appWindow(QMainWindow):
     def __init__(self, parent=None):
         super(appWindow, self).__init__(parent)
-        self._defaultPPI = '72'
-        self._defaultCanvasSize = "A4"
         
         titleMenu = self.menuBar()
         self.mainWidget = QWidget(self)
@@ -53,22 +52,10 @@ class appWindow(QMainWindow):
         self.toolbar.setObjectName("Toolbar")
         self.toolbar.setFixedWidth(200)
         toolbarLayout = QFormLayout(self.toolbar)
-        self.toolbar.setLayout(toolbarLayout)  
-    
-    def setCanvasSize(self, size):
-        self._defaultCanvasSize = size
-        activeCanvas = self.mdi.currentSubWindow()
-        if activeCanvas:
-            activeCanvas.canvasSize = size
-    
-    def setCanvasPPI(self, ppi):
-        self._defaultPPI = ppi
-        activeCanvas = self.mdi.currentSubWindow()
-        if activeCanvas:
-            activeCanvas.ppi = ppi        
+        self.toolbar.setLayout(toolbarLayout)     
     
     def newProject(self):
-        project = fileWindow(self.mdi, size = self._defaultCanvasSize, ppi = self._defaultPPI)
+        project = fileWindow(self.mdi)
         project.setObjectName("New Project")
         self.mdi.addSubWindow(project)
         if not project.tabList:
@@ -91,6 +78,9 @@ class appWindow(QMainWindow):
             if i.tabCount:
                 name = QFileDialog.getSaveFileName(self, 'Save File', f'New Diagram {j}', 'Process Flow Diagram (*.pfd)')
                 i.saveProject(name)
+        else:
+            return False
+        return True
     
     def saveImage(self):
         pass
@@ -104,23 +94,10 @@ class appWindow(QMainWindow):
         super(appWindow, self).resizeEvent(event)
         
     def closeEvent(self, event):
-        if self.saveEvent():
+        if len(self.activeFiles) and dialogs.saveEvent(self):
             event.accept()
         else:
             event.ignore()
-
-    def saveEvent(self):
-        if len(self.activeFiles):
-            alert = QMessageBox.question(self, self.objectName(), "All unsaved progress will be LOST!",
-                                        QMessageBox.StandardButtons(QMessageBox.Save|QMessageBox.Ignore|QMessageBox.Cancel),
-                                        QMessageBox.Save)
-            if alert == QMessageBox.Cancel:
-                return False
-            else:
-                if alert == QMessageBox.Save:
-                    if not self.saveProject():
-                        return False
-        return True
     
     @property
     def activeFiles(self):

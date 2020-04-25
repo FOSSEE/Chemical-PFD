@@ -7,10 +7,9 @@ from PyQt5.QtWidgets import (QComboBox, QDialog, QFileDialog, QFormLayout,
                              QLabel, QMainWindow, QMdiSubWindow, QMenu,
                              QMessageBox, QTabWidget, QWidget)
 
-from . import graphics
+from . import graphics, dialogs
 from .sizes import paperSizes, ppiList, sheetDimensionList
 from .tabs import customTabWidget
-
 
 class canvas(QWidget):
     def __init__(self, parent=None, size= 'A4', ppi= '72'):
@@ -72,30 +71,7 @@ class canvas(QWidget):
         menu.exec_(self.mapToGlobal(point))
         
     def adjustCanvasDialog(self):
-        dialogBox = QDialog(self)
-        dialogBox.setWindowTitle(self.objectName()+":Canvas Size")
-        dialogBoxLayout = QFormLayout(dialogBox)
-        sizeComboBox = QComboBox()
-        sizeComboBox.addItems(sheetDimensionList)
-        sizeComboBox.setCurrentIndex(4)
-        sizeComboBox.activated[str].connect(self.setCanvasSize)
-        sizeLabel = QLabel("Canvas Size")
-        sizeLabel.setBuddy(sizeComboBox)
-        sizeComboBox.setCurrentIndex(sheetDimensionList.index(self.canvasSize))
-        dialogBoxLayout.setWidget(0, QFormLayout.LabelRole, sizeLabel)
-        dialogBoxLayout.setWidget(0, QFormLayout.FieldRole, sizeComboBox)
-        
-        ppiComboBox = QComboBox()
-        ppiComboBox.addItems(ppiList)
-        ppiComboBox.activated[str].connect(self.setCanvasPPI)
-        ppiLabel = QLabel("Canvas ppi")
-        ppiLabel.setBuddy(ppiComboBox)
-        ppiComboBox.setCurrentIndex(ppiList.index(self.ppi))
-        dialogBoxLayout.setWidget(1, QFormLayout.LabelRole, ppiLabel)
-        dialogBoxLayout.setWidget(1, QFormLayout.FieldRole, ppiComboBox)
-        dialogBox.setLayout(dialogBoxLayout)
-
-        dialogBox.exec_()
+        self.canvasSize, self.ppi = dialogs.paperDims(self, self._canvasSize, self._ppi, self.objectName).exec_()
 
     def __getstate__(self) -> dict:
         return {
@@ -119,9 +95,6 @@ class canvas(QWidget):
 class fileWindow(QMdiSubWindow):
     def __init__(self, parent = None, title = 'New Project', size = 'A4', ppi = '72'):
         super(fileWindow, self).__init__(parent)
-        
-        self._ppi = ppi
-        self._canvasSize = size
         
         self.tabber = customTabWidget(self)
         self.tabber.setObjectName(title)
@@ -158,12 +131,12 @@ class fileWindow(QMdiSubWindow):
         pass
     
     def closeTab(self, currentIndex):
-        if self.saveEvent():
+        if dialogs.saveEvent(self):
             self.tabber.widget(currentIndex).deleteLater()
             self.tabber.removeTab(currentIndex)
         
     def newDiagram(self):
-        diagram = canvas(self.tabber, size = self._canvasSize, ppi = self._ppi)
+        diagram = canvas(self.tabber)
         diagram.setObjectName("New")
         self.tabber.addTab(diagram, "New")
     
@@ -209,19 +182,8 @@ class fileWindow(QMdiSubWindow):
             return False
 
     def closeEvent(self, event):
-        if self.tabCount==0 or self.saveEvent():
+        if self.tabCount==0 or dialogs.saveEvent(self):
             event.accept()
             self.deleteLater()
         else:
             event.ignore()
-            
-    def saveEvent(self):
-        alert = QMessageBox.question(self, self.objectName(), "All unsaved progress will be LOST!",
-                                     QMessageBox.StandardButtons(QMessageBox.Save|QMessageBox.Ignore|QMessageBox.Cancel), QMessageBox.Save)
-        if alert == QMessageBox.Cancel:
-            return False
-        else:
-            if alert == QMessageBox.Save:
-                if not self.saveProject():
-                    return False
-        return True
