@@ -32,7 +32,6 @@ class customTabWidget(QTabWidget):
         size = sum([self.tab.tabRect(i).width() for i in range(self.tab.count())])
         h = max(self.tab.geometry().bottom() - 24, 0)
         w = self.tab.width()
-        print(size, w, h)
         if size > w:
             self.plusButton.move(w-self.plusButton.width(), h)
         else:
