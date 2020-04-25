@@ -124,7 +124,7 @@ class appWindow(QMainWindow):
     
     @property
     def activeFiles(self):
-        return filter(lambda x: x.tabCount()>=1, self.mdi.subWindowList())
+        return [i for i in self.mdi.subWindowList() if i.tabCount]
     
 if __name__ == '__main__':
     app = ApplicationContext()       # 1. Instantiate ApplicationContext
