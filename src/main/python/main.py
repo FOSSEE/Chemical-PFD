@@ -15,39 +15,46 @@ from utils import dialogs
 
 
 class appWindow(QMainWindow):
+    """
+    Application entry point, subclasses QMainWindow and implements the main widget,
+    sets necessary window behaviour etc.
+    """
     def __init__(self, parent=None):
         super(appWindow, self).__init__(parent)
+        self.mainWidget = QWidget(self) #create new widget
         
-        titleMenu = self.menuBar()
-        self.mainWidget = QWidget(self)
+        #create the menu bar
+        titleMenu = self.menuBar() #fetch reference to current menu bar
         self.mainWidget.setObjectName("Main Widget")
         
         self.menuFile = titleMenu.addMenu('File') #File Menu
         self.menuFile.addAction("New", self.newProject)
         self.menuFile.addAction("Open", self.openProject)
         self.menuFile.addAction("Save", self.saveProject)
+        
         self.menuGenerate = titleMenu.addMenu('Generate') #Generate menu
         self.menuGenerate.addAction("Image", self.saveImage)
         self.menuGenerate.addAction("Report", self.generateReport)
                 
-        # mainLayout = QGridLayout(self.mainWidget)
+        # create new layout for the main widget
         mainLayout = QHBoxLayout(self.mainWidget)
         mainLayout.setObjectName("Main Layout")
         
-        #ImpsaveProject
-        self.mdi = QMdiArea(self)
-        # add close action to tabs
+        self.mdi = QMdiArea(self) #create area for files to be displayed
         
+        #create toolbar and add the toolbar plus mdi to layout
         self.createToolbar()
         mainLayout.addWidget(self.toolbar)
         mainLayout.addWidget(self.mdi)
+        
         #declare main window layout
         self.mainWidget.setLayout(mainLayout)
         self.setCentralWidget(self.mainWidget)
-        self.resize(1280, 720)
-        self.setWindowState(Qt.WindowMaximized)        
+        self.resize(1280, 720) #set collapse dim
+        self.setWindowState(Qt.WindowMaximized) #launch maximized
 
     def createToolbar(self):
+        #place holder for toolbar with fixed width, layout may change
         self.toolbar = QWidget(self.mainWidget)
         self.toolbar.setObjectName("Toolbar")
         self.toolbar.setFixedWidth(200)
@@ -55,15 +62,17 @@ class appWindow(QMainWindow):
         self.toolbar.setLayout(toolbarLayout)     
     
     def newProject(self):
+        #call to create a new file inside mdi area
         project = fileWindow(self.mdi)
         project.setObjectName("New Project")
         self.mdi.addSubWindow(project)
-        if not project.tabList:
-            project.newDiagram()
+        if not project.tabList: # important when unpickling a file instead
+            project.newDiagram() #create a new tab in the new file
         project.show()
         project.resizeHandler(self.mdi)
     
     def openProject(self):
+        #show the open file dialog to open a saved file, then unpickle it.
         name = QFileDialog.getOpenFileNames(self, 'Open File(s)', '', 'Process Flow Diagram (*pfd)')
         if name:
             for files in name[0]:
@@ -74,7 +83,8 @@ class appWindow(QMainWindow):
                     project.resizeHandler(self.mdi)             
     
     def saveProject(self):
-        for j, i in enumerate(self.mdi.subWindowList()):
+        #pickle all files in mdi area
+        for j, i in enumerate(self.mdi.activeFiles): #get list of all windows with atleast one tab
             if i.tabCount:
                 name = QFileDialog.getSaveFileName(self, 'Save File', f'New Diagram {j}', 'Process Flow Diagram (*.pfd)')
                 i.saveProject(name)
@@ -83,17 +93,21 @@ class appWindow(QMainWindow):
         return True
     
     def saveImage(self):
+        #place holder for future implementaion
         pass
     
     def generateReport(self):
+        #place holder for future implementaion        
         pass
     
     def resizeEvent(self, event):
+        #overload resize to also handle resize on file windows inside
         if self.mdi.activeSubWindow():
             self.mdi.activeSubWindow().resizeHandler(self.mdi)
         super(appWindow, self).resizeEvent(event)
         
     def closeEvent(self, event):
+        #save alert on window close
         if len(self.activeFiles) and dialogs.saveEvent(self):
             event.accept()
         else:

@@ -12,32 +12,48 @@ from .sizes import paperSizes, ppiList, sheetDimensionList
 from .tabs import customTabWidget
 
 class canvas(QWidget):
+    """
+    Defines the work area for a single sheet. Contains a QGraphicScene along with necessary properties
+    for context menu and dialogs.
+    """
+        
     def __init__(self, parent=None, size= 'A4', ppi= '72'):
         super(canvas, self).__init__(parent)
         
+        #Store values for the canvas dimensions for ease of access, these are here just to be
+        # manipulated by the setters and getters
         self._ppi = ppi
         self._canvasSize = size
         
+        #Create area for the graphic items to be placed, this is just here right now for the future
+        # when we will draw items on this, this might be changed if QGraphicScene is subclassed. 
         self.painter = QGraphicsScene()
         self.painter.setSceneRect(0, 0, *paperSizes[self.canvasSize][self.ppi])
         
-        self.painter.setBackgroundBrush(QBrush(Qt.white))
+        self.painter.setBackgroundBrush(QBrush(Qt.white)) #set white background
         
-        self.view = QGraphicsView(self.painter)
-        self.view.setMinimumSize(595, 842)          
-        self.view.setSceneRect(0, 0, *paperSizes[self.canvasSize][self.ppi])        
+        self.view = QGraphicsView(self.painter) #create a viewport for the canvas board
+        self.view.setMinimumSize(595, 842)  #experimentation for the viewport overflow
+        self.view.setSceneRect(0, 0, *paperSizes[self.canvasSize][self.ppi]) # use the dimensions set previously      
         
-        self.layout = QHBoxLayout(self)
+        self.layout = QHBoxLayout(self) #create the layout of the canvas, the canvas could just subclass QGView instead
         self.layout.addWidget(self.view)  
         self.setLayout(self.layout)
         
+        #This is done so that a right click menu is shown on right click
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.contextMenu)
         
     def setCanvasSize(self, size):
+        """
+        extended setter for dialog box
+        """
         self.canvasSize = size
     
-    def setCanvasPPI(self, ppi):  
+    def setCanvasPPI(self, ppi):
+        """
+        extended setter for dialog box
+        """
         self.ppi = ppi
     
     @property
@@ -63,16 +79,21 @@ class canvas(QWidget):
 
     @property
     def dimensions(self):
+        #returns the dimension of the current scene
         return self.painter.sceneRect().width(), self.painter.sceneRect().height()
     
     def contextMenu(self, point):
+        #function to display the right click menu at point of right click
         menu = QMenu("Context Menu", self)
         menu.addAction("Adjust Canvas", self.adjustCanvasDialog)
         menu.exec_(self.mapToGlobal(point))
         
     def adjustCanvasDialog(self):
+        #helper function to the context menu dialog box
         self.canvasSize, self.ppi = dialogs.paperDims(self, self._canvasSize, self._ppi, self.objectName).exec_()
 
+    #following 2 methods are defined for correct pickling of the scene. may be changed to json or xml later so as
+    # to not have a binary file.
     def __getstate__(self) -> dict:
         return {
             "_classname_": self.__class__.__name__,
@@ -93,54 +114,43 @@ class canvas(QWidget):
             self.painter.addItem(graphic)
 
 class fileWindow(QMdiSubWindow):
+    """
+    This defines a single file, inside the application, consisting of multiple tabs that contain
+    canvases. Pre-Defined so that a file can be instantly created without defining the structure again.
+    """
     def __init__(self, parent = None, title = 'New Project', size = 'A4', ppi = '72'):
         super(fileWindow, self).__init__(parent)
         
+        #Uses a custom QTabWidget that houses a custom new Tab Button, used to house the seperate 
+        # diagrams inside a file
         self.tabber = customTabWidget(self)
-        self.tabber.setObjectName(title)
-        self.tabber.tabCloseRequested.connect(self.closeTab)
-        self.tabber.currentChanged.connect(self.changeTab)
-        self.tabber.plusClicked.connect(self.newDiagram)
+        self.tabber.setObjectName(title) #store title as object name for pickling
+        self.tabber.tabCloseRequested.connect(self.closeTab) # Show save alert on tab close
+        self.tabber.currentChanged.connect(self.changeTab) # placeholder just to detect tab change
+        self.tabber.plusClicked.connect(self.newDiagram) #connect the new tab button to add a new tab
         
+        #assign layout to widget
         self.setWidget(self.tabber)
-        self.setWindowTitle(title)
-        
-    @property
-    def canvasSize(self):
-        return self._canvasSize
-    @property
-    def ppi(self):
-        return self._ppi
-    
-    @canvasSize.setter
-    def canvasSize(self, size):
-        self._canvasSize = sheetDimensionList.index(size)
-        if self.tabCount:
-            activeTab = self.tabber.currentWidget()
-            activeTab.canvasSize = size
-    
-    @ppi.setter
-    def ppi(self, ppi):
-        self._ppi = ppiList.index(ppi)
-        if self.tabCount:
-            activeTab = self.tabber.currentWidget()
-            activeTab.ppi = ppi
-            
+        self.setWindowTitle(title)     
 
     def changeTab(self, currentIndex):
+        #placeholder function to detect tab change
         pass
     
     def closeTab(self, currentIndex):
+        #show save alert on tab close
         if dialogs.saveEvent(self):
             self.tabber.widget(currentIndex).deleteLater()
             self.tabber.removeTab(currentIndex)
         
     def newDiagram(self):
+        # helper function to add a new tab on pressing new tab button, using the add tab method on QTabWidget
         diagram = canvas(self.tabber)
         diagram.setObjectName("New")
         self.tabber.addTab(diagram, "New")
     
     def resizeHandler(self, parent = None):
+        # experimental resize Handler to handle resize on parent resize.
         parentRect = parent.rect() if parent else self.parent().rect()
         self.resize(parentRect.width(), parentRect.height())
         self.setMaximumHeight(parentRect.height())
@@ -150,12 +160,34 @@ class fileWindow(QMdiSubWindow):
     
     @property
     def tabList(self):
+        #returns a list of tabs in the given window
         return [self.tabber.widget(i) for i in range(self.tabCount)]
     
     @property
     def tabCount(self):
+        #returns the number of tabs in the given window only
         return self.tabber.count()
     
+    def saveProject(self, name = None):
+        # called by dialog.saveEvent, saves the current file
+        name = QFileDialog.getSaveFileName(self, 'Save File', f'New Diagram', 'Process Flow Diagram (*.pfd)') if not name else name
+        if name:
+            with open(name[0],'wb') as file:
+                pickle.dump(self, file)
+            return True
+        else:
+            return False
+
+    def closeEvent(self, event):
+        # handle save alert on file close, check if current file has no tabs aswell.
+        if self.tabCount==0 or dialogs.saveEvent(self):
+            event.accept()
+            self.deleteLater()
+        else:
+            event.ignore()
+
+    #following 2 methods are defined for correct pickling of the scene. may be changed to json or xml later so as
+    # to not have a binary file.
     def __getstate__(self) -> dict:
         return {
             "_classname_": self.__class__.__name__,
@@ -172,18 +204,4 @@ class fileWindow(QMdiSubWindow):
             diagram.__setstate__(i)
             self.tabber.addTab(diagram, i['ObjectName'])
     
-    def saveProject(self, name = None):
-        name = QFileDialog.getSaveFileName(self, 'Save File', f'New Diagram', 'Process Flow Diagram (*.pfd)') if not name else name
-        if name:
-            with open(name[0],'wb') as file:
-                pickle.dump(self, file)
-            return True
-        else:
-            return False
-
-    def closeEvent(self, event):
-        if self.tabCount==0 or dialogs.saveEvent(self):
-            event.accept()
-            self.deleteLater()
-        else:
-            event.ignore()
+   
