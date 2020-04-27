@@ -108,10 +108,10 @@ class appWindow(QMainWindow):
         
     def closeEvent(self, event):
         #save alert on window close
-        if len(self.activeFiles) and dialogs.saveEvent(self):
-            event.accept()
+        if len(self.activeFiles) and not dialogs.saveEvent(self):
+            event.ignore()            
         else:
-            event.ignore()
+            event.accept()            
     
     @property
     def activeFiles(self):

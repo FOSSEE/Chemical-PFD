@@ -13,7 +13,7 @@ class paperDims(QDialog):
         self._canvasSize = size
         self._ppi = ppi
         
-        self.setWindowTitle(name+":Canvas Size") #Set Window Title
+        self.setWindowTitle(name+" :Canvas Size") #Set Window Title
         #init layout
         dialogBoxLayout = QFormLayout(self)
         
@@ -51,7 +51,7 @@ class paperDims(QDialog):
     def exec_(self):
         #overload exec_ to add return values and delete itself(currently being tested)
         super(paperDims, self).exec_()
-        self.deleteLater()
+        # self.deleteLater()
         return self._canvasSize, self._ppi
 
 def saveEvent(parent = None):
