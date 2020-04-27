@@ -36,7 +36,7 @@ class paperDims(QDialog):
         dialogBoxLayout.setWidget(1, QFormLayout.LabelRole, ppiLabel)
         dialogBoxLayout.setWidget(1, QFormLayout.FieldRole, ppiComboBox)
         self.setLayout(dialogBoxLayout)
-        self.resize(400,300) #resize to a certain size
+        self.resize(300,100) #resize to a certain size
         
         #todo add ok or cancel buttons
     

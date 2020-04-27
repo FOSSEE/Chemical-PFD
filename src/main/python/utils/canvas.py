@@ -1,11 +1,11 @@
 import pickle
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QBrush
-from PyQt5.QtWidgets import (QComboBox, QDialog, QFileDialog, QFormLayout,
+from PyQt5.QtGui import QBrush, QPalette
+from PyQt5.QtWidgets import (QFileDialog, QFormLayout,
                              QGraphicsScene, QGraphicsView, QHBoxLayout,
-                             QLabel, QMainWindow, QMdiSubWindow, QMenu,
-                             QMessageBox, QTabWidget, QWidget)
+                             QMdiSubWindow, QMenu,
+                             QTabWidget, QWidget, QSpacerItem)
 
 from . import graphics, dialogs
 from .sizes import paperSizes, ppiList, sheetDimensionList
@@ -24,21 +24,22 @@ class canvas(QWidget):
         # manipulated by the setters and getters
         self._ppi = ppi
         self._canvasSize = size
-        
+        # self.setFixedSize(parent.size())
         #Create area for the graphic items to be placed, this is just here right now for the future
         # when we will draw items on this, this might be changed if QGraphicScene is subclassed. 
-        self.painter = QGraphicsScene()
-        self.painter.setSceneRect(0, 0, *paperSizes[self.canvasSize][self.ppi])
-        
+        self.painter = QGraphicsScene()        
         self.painter.setBackgroundBrush(QBrush(Qt.white)) #set white background
         
         self.view = QGraphicsView(self.painter) #create a viewport for the canvas board
-        self.view.setMinimumSize(595, 842)  #experimentation for the viewport overflow
-        self.view.setSceneRect(0, 0, *paperSizes[self.canvasSize][self.ppi]) # use the dimensions set previously      
         
         self.layout = QHBoxLayout(self) #create the layout of the canvas, the canvas could just subclass QGView instead
-        self.layout.addWidget(self.view)  
-        self.setLayout(self.layout)
+        self.layout.addWidget(self.view, stretch = 1, alignment= Qt.AlignLeft)
+        self.spacer = QSpacerItem(1, self.height()) #Horizonatal spacer to force view to not expand to fill widget
+        self.layout.addSpacerItem(self.spacer)
+
+        #set layout and background color
+        self.setPalette(self.palette)
+        self.setLayout(self.layout)        
         
         #This is done so that a right click menu is shown on right click
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -67,21 +68,30 @@ class canvas(QWidget):
     def canvasSize(self, size):
         self._canvasSize = size
         if self.painter:
-            self.painter.setSceneRect(0, 0, *paperSizes[self.canvasSize][self.ppi])
-            self.view.setSceneRect(0, 0, *paperSizes[self.canvasSize][self.ppi])
+            self.resizeView(*paperSizes[self.canvasSize][self.ppi])
 
     @ppi.setter
     def ppi(self, ppi):
         self._ppi = ppi
         if self.painter:
-            self.painter.setSceneRect(0, 0, *paperSizes[self.canvasSize][self.ppi])
-            self.view.setSceneRect(0, 0, *paperSizes[self.canvasSize][self.ppi])
+            self.resizeView(*paperSizes[self.canvasSize][self.ppi])
 
     @property
     def dimensions(self):
         #returns the dimension of the current scene
         return self.painter.sceneRect().width(), self.painter.sceneRect().height()
     
+    def resizeView(self, w=None, h=None):
+        #resize canvas to appropriate size.
+        if w is None and h is None:
+            w, h = paperSizes[self.canvasSize][self.ppi]
+        self.painter.setSceneRect(0, 0, w, h)
+        self.view.setSceneRect(0, 0, w, h)            
+        w = min(self.width() - 5, w)
+        h = self.height() - 5
+        self.view.setFixedWidth(w)
+        self.view.setFixedHeight(h)
+        
     def contextMenu(self, point):
         #function to display the right click menu at point of right click
         menu = QMenu("Context Menu", self)
@@ -90,7 +100,7 @@ class canvas(QWidget):
         
     def adjustCanvasDialog(self):
         #helper function to the context menu dialog box
-        self.canvasSize, self.ppi = dialogs.paperDims(self, self._canvasSize, self._ppi, self.objectName).exec_()
+        self.canvasSize, self.ppi = dialogs.paperDims(self, self._canvasSize, self._ppi, self.objectName()).exec_()
 
     #following 2 methods are defined for correct pickling of the scene. may be changed to json or xml later so as
     # to not have a binary file.
@@ -148,6 +158,7 @@ class fileWindow(QMdiSubWindow):
         diagram = canvas(self.tabber)
         diagram.setObjectName("New")
         self.tabber.addTab(diagram, "New")
+        diagram.resizeView()
     
     def resizeHandler(self, parent = None):
         # experimental resize Handler to handle resize on parent resize.
@@ -157,6 +168,7 @@ class fileWindow(QMdiSubWindow):
         self.tabber.setMaximumHeight(parentRect.height())
         for i in self.tabList:
             i.setMaximumHeight(parentRect.height())
+        self.tabber.currentWidget().resizeView()
     
     @property
     def tabList(self):
