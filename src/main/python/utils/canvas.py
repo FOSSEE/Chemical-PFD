@@ -47,30 +47,31 @@ class canvas(QWidget):
         #helper function to resize canvas
         self.painter.setSceneRect(0, 0, w, h)
         # self.view.setSceneRect(0, 0, w - self.view.frameWidth() * 2, h)
+        # self.adjustView()
 
     def adjustView(self):
         #update view size
         width, height = self.dimensions
+        frameWidth = self.view.frameWidth()        
+        self.view.setSceneRect(0, 0, width - frameWidth*2, height)        
         # give the view some time to adjust itself
         QApplication.processEvents()
 
-        self.view.setSceneRect(0, 0, width, height)      
-        prect = self.parent().parentWidget().size()
-        frameWidth = self.view.frameWidth()
-        width = min(prect.width() - frameWidth*2, width + frameWidth * 2)
-        height = min(prect.height() - frameWidth*2, height + frameWidth * 2)
+        prect = self.parent().parentWidget().parentWidget().size()
+        width = width + frameWidth*2
+        height = height + frameWidth * 2
 
         if self.view.verticalScrollBar().isVisible():
             width += self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
         if self.view.horizontalScrollBar().isVisible():
             height += self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
-        self.view.setFixedWidth(width)
-        self.view.setFixedHeight(height)
-        self.resize(width + frameWidth * 2, height + frameWidth * 2) 
-    # def resizeEvent(self, event):
-    #     #overloaded function to also view size on window update
-    #     self.adjustView()
-    #     # pass
+        self.view.setFixedWidth(min(prect.width() - frameWidth*2, width))
+        self.view.setFixedHeight(min(prect.height() - frameWidth*2, height))
+        # self.resize(width + frameWidth * 2, height + frameWidth * 2) 
+    def resizeEvent(self, event):
+        #overloaded function to also view size on window update
+        self.adjustView()
+        # pass
    
     def setCanvasSize(self, size):
         """
