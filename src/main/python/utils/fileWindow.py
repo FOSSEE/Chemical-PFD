@@ -53,10 +53,10 @@ class fileWindow(QMdiSubWindow):
         parentRect = parent.parentWidget().rect() if parent else self.parentWidget().parentWidget().rect()
         current = self.tabber.currentWidget()
         width, height = current.dimensions
-        width = min(parentRect.width(), width + 50)
-        height = min(parentRect.height(), height + 100)
+        width = min(parentRect.width(), width + 100)
+        height = min(parentRect.height(), height + 200)
         self.setFixedSize(width, height)
-        # self.tabber.resize(width, height)
+        self.tabber.resize(width, height)
         self.tabber.currentWidget().adjustView()
     
     def contextMenu(self, point):
