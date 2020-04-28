@@ -50,11 +50,11 @@ class fileWindow(QMdiSubWindow):
     
     def resizeHandler(self, parent = None):
         # experimental resize Handler to handle resize on parent resize.
-        parentRect = parent.rect() if parent else self.parentWidget().rect()
-        width, height = self.tabber.currentWidget().dimensions
-        frameWidth = self.tabber.currentWidget().view.frameWidth()
-        width = min(parentRect.width(), width + frameWidth*2)
-        height = min(parentRect.height(), height + frameWidth*2)
+        parentRect = parent.parentWidget().rect() if parent else self.parentWidget().parentWidget().rect()
+        current = self.tabber.currentWidget()
+        width, height = current.dimensions
+        width = min(parentRect.width(), width + 50)
+        height = min(parentRect.height(), height + 100)
         self.setFixedSize(width, height)
         # self.tabber.resize(width, height)
         self.tabber.currentWidget().adjustView()
@@ -72,7 +72,7 @@ class fileWindow(QMdiSubWindow):
         self.resizeHandler()
     
     def resizeEvent(self, event):
-        print(self.size())
+        self.resizeHandler()
         super(fileWindow, self).resizeEvent(event)
         
     @property

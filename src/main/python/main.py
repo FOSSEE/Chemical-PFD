@@ -42,6 +42,7 @@ class appWindow(QMainWindow):
         mainLayout.setObjectName("Main Layout")
         
         self.mdi = QMdiArea(self) #create area for files to be displayed
+        self.mdi.setObjectName('mdi area')
         
         #create toolbar and add the toolbar plus mdi to layout
         self.createToolbar()
@@ -70,7 +71,7 @@ class appWindow(QMainWindow):
         if not project.tabList: # important when unpickling a file instead
             project.newDiagram() #create a new tab in the new file
         project.show()
-        project.resizeHandler(self.mdi)
+        project.resizeHandler()
     
     def openProject(self):
         #show the open file dialog to open a saved file, then unpickle it.

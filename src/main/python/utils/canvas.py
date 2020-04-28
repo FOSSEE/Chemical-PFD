@@ -55,19 +55,19 @@ class canvas(QWidget):
         frameWidth = self.view.frameWidth()        
         self.view.setSceneRect(0, 0, width - frameWidth*2, height)        
         # give the view some time to adjust itself
-        QApplication.processEvents()
 
-        prect = self.parent().parentWidget().parentWidget().size()
-        width = width + frameWidth*2
-        height = height + frameWidth * 2
+        prect = self.parent().parentWidget().parentWidget().parentWidget().rect()
+        width = width + 50
+        height = height + 100
 
         if self.view.verticalScrollBar().isVisible():
             width += self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
         if self.view.horizontalScrollBar().isVisible():
             height += self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
-        self.view.setFixedWidth(min(prect.width() - frameWidth*2, width))
-        self.view.setFixedHeight(min(prect.height() - frameWidth*2, height))
+        self.view.setFixedWidth(min(prect.width() - 50, width))
+        self.view.setFixedHeight(min(prect.height() - 100, height))
         # self.resize(width + frameWidth * 2, height + frameWidth * 2) 
+        
     def resizeEvent(self, event):
         #overloaded function to also view size on window update
         self.adjustView()
