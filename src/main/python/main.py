@@ -9,7 +9,8 @@ from PyQt5.QtWidgets import (QComboBox, QFileDialog, QFormLayout,
                              QHBoxLayout, QLabel, QMainWindow, QMenu, QMenuBar,
                              QPushButton, QTabWidget, QWidget, QMdiArea, QMessageBox)
 
-from utils.canvas import canvas, fileWindow
+from utils.canvas import canvas
+from utils.fileWindow import fileWindow
 from utils.sizes import ppiList, sheetDimensionList
 from utils import dialogs
 
@@ -79,8 +80,7 @@ class appWindow(QMainWindow):
                 with open(files,'rb') as file:
                     project = pickle.load(file)
                     self.mdi.addSubWindow(project)
-                    project.show()
-                    project.resizeHandler(self.mdi)             
+                    project.show()             
     
     def saveProject(self):
         #pickle all files in mdi area
