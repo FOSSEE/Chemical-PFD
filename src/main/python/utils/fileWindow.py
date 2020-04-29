@@ -32,6 +32,8 @@ class fileWindow(QMdiSubWindow):
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.contextMenu)
         
+        self.windowStateChanged.connect(self.stateChange)
+        
     def changeTab(self, currentIndex):
         #placeholder function to detect tab change
         self.resizeHandler()        
@@ -48,9 +50,9 @@ class fileWindow(QMdiSubWindow):
         diagram.setObjectName("New")
         self.tabber.addTab(diagram, "New")
     
-    def resizeHandler(self, parent = None):
+    def resizeHandler(self):
         # experimental resize Handler to handle resize on parent resize.
-        parentRect = parent.parentWidget().rect() if parent else self.parentWidget().parentWidget().rect()
+        parentRect = self.mdiArea().rect()
         current = self.tabber.currentWidget()
         width, height = current.dimensions
         width = min(parentRect.width(), width + 100)
@@ -74,7 +76,18 @@ class fileWindow(QMdiSubWindow):
     def resizeEvent(self, event):
         self.resizeHandler()
         super(fileWindow, self).resizeEvent(event)
-        
+    
+    def stateChange(self, oldState, newState):
+        if newState == Qt.WindowMinimized:
+            print("minimized")
+        elif newState == Qt.WindowFullScreen:
+            print("maximized")
+        else:
+            if oldState == Qt.WindowMinimized:
+                print("min to full")
+            else:
+                print("max to full")
+    
     @property
     def tabList(self):
         #returns a list of tabs in the given window

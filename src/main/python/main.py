@@ -104,7 +104,7 @@ class appWindow(QMainWindow):
     def resizeEvent(self, event):
         #overload resize to also handle resize on file windows inside
         if self.mdi.activeSubWindow():
-            self.mdi.activeSubWindow().resizeHandler(self.mdi)
+            self.mdi.activeSubWindow().resizeHandler()
         super(appWindow, self).resizeEvent(event)
         
     def closeEvent(self, event):
