@@ -1,22 +1,24 @@
 import pickle
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QMdiSubWindow, QFileDialog, QMenu, QSizePolicy
 
 from . import dialogs
 from .canvas import canvas
 from .tabs import customTabWidget
 
-
 class fileWindow(QMdiSubWindow):
     """
     This defines a single file, inside the application, consisting of multiple tabs that contain
     canvases. Pre-Defined so that a file can be instantly created without defining the structure again.
     """
+    fileCloseEvent = pyqtSignal(int)
+    fileMinimized = pyqtSignal(int)
     def __init__(self, parent = None, title = 'New Project', size = 'A4', ppi = '72'):
         super(fileWindow, self).__init__(parent)
         
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.index = None
         #Uses a custom QTabWidget that houses a custom new Tab Button, used to house the seperate 
         # diagrams inside a file
         self.tabber = customTabWidget(self)
@@ -77,22 +79,20 @@ class fileWindow(QMdiSubWindow):
     
     def resizeEvent(self, event):
         # self.resizeHandler()
-        # super(fileWindow, self).resizeEvent(event)
-        pass
+        super(fileWindow, self).resizeEvent(event)
+        # pass
     
     def stateChange(self, oldState, newState):
-        areaRect = self.mdiArea().rect()        
         if newState == Qt.WindowMinimized:
-            pass
-        elif newState == Qt.WindowMaximized:
-            pass
+            self.hide()
         else:
-            if oldState == Qt.WindowMinimized:
-                # print("min to full")
-                pass
-            else:
-                # print("max to full")
-                pass
+            if not self.isVisible():
+                self.show()
+            if newState == Qt.WindowMaximized:
+                self.setFixedSize(self.mdiArea().size())
+    
+    def showShaded(self):
+        self.hide()
     
     @property
     def tabList(self):
@@ -119,6 +119,7 @@ class fileWindow(QMdiSubWindow):
         if self.tabCount==0 or dialogs.saveEvent(self):
             event.accept()
             self.deleteLater()
+            self.fileCloseEvent.emit(self.index)
         else:
             event.ignore()
 
