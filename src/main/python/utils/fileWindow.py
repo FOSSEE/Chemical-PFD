@@ -1,7 +1,7 @@
 import pickle
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMdiSubWindow, QFileDialog, QMenu
+from PyQt5.QtWidgets import QMdiSubWindow, QFileDialog, QMenu, QSizePolicy
 
 from . import dialogs
 from .canvas import canvas
@@ -16,6 +16,7 @@ class fileWindow(QMdiSubWindow):
     def __init__(self, parent = None, title = 'New Project', size = 'A4', ppi = '72'):
         super(fileWindow, self).__init__(parent)
         
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         #Uses a custom QTabWidget that houses a custom new Tab Button, used to house the seperate 
         # diagrams inside a file
         self.tabber = customTabWidget(self)
@@ -48,8 +49,9 @@ class fileWindow(QMdiSubWindow):
         # helper function to add a new tab on pressing new tab button, using the add tab method on QTabWidget
         diagram = canvas(self.tabber)
         diagram.setObjectName("New")
-        self.tabber.addTab(diagram, "New")
-    
+        index = self.tabber.addTab(diagram, "New")
+        self.tabber.setCurrentIndex(index)
+
     def resizeHandler(self):
         # experimental resize Handler to handle resize on parent resize.
         parentRect = self.mdiArea().rect()
@@ -74,19 +76,23 @@ class fileWindow(QMdiSubWindow):
         self.resizeHandler()
     
     def resizeEvent(self, event):
-        self.resizeHandler()
-        super(fileWindow, self).resizeEvent(event)
+        # self.resizeHandler()
+        # super(fileWindow, self).resizeEvent(event)
+        pass
     
     def stateChange(self, oldState, newState):
+        areaRect = self.mdiArea().rect()        
         if newState == Qt.WindowMinimized:
-            print("minimized")
-        elif newState == Qt.WindowFullScreen:
-            print("maximized")
+            pass
+        elif newState == Qt.WindowMaximized:
+            pass
         else:
             if oldState == Qt.WindowMinimized:
-                print("min to full")
+                # print("min to full")
+                pass
             else:
-                print("max to full")
+                # print("max to full")
+                pass
     
     @property
     def tabList(self):

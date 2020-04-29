@@ -4,10 +4,9 @@ import sys
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtCore import QObject, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QBrush, QColor, QImage, QPainter, QPalette
-from PyQt5.QtWidgets import (QComboBox, QFileDialog, QFormLayout,
-                             QGraphicsScene, QGraphicsView, QGridLayout,
+from PyQt5.QtWidgets import (QComboBox, QFileDialog, QFormLayout, QVBoxLayout,
                              QHBoxLayout, QLabel, QMainWindow, QMenu, QMenuBar,
-                             QPushButton, QTabWidget, QWidget, QMdiArea, QMessageBox)
+                             QPushButton, QWidget, QMdiArea, QListWidget)
 
 from utils.canvas import canvas
 from utils.fileWindow import fileWindow
@@ -38,8 +37,10 @@ class appWindow(QMainWindow):
         self.menuGenerate.addAction("Report", self.generateReport)
                 
         # create new layout for the main widget
-        mainLayout = QHBoxLayout(self.mainWidget)
+        mainLayout = QHBoxLayout()
         mainLayout.setObjectName("Main Layout")
+        fileLayout = QVBoxLayout()
+        fileLayout.setObjectName("file window + tabs space")
         
         self.mdi = QMdiArea(self) #create area for files to be displayed
         self.mdi.setObjectName('mdi area')
@@ -47,8 +48,13 @@ class appWindow(QMainWindow):
         #create toolbar and add the toolbar plus mdi to layout
         self.createToolbar()
         mainLayout.addWidget(self.toolbar)
-        mainLayout.addWidget(self.mdi)
         
+        fileLayout.addWidget(self.mdi)
+        self.createTabSpace()
+        fileLayout.addWidget(self.tabSpace)
+        
+        mainLayout.addLayout(fileLayout)
+                
         #declare main window layout
         self.mainWidget.setLayout(mainLayout)
         self.setCentralWidget(self.mainWidget)
@@ -63,6 +69,11 @@ class appWindow(QMainWindow):
         toolbarLayout = QFormLayout(self.toolbar)
         self.toolbar.setLayout(toolbarLayout)     
     
+    def createTabSpace(self):        
+        self.tabSpace = QListWidget(self.mainWidget)
+        self.tabSpace.setFlow(QListWidget.LeftToRight)
+        self.tabSpace.setFixedHeight(25)
+
     def newProject(self):
         #call to create a new file inside mdi area
         project = fileWindow(self.mdi)
