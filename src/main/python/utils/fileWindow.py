@@ -13,6 +13,7 @@ class fileWindow(QMdiSubWindow):
     canvases. Pre-Defined so that a file can be instantly created without defining the structure again.
     """
     fileCloseEvent = pyqtSignal(int)
+    fileMinimized = pyqtSignal(QMdiSubWindow)
     def __init__(self, parent = None, title = 'New Project', size = 'A4', ppi = '72'):
         super(fileWindow, self).__init__(parent)
         
@@ -57,7 +58,7 @@ class fileWindow(QMdiSubWindow):
 
     def resizeHandler(self):
         # experimental resize Handler to handle resize on parent resize.
-        parentRect = self.mdiArea().sizeHint()
+        parentRect = self.mdiArea().size()
         current = self.tabber.currentWidget()
         width, height = current.dimensions
         width = min(parentRect.width(), width + 100)
@@ -82,23 +83,21 @@ class fileWindow(QMdiSubWindow):
         else:
             return None
     
-    def resizeEvent(self, event):
-        # self.resizeHandler()
-        super(fileWindow, self).resizeEvent(event)
-        # pass
-    
-    def stateChange(self, oldState, newState):
-        if newState == Qt.WindowMinimized:
-            self.hide()
-        else:
-            if not self.isVisible():
-                self.show()
-            if newState == Qt.WindowMaximized:
-                self.setFixedSize(self.mdiArea().size())
-    
-    def showShaded(self):
-        self.hide()
-    
+    # def stateChange(self, oldState, newState):
+    #     if newState == Qt.WindowMinimized:
+    #         print("a")
+    #         self.setVisible(False)
+    #     elif newState == Qt.WindowMaximized:
+    #         print("b")
+    #         parentRect = self.mdiArea().size()
+    #         self.setFixedSize(parentRect.width(), parentRect.height())
+    #         self.tabber.resize(parentRect.width(), parentRect.height())
+    #         self.tabber.currentWidget().adjustView()
+    #     else:
+    #         if oldState == Qt.WindowMinimized or oldState == Qt.WindowMaximized:
+    #             print("c")            
+    #             self.resizeHandler()
+
     @property
     def tabList(self):
         #returns a list of tabs in the given window

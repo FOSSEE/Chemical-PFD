@@ -43,6 +43,7 @@ class customTabWidget(QTabWidget):
         border-radius: 7px;
         padding: 1px;
         background-color: #E6E6E3;}""")
+        self.setContentsMargins(0, 0, 0, 0)
     
     def movePlusButton(self):
         #move the new tab button to correct location

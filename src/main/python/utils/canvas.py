@@ -32,11 +32,7 @@ class canvas(QWidget):
         
         self.layout = QHBoxLayout(self) #create the layout of the canvas, the canvas could just subclass QGView instead
         self.layout.addWidget(self.view, alignment=Qt.AlignCenter)
-        # self.spacer = QSpacerItem(1, self.height()) #Horizonatal spacer to force view to not expand to fill widget
-        # self.layout.addSpacerItem(self.spacer)
-        # self.layout.addSpacing(0)
-        self.layout.setContentsMargins(0, 0, 0 ,0)
-        self.layout.setSpacing(0)
+        self.layout.setContentsMargins(0, 0, 0, 0)
         #set layout and background color
         self.setLayout(self.layout)
         
@@ -54,20 +50,20 @@ class canvas(QWidget):
     def adjustView(self):
         #update view size
         width, height = self.dimensions
-        frameWidth = self.view.frameWidth()        
+        frameWidth = self.view.frameWidth()
         self.view.setSceneRect(0, 0, width - frameWidth*2, height)        
         # give the view some time to adjust itself
 
         prect = self.parent().parentWidget().parentWidget().parentWidget().rect()
-        width = width + 50
-        height = height + 100
+        width = width + 20
+        height = height + 60
 
         if self.view.verticalScrollBar().isVisible():
             width += self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
         if self.view.horizontalScrollBar().isVisible():
             height += self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
-        self.view.setFixedWidth(min(prect.width() - 50, width))
-        self.view.setFixedHeight(min(prect.height() - 100, height))
+        self.view.setFixedWidth(min(prect.width() - 20, width))
+        self.view.setFixedHeight(min(prect.height() - 60, height))
         # self.resize(width + frameWidth * 2, height + frameWidth * 2) 
         
     def resizeEvent(self, event):

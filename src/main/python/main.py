@@ -74,6 +74,7 @@ class appWindow(QMainWindow):
             project.newDiagram() #create a new tab in the new file
         project.resizeHandler()
         project.fileCloseEvent.connect(self.fileClosed) #closed file signal to switch to sub window view
+        project.fileMinimized.connect(self.fileMinimized)
         if self.count > 1: #switch to tab view if needed
             self.mdi.setViewMode(QMdiArea.TabbedView)
         project.show()
@@ -127,7 +128,11 @@ class appWindow(QMainWindow):
     def fileClosed(self, index):
         if self.count <= 2 :
             self.mdi.setViewMode(QMdiArea.SubWindowView)
-    
+
+    def fileMinimized(self, file):
+        if self.count > 1:
+            self.mdi.activateNextSubWindow()
+            
     @property
     def activeFiles(self):
         return [i for i in self.mdi.subWindowList() if i.tabCount]
