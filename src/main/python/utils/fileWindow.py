@@ -35,9 +35,12 @@ class fileWindow(QMdiSubWindow):
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.contextMenu)
         
-        self.windowStateChanged.connect(self.stateChange)
+        # self.windowStateChanged.connect(self.stateChange)
         
         self.setAttribute(Qt.WA_DeleteOnClose, True)
+        self.setWindowFlag(Qt.CustomizeWindowHint, True)
+        self.setWindowFlag(Qt.WindowMinimizeButtonHint, False)
+        self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
         
     def changeTab(self, currentIndex):
         #placeholder function to detect tab change
@@ -63,6 +66,8 @@ class fileWindow(QMdiSubWindow):
         width, height = current.dimensions
         width = min(parentRect.width(), width + 100)
         height = min(parentRect.height(), height + 200)
+        # width = parentRect.width()
+        # height = parentRect.height()
         self.setFixedSize(width, height)
         self.tabber.resize(width, height)
         self.tabber.currentWidget().adjustView()
