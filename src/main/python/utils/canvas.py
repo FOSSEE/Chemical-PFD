@@ -35,6 +35,8 @@ class canvas(QWidget):
         # self.spacer = QSpacerItem(1, self.height()) #Horizonatal spacer to force view to not expand to fill widget
         # self.layout.addSpacerItem(self.spacer)
         # self.layout.addSpacing(0)
+        self.layout.setContentsMargins(0, 0, 0 ,0)
+        self.layout.setSpacing(0)
         #set layout and background color
         self.setLayout(self.layout)
         

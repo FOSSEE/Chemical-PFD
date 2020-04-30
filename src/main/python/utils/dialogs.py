@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QDialog, QPushButton, QFormLayout, QComboBox, QLabel, QMessageBox
+from PyQt5.QtWidgets import QDialog, QPushButton, QFormLayout, QComboBox, QLabel, QMessageBox, QDialogButtonBox
 from .sizes import sheetDimensionList, ppiList
 
 class paperDims(QDialog):
@@ -35,6 +35,12 @@ class paperDims(QDialog):
         ppiComboBox.setCurrentIndex(ppiList.index(self._ppi)) #set index to current value of canvas
         dialogBoxLayout.setWidget(1, QFormLayout.LabelRole, ppiLabel)
         dialogBoxLayout.setWidget(1, QFormLayout.FieldRole, ppiComboBox)
+        
+        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+        
+        dialogBoxLayout.addWidget(buttonBox)
         self.setLayout(dialogBoxLayout)
         self.resize(300,100) #resize to a certain size
         
@@ -51,8 +57,7 @@ class paperDims(QDialog):
     def exec_(self):
         #overload exec_ to add return values and delete itself(currently being tested)
         super(paperDims, self).exec_()
-        # self.deleteLater()
-        return self._canvasSize, self._ppi
+        return self._canvasSize, self._ppi if self.result==1 else None
 
 def saveEvent(parent = None):
     #utility function to generate a Qt alert window requesting the user to save the file, returns user intention on window close

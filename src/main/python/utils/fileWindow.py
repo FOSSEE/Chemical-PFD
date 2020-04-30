@@ -13,7 +13,6 @@ class fileWindow(QMdiSubWindow):
     canvases. Pre-Defined so that a file can be instantly created without defining the structure again.
     """
     fileCloseEvent = pyqtSignal(int)
-    fileMinimized = pyqtSignal(int)
     def __init__(self, parent = None, title = 'New Project', size = 'A4', ppi = '72'):
         super(fileWindow, self).__init__(parent)
         
@@ -37,6 +36,8 @@ class fileWindow(QMdiSubWindow):
         
         self.windowStateChanged.connect(self.stateChange)
         
+        self.setAttribute(Qt.WA_DeleteOnClose, True)
+        
     def changeTab(self, currentIndex):
         #placeholder function to detect tab change
         self.resizeHandler()        
@@ -56,7 +57,7 @@ class fileWindow(QMdiSubWindow):
 
     def resizeHandler(self):
         # experimental resize Handler to handle resize on parent resize.
-        parentRect = self.mdiArea().rect()
+        parentRect = self.mdiArea().sizeHint()
         current = self.tabber.currentWidget()
         width, height = current.dimensions
         width = min(parentRect.width(), width + 100)
@@ -74,8 +75,12 @@ class fileWindow(QMdiSubWindow):
     def adjustCanvasDialog(self):
         #helper function to the context menu dialog box
         currentTab = self.tabber.currentWidget()
-        currentTab.canvasSize, currentTab.ppi = dialogs.paperDims(self, currentTab._canvasSize, currentTab._ppi, currentTab.objectName()).exec_()
-        self.resizeHandler()
+        result = dialogs.paperDims(self, currentTab._canvasSize, currentTab._ppi, currentTab.objectName()).exec_()
+        if result:
+            currentTab.canvasSize, currentTab.ppi = result
+            return self.resizeHandler()
+        else:
+            return None
     
     def resizeEvent(self, event):
         # self.resizeHandler()
