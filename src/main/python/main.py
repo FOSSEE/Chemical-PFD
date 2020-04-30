@@ -5,8 +5,8 @@ from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtCore import QObject, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QImage, QPainter, QPalette
 from PyQt5.QtWidgets import (QComboBox, QFileDialog, QFormLayout, QVBoxLayout,
-                             QHBoxLayout, QLabel, QMainWindow, QMenu, QTabBar,
-                             QPushButton, QWidget, QMdiArea, QListWidget)
+                             QHBoxLayout, QLabel, QMainWindow, QMenu,
+                             QPushButton, QWidget, QMdiArea)
 
 from utils.canvas import canvas
 from utils.fileWindow import fileWindow
@@ -38,27 +38,24 @@ class appWindow(QMainWindow):
         # create new layout for the main widget
         mainLayout = QHBoxLayout()
         mainLayout.setObjectName("Main Layout")
-        fileLayout = QVBoxLayout()
-        fileLayout.setObjectName("file window + tabs space")
         
         self.mdi = QMdiArea(self) #create area for files to be displayed
         self.mdi.setObjectName('mdi area')
         #create toolbar and add the toolbar plus mdi to layout
         self.createToolbar()
         mainLayout.addWidget(self.toolbar)
+        mainLayout.addWidget(self.mdi)
         
-        fileLayout.addWidget(self.mdi)
-        self.createTabSpace()
-        fileLayout.addWidget(self.tabSpace)
+        self.mdi.setOption(QMdiArea.DontMaximizeSubWindowOnActivation, True) #set flag so that window doesnt look weird
+        self.mdi.setTabsClosable(True)
+        self.mdi.setTabsMovable(True)
+        self.mdi.setDocumentMode(True)
         
-        mainLayout.addLayout(fileLayout)
-                
         #declare main window layout
         self.mainWidget.setLayout(mainLayout)
         self.setCentralWidget(self.mainWidget)
         self.resize(1280, 720) #set collapse dim
-        self.setWindowState(Qt.WindowMaximized) #launch maximized
-        self.mdi.subWindowActivated.connect(lambda x: self.tabSpace.setCurrentIndex(x.index) if (x is not None) else False)
+        self.setWindowState(Qt.WindowMaximized) #launch maximized      
 
     def createToolbar(self):
         #place holder for toolbar with fixed width, layout may change
@@ -66,20 +63,7 @@ class appWindow(QMainWindow):
         self.toolbar.setObjectName("Toolbar")
         self.toolbar.setFixedWidth(200)
         toolbarLayout = QFormLayout(self.toolbar)
-        self.toolbar.setLayout(toolbarLayout)     
-    
-    def createTabSpace(self):        
-        self.tabSpace = QTabBar(self.mainWidget)
-        # self.tabSpace.setFlow(QListWidget.LeftToRight)
-        self.tabSpace.setFixedHeight(25)
-        self.tabSpace.currentChanged.connect(self.switchProject)
-        self.tabSpace.setVisible(False)
-
-    def switchProject(self, index):
-        i = self.mdi.subWindowList(order=QMdiArea.CreationOrder)[index]
-        if not i.isVisible():
-            i.show()
-        self.mdi.setActiveSubWindow(i)
+        self.toolbar.setLayout(toolbarLayout)
 
     def newProject(self):
         #call to create a new file inside mdi area
@@ -89,10 +73,10 @@ class appWindow(QMainWindow):
         if not project.tabList: # important when unpickling a file instead
             project.newDiagram() #create a new tab in the new file
         project.resizeHandler()
-        project.fileCloseEvent.connect(self.fileClosed)
-        project.index = self.tabSpace.addTab("New Project")
-        if self.tabSpace.count() > 1:
-            self.tabSpace.setVisible(True)
+        project.fileCloseEvent.connect(self.fileClosed) #closed file signal to switch to sub window view
+        if self.count > 1: #switch to tab view if needed
+            self.mdi.setViewMode(QMdiArea.TabbedView)
+        project.show()
                 
     def openProject(self):
         #show the open file dialog to open a saved file, then unpickle it.
@@ -105,8 +89,9 @@ class appWindow(QMainWindow):
                     project.show()
                     project.resizeHandler()
                     project.fileCloseEvent.connect(self.fileClosed)                    
-        if self.tabSpace.count() > 1:
-            self.tabSpace.setVisible(True)
+        if self.count > 1:
+            # self.tabSpace.setVisible(True)
+            self.mdi.setViewMode(QMdiArea.TabbedView)
             
     def saveProject(self):
         #pickle all files in mdi area
@@ -140,16 +125,16 @@ class appWindow(QMainWindow):
             event.accept()            
     
     def fileClosed(self, index):
-        self.tabSpace.removeTab(index)
-        i = self.mdi.subWindowList(order=QMdiArea.CreationOrder)[self.tabSpace.currentIndex()]
-        i.show()
-        self.mdi.setActiveSubWindow(i)
-        if self.tabSpace.count() <=1 :
-            self.tabSpace.setVisible(False)
+        if self.count <= 2 :
+            self.mdi.setViewMode(QMdiArea.SubWindowView)
     
     @property
     def activeFiles(self):
         return [i for i in self.mdi.subWindowList() if i.tabCount]
+    
+    @property
+    def count(self):
+        return len(self.mdi.subWindowList())
     
 if __name__ == '__main__':
     app = ApplicationContext()       # 1. Instantiate ApplicationContext
