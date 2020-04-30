@@ -76,7 +76,7 @@ class fileWindow(QMdiSubWindow):
         #helper function to the context menu dialog box
         currentTab = self.tabber.currentWidget()
         result = dialogs.paperDims(self, currentTab._canvasSize, currentTab._ppi, currentTab.objectName()).exec_()
-        if result:
+        if result is not None:
             currentTab.canvasSize, currentTab.ppi = result
             return self.resizeHandler()
         else:

@@ -57,7 +57,19 @@ class paperDims(QDialog):
     def exec_(self):
         #overload exec_ to add return values and delete itself(currently being tested)
         super(paperDims, self).exec_()
-        return self._canvasSize, self._ppi if self.result==1 else None
+        self.deleteLater()
+        return (self._canvasSize, self._ppi) if self.result() else None
+    
+    def accept(self):
+        self.setResult(1)
+        self.accepted.emit()
+        return super(paperDims, self).accept()        
+    
+    def reject(self):
+        self.setResult(0)
+        self.rejected.emit()
+        return super(paperDims, self).reject()
+        
 
 def saveEvent(parent = None):
     #utility function to generate a Qt alert window requesting the user to save the file, returns user intention on window close
