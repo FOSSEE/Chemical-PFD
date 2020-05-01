@@ -33,13 +33,16 @@ class canvas(QWidget):
         self.layout = QHBoxLayout(self) #create the layout of the canvas, the canvas could just subclass QGView instead
         self.layout.addWidget(self.view, alignment=Qt.AlignCenter)
         self.layout.setContentsMargins(0, 0, 0, 0)
-        #set layout and background color
         self.setLayout(self.layout)
+        #set layout and background color
         
         self.painter.setSceneRect(0, 0, *paperSizes[self.canvasSize][self.ppi])
         # ensure that the scene is always aligned on the left, instead of being
         # centered (the default)
         # self.view.setAlignment(Qt.AlignLeft|Qt.AlignTop)
+        
+        self.parentMdiArea = self.parent().parentWidget().parentWidget().parentWidget().parentWidget()
+        self.parentFileWindow = self.parent().parentWidget().parentWidget()
 
     def resizeView(self, w, h):
         #helper function to resize canvas
@@ -54,7 +57,8 @@ class canvas(QWidget):
         self.view.setSceneRect(0, 0, width - frameWidth*2, height)        
         # give the view some time to adjust itself
 
-        prect = self.parent().parentWidget().parentWidget().parentWidget().rect()
+        prect = self.parentMdiArea.rect()
+        # prect = self.parent().parent().size()
         width = width + 20
         height = height + 60
 
@@ -62,8 +66,12 @@ class canvas(QWidget):
             width += self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
         if self.view.horizontalScrollBar().isVisible():
             height += self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
-        self.view.setFixedWidth(min(prect.width() - 20, width))
-        self.view.setFixedHeight(min(prect.height() - 60, height))
+        
+        # factor = 2 if self.parentFileWindow.sideViewTab is not None else 1
+        width = min(prect.width() - 20, width) # // factor
+        height = min(prect.height() - 60, height) # // factor
+        self.view.setFixedWidth(width)
+        self.view.setFixedHeight(height)
         # self.resize(width + frameWidth * 2, height + frameWidth * 2) 
         
     def resizeEvent(self, event):

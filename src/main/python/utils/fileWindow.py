@@ -1,7 +1,7 @@
 import pickle
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QMdiSubWindow, QFileDialog, QMenu, QSizePolicy
+from PyQt5.QtWidgets import QMdiSubWindow, QFileDialog, QMenu, QSizePolicy, QWidget, QHBoxLayout, QSplitter, QGraphicsView
 
 from . import dialogs
 from .canvas import canvas
@@ -16,9 +16,10 @@ class fileWindow(QMdiSubWindow):
     fileMinimized = pyqtSignal(QMdiSubWindow)
     def __init__(self, parent = None, title = 'New Project', size = 'A4', ppi = '72'):
         super(fileWindow, self).__init__(parent)
-        
+        self._sideViewTab = None
+        self.index = None        
+                
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.index = None
         #Uses a custom QTabWidget that houses a custom new Tab Button, used to house the seperate 
         # diagrams inside a file
         self.tabber = customTabWidget(self)
@@ -26,22 +27,29 @@ class fileWindow(QMdiSubWindow):
         self.tabber.tabCloseRequested.connect(self.closeTab) # Show save alert on tab close
         self.tabber.currentChanged.connect(self.changeTab) # placeholder just to detect tab change
         self.tabber.plusClicked.connect(self.newDiagram) #connect the new tab button to add a new tab
-        # self.tabber.setContentsMargins(0, 1, 1, 1)
+        
         #assign layout to widget
-        self.setWidget(self.tabber)
+        self.mainWidget = QWidget(self)
+        layout = QHBoxLayout(self.mainWidget)
+        layout.addWidget(self.tabber)
+        self.splitter = QSplitter(Qt.Vertical ,self)
+        layout.addWidget(self.splitter)
+        self.sideView = QGraphicsView(self)
+        layout.addWidget(self.sideView)
+        
+        self.mainWidget.setLayout(layout)
+        self.setWidget(self.mainWidget)
         self.setWindowTitle(title)
         
         #This is done so that a right click menu is shown on right click
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.contextMenu)
         
-        # self.windowStateChanged.connect(self.stateChange)
-        
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setWindowFlag(Qt.CustomizeWindowHint, True)
         self.setWindowFlag(Qt.WindowMinimizeButtonHint, False)
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
-        
+    
     def changeTab(self, currentIndex):
         #placeholder function to detect tab change
         self.resizeHandler()        
@@ -64,20 +72,18 @@ class fileWindow(QMdiSubWindow):
         parentRect = self.mdiArea().size()
         current = self.tabber.currentWidget()
         width, height = current.dimensions
-        width = min(parentRect.width(), width + 100)
-        height = min(parentRect.height(), height + 200)
+        if self.sideViewTab:
+            width = parentRect.width()
+            height = parentRect.height()
+        else:
+            width = min(parentRect.width(), width + 100)
+            height = min(parentRect.height(), height + 200)
         # width = parentRect.width()
         # height = parentRect.height()
         self.setFixedSize(width, height)
         self.tabber.resize(width, height)
         self.tabber.currentWidget().adjustView()
-    
-    def contextMenu(self, point):
-        #function to display the right click menu at point of right click
-        menu = QMenu("Context Menu", self)
-        menu.addAction("Adjust Canvas", self.adjustCanvasDialog)
-        menu.exec_(self.mapToGlobal(point))
-        
+
     def adjustCanvasDialog(self):
         #helper function to the context menu dialog box
         currentTab = self.tabber.currentWidget()
@@ -88,21 +94,38 @@ class fileWindow(QMdiSubWindow):
         else:
             return None
     
-    # def stateChange(self, oldState, newState):
-    #     if newState == Qt.WindowMinimized:
-    #         print("a")
-    #         self.setVisible(False)
-    #     elif newState == Qt.WindowMaximized:
-    #         print("b")
-    #         parentRect = self.mdiArea().size()
-    #         self.setFixedSize(parentRect.width(), parentRect.height())
-    #         self.tabber.resize(parentRect.width(), parentRect.height())
-    #         self.tabber.currentWidget().adjustView()
-    #     else:
-    #         if oldState == Qt.WindowMinimized or oldState == Qt.WindowMaximized:
-    #             print("c")            
-    #             self.resizeHandler()
-
+    def contextMenu(self, point):
+        #function to display the right click menu at point of right click
+        menu = QMenu("Context Menu", self)
+        menu.addAction("Adjust Canvas", self.adjustCanvasDialog)
+        menu.addAction("View Side-By-Side", self.sideViewMode)
+        menu.exec_(self.mapToGlobal(point))
+    
+    def sideViewMode(self):     
+        self.sideViewTab = self.tabber.currentWidget()
+    
+    def sideViewToggle(self):
+        if self.sideViewTab:
+            self.splitter.setVisible(True)
+            self.sideView.setVisible(True)
+            self.sideView.setScene(self.tabber.currentWidget().painter)
+            self.resizeHandler()
+            return True
+        else:           
+            self.splitter.setVisible(False)
+            self.sideView.setVisible(False)
+            self.resizeHandler()            
+            return False
+    
+    @property
+    def sideViewTab(self):
+        return self._sideViewTab
+    
+    @sideViewTab.setter
+    def sideViewTab(self, tab):
+        self._sideViewTab = None if tab == self.sideViewTab else tab
+        return self.sideViewToggle()
+    
     @property
     def tabList(self):
         #returns a list of tabs in the given window
@@ -146,6 +169,6 @@ class fileWindow(QMdiSubWindow):
     def __setstate__(self, dict):
         self.__init__(title = dict['ObjectName'])
         for i in dict['tabs']:
-            diagram = canvas(self.tabber, size = dict['canvasSize'], ppi = dict['ppi'])
+            diagram = canvas(self.tabber, size = dict['canvasSize'], ppi = dict['ppi'], fileWindow = self)
             diagram.__setstate__(i)
             self.tabber.addTab(diagram, i['ObjectName'])

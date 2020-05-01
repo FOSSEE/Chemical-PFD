@@ -55,7 +55,7 @@ class appWindow(QMainWindow):
         self.mainWidget.setLayout(mainLayout)
         self.setCentralWidget(self.mainWidget)
         self.resize(1280, 720) #set collapse dim
-        self.setWindowState(Qt.WindowMaximized) #launch maximized      
+        # self.setWindowState(Qt.WindowMaximized) #launch maximized 
 
     def createToolbar(self):
         #place holder for toolbar with fixed width, layout may change
