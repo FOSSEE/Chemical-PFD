@@ -67,9 +67,9 @@ class canvas(QWidget):
         if self.view.horizontalScrollBar().isVisible():
             height += self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
         
-        # factor = 2 if self.parentFileWindow.sideViewTab is not None else 1
-        width = min(prect.width() - 20, width) # // factor
-        height = min(prect.height() - 60, height) # // factor
+        factor = 2 if self.parentFileWindow.sideViewTab is not None else 1
+        width = min((prect.width() - 20)//factor, width) 
+        height = min(prect.height() - 80, height)
         self.view.setFixedWidth(width)
         self.view.setFixedHeight(height)
         # self.resize(width + frameWidth * 2, height + frameWidth * 2) 

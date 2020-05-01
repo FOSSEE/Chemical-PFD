@@ -50,6 +50,9 @@ class fileWindow(QMdiSubWindow):
         self.setWindowFlag(Qt.WindowMinimizeButtonHint, False)
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
     
+        self.splitter.setVisible(False)
+        self.sideView.setVisible(False)
+        
     def changeTab(self, currentIndex):
         #placeholder function to detect tab change
         self.resizeHandler()        
