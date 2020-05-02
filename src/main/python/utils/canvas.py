@@ -24,7 +24,9 @@ class canvas(QWidget):
         self._canvasSize = size
         # self.setFixedSize(parent.size())
         #Create area for the graphic items to be placed, this is just here right now for the future
-        # when we will draw items on this, this might be changed if QGraphicScene is subclassed. 
+        # when we will draw items on this, this might be changed if QGraphicScene is subclassed.
+        
+        #set layout and background color
         self.painter = QGraphicsScene()        
         self.painter.setBackgroundBrush(QBrush(Qt.white)) #set white background
         
@@ -34,7 +36,6 @@ class canvas(QWidget):
         self.layout.addWidget(self.view, alignment=Qt.AlignCenter)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
-        #set layout and background color
         
         #set initial paper size for the scene
         self.painter.setSceneRect(0, 0, *paperSizes[self.canvasSize][self.ppi])

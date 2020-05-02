@@ -45,7 +45,7 @@ class fileWindow(QMdiSubWindow):
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.contextMenu)
         
-        self.setAttribute(Qt.WA_DeleteOnClose, True)
+        # self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setWindowFlag(Qt.CustomizeWindowHint, True)
         self.setWindowFlag(Qt.WindowMinimizeButtonHint, False)
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)

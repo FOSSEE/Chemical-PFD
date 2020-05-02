@@ -47,7 +47,7 @@ class appWindow(QMainWindow):
         mainLayout.addWidget(self.toolbar)
         mainLayout.addWidget(self.mdi)
         
-        #set flag so that window doesnt look weird
+        #set flags so that window doesnt look weird
         self.mdi.setOption(QMdiArea.DontMaximizeSubWindowOnActivation, True) 
         self.mdi.setTabsClosable(True)
         self.mdi.setTabsMovable(True)
