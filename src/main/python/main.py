@@ -41,12 +41,14 @@ class appWindow(QMainWindow):
         
         self.mdi = QMdiArea(self) #create area for files to be displayed
         self.mdi.setObjectName('mdi area')
+        
         #create toolbar and add the toolbar plus mdi to layout
         self.createToolbar()
         mainLayout.addWidget(self.toolbar)
         mainLayout.addWidget(self.mdi)
         
-        self.mdi.setOption(QMdiArea.DontMaximizeSubWindowOnActivation, True) #set flag so that window doesnt look weird
+        #set flag so that window doesnt look weird
+        self.mdi.setOption(QMdiArea.DontMaximizeSubWindowOnActivation, True) 
         self.mdi.setTabsClosable(True)
         self.mdi.setTabsMovable(True)
         self.mdi.setDocumentMode(True)
@@ -55,7 +57,6 @@ class appWindow(QMainWindow):
         self.mainWidget.setLayout(mainLayout)
         self.setCentralWidget(self.mainWidget)
         self.resize(1280, 720) #set collapse dim
-        # self.setWindowState(Qt.WindowMaximized) #launch maximized 
 
     def createToolbar(self):
         #place holder for toolbar with fixed width, layout may change
@@ -74,7 +75,6 @@ class appWindow(QMainWindow):
             project.newDiagram() #create a new tab in the new file
         project.resizeHandler()
         project.fileCloseEvent.connect(self.fileClosed) #closed file signal to switch to sub window view
-        project.fileMinimized.connect(self.fileMinimized)
         if self.count > 1: #switch to tab view if needed
             self.mdi.setViewMode(QMdiArea.TabbedView)
         project.show()
@@ -126,12 +126,9 @@ class appWindow(QMainWindow):
             event.accept()            
     
     def fileClosed(self, index):
+        #checks if the file tab menu needs to be removed
         if self.count <= 2 :
             self.mdi.setViewMode(QMdiArea.SubWindowView)
-
-    def fileMinimized(self, file):
-        if self.count > 1:
-            self.mdi.activateNextSubWindow()
             
     @property
     def activeFiles(self):

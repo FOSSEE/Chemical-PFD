@@ -36,48 +36,47 @@ class canvas(QWidget):
         self.setLayout(self.layout)
         #set layout and background color
         
+        #set initial paper size for the scene
         self.painter.setSceneRect(0, 0, *paperSizes[self.canvasSize][self.ppi])
-        # ensure that the scene is always aligned on the left, instead of being
-        # centered (the default)
-        # self.view.setAlignment(Qt.AlignLeft|Qt.AlignTop)
         
+        #set pointers to necessary parents for ease of reference
         self.parentMdiArea = self.parent().parentWidget().parentWidget().parentWidget().parentWidget()
         self.parentFileWindow = self.parent().parentWidget().parentWidget()
 
     def resizeView(self, w, h):
         #helper function to resize canvas
         self.painter.setSceneRect(0, 0, w, h)
-        # self.view.setSceneRect(0, 0, w - self.view.frameWidth() * 2, h)
-        # self.adjustView()
 
     def adjustView(self):
-        #update view size
+        #utitily to adjust current diagram view
         width, height = self.dimensions
         frameWidth = self.view.frameWidth()
-        self.view.setSceneRect(0, 0, width - frameWidth*2, height)        
-        # give the view some time to adjust itself
-
+        #update view size
+        self.view.setSceneRect(0, 0, width - frameWidth*2, height)
+        
+        # use the available mdi area, also add padding
         prect = self.parentMdiArea.rect()
-        # prect = self.parent().parent().size()
         width = width + 20
         height = height + 60
 
+        # add scrollbar size to width and height if they are visible, avoids clipping
         if self.view.verticalScrollBar().isVisible():
             width += self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
         if self.view.horizontalScrollBar().isVisible():
             height += self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
         
+        #if view is visible use half of available width
         factor = 2 if self.parentFileWindow.sideViewTab is not None else 1
+        #use minimum width required to fit the view
         width = min((prect.width() - 20)//factor, width) 
         height = min(prect.height() - 80, height)
+        #set view dims
         self.view.setFixedWidth(width)
         self.view.setFixedHeight(height)
-        # self.resize(width + frameWidth * 2, height + frameWidth * 2) 
         
     def resizeEvent(self, event):
         #overloaded function to also view size on window update
         self.adjustView()
-        # pass
    
     def setCanvasSize(self, size):
         """
@@ -90,6 +89,11 @@ class canvas(QWidget):
         extended setter for dialog box
         """
         self.ppi = ppi
+    
+    @property
+    def dimensions(self):
+        #returns the dimension of the current scene
+        return self.painter.sceneRect().width(), self.painter.sceneRect().height()
     
     @property
     def canvasSize(self):
@@ -109,11 +113,6 @@ class canvas(QWidget):
         self._ppi = ppi
         if self.painter:
             self.resizeView(*paperSizes[self.canvasSize][self.ppi])
-
-    @property
-    def dimensions(self):
-        #returns the dimension of the current scene
-        return self.painter.sceneRect().width(), self.painter.sceneRect().height()
         
     #following 2 methods are defined for correct pickling of the scene. may be changed to json or xml later so as
     # to not have a binary file.

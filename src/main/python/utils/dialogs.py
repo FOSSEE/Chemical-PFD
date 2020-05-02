@@ -36,6 +36,7 @@ class paperDims(QDialog):
         dialogBoxLayout.setWidget(1, QFormLayout.LabelRole, ppiLabel)
         dialogBoxLayout.setWidget(1, QFormLayout.FieldRole, ppiComboBox)
         
+        # add ok and cancel buttons
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
@@ -43,8 +44,6 @@ class paperDims(QDialog):
         dialogBoxLayout.addWidget(buttonBox)
         self.setLayout(dialogBoxLayout)
         self.resize(300,100) #resize to a certain size
-        
-        #todo add ok or cancel buttons
     
     def setCanvasSize(self, size):
         #for standard combo box behaviour
@@ -57,20 +56,10 @@ class paperDims(QDialog):
     def exec_(self):
         #overload exec_ to add return values and delete itself(currently being tested)
         super(paperDims, self).exec_()
-        self.deleteLater()
+        self.deleteLater() #remove from memory
+        #if ok was pressed return value else return None
         return (self._canvasSize, self._ppi) if self.result() else None
-    
-    def accept(self):
-        self.setResult(1)
-        self.accepted.emit()
-        return super(paperDims, self).accept()        
-    
-    def reject(self):
-        self.setResult(0)
-        self.rejected.emit()
-        return super(paperDims, self).reject()
         
-
 def saveEvent(parent = None):
     #utility function to generate a Qt alert window requesting the user to save the file, returns user intention on window close
     alert = QMessageBox.question(parent, parent.objectName(), "All unsaved progress will be LOST!",

@@ -37,13 +37,14 @@ class customTabWidget(QTabWidget):
 
         self.tab.layoutChanged.connect(self.movePlusButton) #connect layout change
         # to dynamically move the button.
+        
+        #set custom stylesheet for the widget area
         self.setStyleSheet("""QTabWidget::pane { 
         margin: 0px,1px,1px,1px;
         border: 2px solid #E6E6E3;
         border-radius: 7px;
         padding: 1px;
         background-color: #E6E6E3;}""")
-        self.setContentsMargins(0, 0, 0, 0)
     
     def movePlusButton(self):
         #move the new tab button to correct location

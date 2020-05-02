@@ -13,7 +13,7 @@ class fileWindow(QMdiSubWindow):
     canvases. Pre-Defined so that a file can be instantly created without defining the structure again.
     """
     fileCloseEvent = pyqtSignal(int)
-    fileMinimized = pyqtSignal(QMdiSubWindow)
+    
     def __init__(self, parent = None, title = 'New Project', size = 'A4', ppi = '72'):
         super(fileWindow, self).__init__(parent)
         self._sideViewTab = None
@@ -53,6 +53,82 @@ class fileWindow(QMdiSubWindow):
         self.splitter.setVisible(False)
         self.sideView.setVisible(False)
         
+    def resizeHandler(self):
+        # resize Handler to handle resize cases.
+        parentRect = self.mdiArea().size()
+        current = self.tabber.currentWidget()
+        width, height = current.dimensions
+        
+        # if side view is visible, set width to maximum possible, else use minimum requirement
+        if self.sideViewTab:
+            width = parentRect.width()
+            height = parentRect.height()
+        else:
+            width = min(parentRect.width(), width + 100)
+            height = min(parentRect.height(), height + 200)
+        
+        # set element dimensions  
+        self.setFixedSize(width, height)
+        self.tabber.resize(width, height)
+        self.tabber.currentWidget().adjustView()
+    
+    def contextMenu(self, point):
+        #function to display the right click menu at point of right click
+        menu = QMenu("Context Menu", self)
+        menu.addAction("Adjust Canvas", self.adjustCanvasDialog)
+        menu.addAction("Remove Side View" if self.sideViewTab == self.tabber.currentWidget() else "View Side-By-Side",
+                        self.sideViewMode)
+        menu.exec_(self.mapToGlobal(point))
+    
+    def sideViewMode(self): 
+        #helper context menu function to toggle side view    
+        self.sideViewTab = self.tabber.currentWidget()
+    
+    def adjustCanvasDialog(self):
+        #helper context menu function to the context menu dialog box
+        currentTab = self.tabber.currentWidget()
+        result = dialogs.paperDims(self, currentTab._canvasSize, currentTab._ppi, currentTab.objectName()).exec_()
+        if result is not None:
+            currentTab.canvasSize, currentTab.ppi = result
+            return self.resizeHandler()
+        else:
+            return None
+        
+    def sideViewToggle(self):
+        #Function checks if current side view tab is set, and toggles view as required
+        if self.sideViewTab:
+            self.splitter.setVisible(True)
+            self.sideView.setVisible(True)
+            self.sideView.setScene(self.tabber.currentWidget().painter)
+            self.resizeHandler()
+            return True
+        else:           
+            self.splitter.setVisible(False)
+            self.sideView.setVisible(False)
+            self.resizeHandler()            
+            return False
+    
+    @property
+    def sideViewTab(self):
+        #returns current active if sideViewTab otherwise None
+        return self._sideViewTab
+    
+    @property
+    def tabList(self):
+        #returns a list of tabs in the given window
+        return [self.tabber.widget(i) for i in range(self.tabCount)]
+    
+    @property
+    def tabCount(self):
+        #returns the number of tabs in the given window only
+        return self.tabber.count()
+    
+    @sideViewTab.setter
+    def sideViewTab(self, tab):
+        #setter for side view. Also toggles view as necessary
+        self._sideViewTab = None if tab == self.sideViewTab else tab
+        return self.sideViewToggle()
+    
     def changeTab(self, currentIndex):
         #placeholder function to detect tab change
         self.resizeHandler()        
@@ -69,76 +145,7 @@ class fileWindow(QMdiSubWindow):
         diagram.setObjectName("New")
         index = self.tabber.addTab(diagram, "New")
         self.tabber.setCurrentIndex(index)
-
-    def resizeHandler(self):
-        # experimental resize Handler to handle resize on parent resize.
-        parentRect = self.mdiArea().size()
-        current = self.tabber.currentWidget()
-        width, height = current.dimensions
-        if self.sideViewTab:
-            width = parentRect.width()
-            height = parentRect.height()
-        else:
-            width = min(parentRect.width(), width + 100)
-            height = min(parentRect.height(), height + 200)
-        # width = parentRect.width()
-        # height = parentRect.height()
-        self.setFixedSize(width, height)
-        self.tabber.resize(width, height)
-        self.tabber.currentWidget().adjustView()
-
-    def adjustCanvasDialog(self):
-        #helper function to the context menu dialog box
-        currentTab = self.tabber.currentWidget()
-        result = dialogs.paperDims(self, currentTab._canvasSize, currentTab._ppi, currentTab.objectName()).exec_()
-        if result is not None:
-            currentTab.canvasSize, currentTab.ppi = result
-            return self.resizeHandler()
-        else:
-            return None
-    
-    def contextMenu(self, point):
-        #function to display the right click menu at point of right click
-        menu = QMenu("Context Menu", self)
-        menu.addAction("Adjust Canvas", self.adjustCanvasDialog)
-        menu.addAction("View Side-By-Side", self.sideViewMode)
-        menu.exec_(self.mapToGlobal(point))
-    
-    def sideViewMode(self):     
-        self.sideViewTab = self.tabber.currentWidget()
-    
-    def sideViewToggle(self):
-        if self.sideViewTab:
-            self.splitter.setVisible(True)
-            self.sideView.setVisible(True)
-            self.sideView.setScene(self.tabber.currentWidget().painter)
-            self.resizeHandler()
-            return True
-        else:           
-            self.splitter.setVisible(False)
-            self.sideView.setVisible(False)
-            self.resizeHandler()            
-            return False
-    
-    @property
-    def sideViewTab(self):
-        return self._sideViewTab
-    
-    @sideViewTab.setter
-    def sideViewTab(self, tab):
-        self._sideViewTab = None if tab == self.sideViewTab else tab
-        return self.sideViewToggle()
-    
-    @property
-    def tabList(self):
-        #returns a list of tabs in the given window
-        return [self.tabber.widget(i) for i in range(self.tabCount)]
-    
-    @property
-    def tabCount(self):
-        #returns the number of tabs in the given window only
-        return self.tabber.count()
-    
+        
     def saveProject(self, name = None):
         # called by dialog.saveEvent, saves the current file
         name = QFileDialog.getSaveFileName(self, 'Save File', f'New Diagram', 'Process Flow Diagram (*.pfd)') if not name else name
