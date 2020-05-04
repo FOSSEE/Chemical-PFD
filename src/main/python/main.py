@@ -51,13 +51,14 @@ class appWindow(QMainWindow):
         self.mdi.setOption(QMdiArea.DontMaximizeSubWindowOnActivation, True) 
         self.mdi.setTabsClosable(True)
         self.mdi.setTabsMovable(True)
-        self.mdi.setDocumentMode(True)
+        self.mdi.setDocumentMode(False)
         
         #declare main window layout
         self.mainWidget.setLayout(mainLayout)
         self.setCentralWidget(self.mainWidget)
         self.resize(1280, 720) #set collapse dim
-
+        self.mdi.subWindowActivated.connect(self.tabSwitched)
+                
     def createToolbar(self):
         #place holder for toolbar with fixed width, layout may change
         self.toolbar = QWidget(self.mainWidget)
@@ -96,7 +97,7 @@ class appWindow(QMainWindow):
             
     def saveProject(self):
         #pickle all files in mdi area
-        for j, i in enumerate(self.mdi.activeFiles): #get list of all windows with atleast one tab
+        for j, i in enumerate(self.activeFiles): #get list of all windows with atleast one tab
             if i.tabCount:
                 name = QFileDialog.getSaveFileName(self, 'Save File', f'New Diagram {j}', 'Process Flow Diagram (*.pfd)')
                 i.saveProject(name)
@@ -112,10 +113,15 @@ class appWindow(QMainWindow):
         #place holder for future implementaion        
         pass
     
+    def tabSwitched(self, window):
+        #handle window switched edge case
+        if window:
+            window.resizeHandler()
+                
     def resizeEvent(self, event):
         #overload resize to also handle resize on file windows inside
-        if self.mdi.activeSubWindow():
-            self.mdi.activeSubWindow().resizeHandler()
+        for i in self.mdi.subWindowList():
+            i.resizeHandler()
         super(appWindow, self).resizeEvent(event)
         
     def closeEvent(self, event):

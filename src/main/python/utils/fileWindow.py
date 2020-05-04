@@ -1,11 +1,15 @@
 import pickle
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QMdiSubWindow, QFileDialog, QMenu, QSizePolicy, QWidget, QHBoxLayout, QSplitter, QGraphicsView
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import (QFileDialog, QGraphicsView, QHBoxLayout,
+                             QMdiSubWindow, QMenu, QPushButton, QSizePolicy,
+                             QSplitter, QWidget)
 
 from . import dialogs
 from .canvas import canvas
 from .tabs import customTabWidget
+
 
 class fileWindow(QMdiSubWindow):
     """
@@ -31,12 +35,10 @@ class fileWindow(QMdiSubWindow):
         #assign layout to widget
         self.mainWidget = QWidget(self)
         layout = QHBoxLayout(self.mainWidget)
+        self.createSideViewArea() #create the side view objects
         layout.addWidget(self.tabber)
-        self.splitter = QSplitter(Qt.Vertical ,self)
         layout.addWidget(self.splitter)
-        self.sideView = QGraphicsView(self)
         layout.addWidget(self.sideView)
-        
         self.mainWidget.setLayout(layout)
         self.setWidget(self.mainWidget)
         self.setWindowTitle(title)
@@ -50,6 +52,30 @@ class fileWindow(QMdiSubWindow):
         self.setWindowFlag(Qt.WindowMinimizeButtonHint, False)
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
     
+    def createSideViewArea(self):
+        #creates the side view widgets and sets them to invisible
+        self.splitter = QSplitter(Qt.Vertical ,self)
+        self.sideView = QGraphicsView(self)
+        self.sideView.setInteractive(False)
+        sideViewCloseButton = QPushButton('×', self.sideView)
+        sideViewCloseButton.setFlat(True)
+        sideViewCloseButton.setStyleSheet("""QPushButton{
+            background: rgba(214, 54, 40, 50%);
+            border: 1px groove white;
+            border-radius: 2px;
+            font-size: 18px;
+            font-weight: Bold;
+            padding: 1px 2px 3px 3px;
+            color: rgba(255, 255, 255, 50%);
+        }
+        QPushButton:Hover{
+            background: rgba(214, 54, 40, 90%);
+            color: rgba(255, 255, 255, 90%);            
+        }
+        """)
+        sideViewCloseButton.setFixedSize(20, 20)
+        sideViewCloseButton.move(5, 5)
+        sideViewCloseButton.clicked.connect(lambda: setattr(self, 'sideViewTab', None))
         self.splitter.setVisible(False)
         self.sideView.setVisible(False)
         
@@ -67,10 +93,14 @@ class fileWindow(QMdiSubWindow):
             width = min(parentRect.width(), width + 100)
             height = min(parentRect.height(), height + 200)
         
+        if len(self.parent().parent().subWindowList()) > 1:
+            height -= 20
+        
         # set element dimensions  
         self.setFixedSize(width, height)
         self.tabber.resize(width, height)
         self.tabber.currentWidget().adjustView()
+        
     
     def contextMenu(self, point):
         #function to display the right click menu at point of right click
