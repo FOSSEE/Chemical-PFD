@@ -6,7 +6,7 @@ from PyQt5.QtCore import QObject, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QImage, QPainter, QPalette
 from PyQt5.QtWidgets import (QComboBox, QFileDialog, QFormLayout, QVBoxLayout,
                              QHBoxLayout, QLabel, QMainWindow, QMenu,
-                             QPushButton, QWidget, QMdiArea)
+                             QPushButton, QWidget, QMdiArea, QSplitter)
 
 from utils.canvas import canvas
 from utils.fileWindow import fileWindow
@@ -45,6 +45,7 @@ class appWindow(QMainWindow):
         #create toolbar and add the toolbar plus mdi to layout
         self.createToolbar()
         mainLayout.addWidget(self.toolbar)
+        mainLayout.addWidget(QSplitter(Qt.Vertical, self))
         mainLayout.addWidget(self.mdi)
         
         #set flags so that window doesnt look weird
