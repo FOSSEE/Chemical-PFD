@@ -28,6 +28,15 @@ class customTabWidget(QTabWidget):
         self.setTabBar(self.tab) #set tabBar to our custom tabBarPlus
         
         self.plusButton = QPushButton('+', self) #create the new tab button
+        #style the new tab button
+        self.plusButton.setFlat(True)
+        self.plusButton.setStyleSheet("""QPushButton{
+            background: rgba(230, 230, 227, 0%);
+        }
+        QPushButton:Hover{
+            background: rgba(230, 230, 227, 40%);
+        }""")
+        
         #and parent it to the widget to add it at 0, 0
         self.plusButton.setFixedSize(35, 25) #set dimensions
         self.plusButton.clicked.connect(self.plusClicked.emit) #emit signal on click
@@ -50,7 +59,7 @@ class customTabWidget(QTabWidget):
         #move the new tab button to correct location
         size = sum([self.tab.tabRect(i).width() for i in range(self.tab.count())])
         # calculate width of all tabs 
-        h = max(self.tab.geometry().bottom() - 25, 0) #align with bottom of tabbar
+        h = max(self.tab.geometry().bottom() - self.plusButton.height(), 0) #align with bottom of tabbar
         w = self.tab.width()
         if size > w: #if all the tabs do not overflow the tab bar, add at the end
             self.plusButton.move(w-self.plusButton.width(), h)
