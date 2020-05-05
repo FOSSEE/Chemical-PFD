@@ -95,6 +95,11 @@ class canvas(QWidget):
     def dimensions(self):
         #returns the dimension of the current scene
         return self.painter.sceneRect().width(), self.painter.sceneRect().height()
+    @property
+    def items(self):
+        # generator to filter out certain items
+        for i in self.painter.items():
+            yield i
     
     @property
     def canvasSize(self):

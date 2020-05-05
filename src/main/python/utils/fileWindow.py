@@ -100,8 +100,7 @@ class fileWindow(QMdiSubWindow):
         self.setFixedSize(width, height)
         self.tabber.resize(width, height)
         self.tabber.currentWidget().adjustView()
-        
-    
+         
     def contextMenu(self, point):
         #function to display the right click menu at point of right click
         menu = QMenu("Context Menu", self)
