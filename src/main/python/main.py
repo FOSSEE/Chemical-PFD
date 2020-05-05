@@ -149,7 +149,7 @@ class appWindow(QMainWindow):
     def keyPressEvent(self, event):
         #overload key press event for custom keyboard shortcuts
         if event.modifiers() and Qt.ControlModifier:
-            if event.key() == Qt.key_N:
+            if event.key() == Qt.Key_N:
                 self.newProject()
                 
             elif event.key() == Qt.Key_S:
@@ -159,7 +159,7 @@ class appWindow(QMainWindow):
                 self.openProject()
                 
             elif event.key() == Qt.Key_Q:
-                self.closeEvent()
+                self.close()
                 
             elif event.key() == Qt.Key_P:
                 if Qt.AltModifier:
@@ -167,25 +167,20 @@ class appWindow(QMainWindow):
                 else:
                     self.generateReport()
             
-            elif event.key() == Qt.key_A:
+            elif event.key() == Qt.Key_A:
                 #todo implement selectAll
                 for item in self.mdi.activeSubWindow().tabber.currentWidget().items:
                     item.setSelected(True)
                     
             #todo copy, paste, undo redo
             
-            else:
-                return event.reject()
             
         elif event.key() == Qt.Key_Delete or event.key() == Qt.Key_Backspace:
             for item in self.mdi.activeSubWindow().tabber.currentWidget().painter.selectedItems():
                 item.setEnabled(False)
                 #donot delete, to manage undo redo
-                
-        else: 
-            return event.reject()
         
-        return event.accept()
+        event.accept()
         
 if __name__ == '__main__':
     app = ApplicationContext()       # 1. Instantiate ApplicationContext

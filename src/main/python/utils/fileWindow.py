@@ -178,7 +178,7 @@ class fileWindow(QMdiSubWindow):
     def saveProject(self, name = None):
         # called by dialog.saveEvent, saves the current file
         name = QFileDialog.getSaveFileName(self, 'Save File', f'New Diagram', 'Process Flow Diagram (*.pfd)') if not name else name
-        if name:
+        if name[0]:
             with open(name[0],'wb') as file: 
                 pickle.dump(self, file)
             return True
