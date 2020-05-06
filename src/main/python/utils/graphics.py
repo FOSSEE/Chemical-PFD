@@ -8,19 +8,27 @@ class customView(QGraphicsView):
             super(customView, self).__init__(scene, parent)
         else:
             super(customView, self).__init__(parent)
-        self.zoom = 1
+        self._zoom = 1
         self.setDragMode(True)
         
     def wheelEvent(self, QWheelEvent):
         if Qt.ControlModifier:
-            temp = self.zoom
             if QWheelEvent.source() == Qt.MouseEventNotSynthesized:
                 if self.zoom + QWheelEvent.angleDelta().y()/2880 > 0.1:
                     self.zoom += QWheelEvent.angleDelta().y()/2880
             else:
                 if self.zoom + QWheelEvent.pixelDelta().y() > 0.1:
                     self.zoom += QWheelEvent.angleDelta().y()
-            self.scale(self.zoom / temp, self.zoom / temp)
             QWheelEvent.accept()
         else:
             return super().wheelEvent(self, QWheelEvent)
+    
+    @property
+    def zoom(self):
+        return self._zoom
+    
+    @zoom.setter
+    def zoom(self, value):
+        temp = self.zoom
+        self._zoom = value
+        self.scale(self.zoom / temp, self.zoom / temp)

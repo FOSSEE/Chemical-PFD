@@ -142,11 +142,11 @@ class fileWindow(QMdiSubWindow):
             return False
         
     def moveSideViewCloseButton(self):
-        x = self.sideView.width() - 5
-        print(x)
-        if self.sideView.verticalScrollBar().isVisible():
-            x -= self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
-        self.sideViewCloseButton.move(x, 5)
+        # x = self.rect().width()//2 - 5
+        # if self.sideView.verticalScrollBar().isVisible():
+        #     x -= self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
+        # self.sideViewCloseButton.move(x, 5)
+        self.sideViewCloseButton.move(5, 5)
             
     @property
     def sideViewTab(self):
