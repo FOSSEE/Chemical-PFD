@@ -6,7 +6,8 @@ from PyQt5.QtWidgets import (QFileDialog, QApplication,
                              QGraphicsScene, QGraphicsView, QHBoxLayout, QMenu,
                              QTabWidget, QWidget, QSpacerItem, QStyle)
 
-from . import graphics, dialogs
+from . import dialogs
+from .graphics import customView
 from .sizes import paperSizes, ppiList, sheetDimensionList
 
 class canvas(QWidget):
@@ -30,7 +31,7 @@ class canvas(QWidget):
         self.painter = QGraphicsScene()        
         self.painter.setBackgroundBrush(QBrush(Qt.white)) #set white background
         
-        self.view = graphics.customView(self.painter, self) #create a viewport for the canvas board
+        self.view = customView(self.painter, self) #create a viewport for the canvas board
         
         self.layout = QHBoxLayout(self) #create the layout of the canvas, the canvas could just subclass QGView instead
         self.layout.addWidget(self.view, alignment=Qt.AlignCenter)

@@ -2,11 +2,12 @@ import pickle
 
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import (QFileDialog, QGraphicsView, QHBoxLayout,
+from PyQt5.QtWidgets import (QFileDialog, QHBoxLayout,
                              QMdiSubWindow, QMenu, QPushButton, QSizePolicy,
-                             QSplitter, QWidget)
+                             QSplitter, QWidget, QStyle)
 
 from . import dialogs
+from .graphics import customView
 from .canvas import canvas
 from .tabs import customTabWidget
 
@@ -55,11 +56,11 @@ class fileWindow(QMdiSubWindow):
     def createSideViewArea(self):
         #creates the side view widgets and sets them to invisible
         self.splitter = QSplitter(Qt.Vertical ,self)
-        self.sideView = QGraphicsView(self)
+        self.sideView = customView(parent = self)
         self.sideView.setInteractive(False)
-        sideViewCloseButton = QPushButton('×', self.sideView)
-        sideViewCloseButton.setFlat(True)
-        sideViewCloseButton.setStyleSheet("""QPushButton{
+        self.sideViewCloseButton = QPushButton('×', self.sideView)
+        self.sideViewCloseButton.setFlat(True)
+        self.sideViewCloseButton.setStyleSheet("""QPushButton{
             background: rgba(214, 54, 40, 50%);
             border: 1px groove white;
             border-radius: 2px;
@@ -67,15 +68,15 @@ class fileWindow(QMdiSubWindow):
             font-weight: Bold;
             padding: 1px 2px 3px 3px;
             color: rgba(255, 255, 255, 50%);
-        }
-        QPushButton:Hover{
-            background: rgba(214, 54, 40, 90%);
-            color: rgba(255, 255, 255, 90%);            
-        }
+            }
+            QPushButton:Hover{
+                background: rgba(214, 54, 40, 90%);
+                color: rgba(255, 255, 255, 90%);            
+            }
         """)
-        sideViewCloseButton.setFixedSize(20, 20)
-        sideViewCloseButton.move(5, 5)
-        sideViewCloseButton.clicked.connect(lambda: setattr(self, 'sideViewTab', None))
+        self.sideViewCloseButton.setFixedSize(20, 20)
+        self.moveSideViewCloseButton()
+        self.sideViewCloseButton.clicked.connect(lambda: setattr(self, 'sideViewTab', None))
         self.splitter.setVisible(False)
         self.sideView.setVisible(False)
         
@@ -89,6 +90,8 @@ class fileWindow(QMdiSubWindow):
         if self.sideViewTab:
             width = parentRect.width()
             height = parentRect.height()
+            self.moveSideViewCloseButton()
+            
         else:
             width = min(parentRect.width(), width + 100)
             height = min(parentRect.height(), height + 200)
@@ -129,6 +132,7 @@ class fileWindow(QMdiSubWindow):
             self.splitter.setVisible(True)
             self.sideView.setVisible(True)
             self.sideView.setScene(self.tabber.currentWidget().painter)
+            self.moveSideViewCloseButton()
             self.resizeHandler()
             return True
         else:           
@@ -136,7 +140,14 @@ class fileWindow(QMdiSubWindow):
             self.sideView.setVisible(False)
             self.resizeHandler()            
             return False
-    
+        
+    def moveSideViewCloseButton(self):
+        x = self.sideView.width() - 5
+        print(x)
+        if self.sideView.verticalScrollBar().isVisible():
+            x -= self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
+        self.sideViewCloseButton.move(x, 5)
+            
     @property
     def sideViewTab(self):
         #returns current active if sideViewTab otherwise None
