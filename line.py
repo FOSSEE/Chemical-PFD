@@ -1,6 +1,7 @@
-from PyQt5.QtGui import QFont, QPen, QPainterPath
+from PyQt5.QtGui import QFont, QPen, QPainterPath, QPolygon, QBrush
 from PyQt5.QtWidgets import QGraphicsLineItem, QLineEdit, QGraphicsProxyWidget, QGraphicsItem
 from PyQt5.QtCore import Qt, QPointF, QRectF
+from PyQt5.uic.properties import QtCore
 
 
 class Line(QGraphicsItem):
@@ -10,6 +11,7 @@ class Line(QGraphicsItem):
         self.endPoint = endPoint
         self.startGripItem = None
         self.endGripItem = None
+        self._selected = False
 
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         # self.setFlag(QGraphicsItem.ItemIsMovable, True)
@@ -25,7 +27,7 @@ class Line(QGraphicsItem):
     def shape(self):
         x0, y0 = self.startPoint.x(), self.startPoint.y()
         x1, y1 = self.endPoint.x(), self.endPoint.y()
-        path = QPainterPath(QPointF(x0,y0))
+        path = QPainterPath(QPointF(x0, y0))
         path.lineTo((x0 + x1) / 2, y0)
         path.moveTo((x0 + x1) / 2, y0)
         path.lineTo((x0 + x1) / 2, y1)
@@ -46,12 +48,23 @@ class Line(QGraphicsItem):
         # painter.drawLine((x0 + x1) / 2, y1, x1, y1)
         painter.drawPath(self.shape())
 
+        if self.isSelected():
+            self.showGripItem()
+            self._selected= True
+            pen = QPen(QBrush(Qt.red), 5)
+            painter.setPen(pen)
+            painter.drawPath(self.shape())
+        elif self._selected:
+            self.hideGripItem()
+            self._selected = False
+
     def updateLine(self, startPoint=None, endPoint=None):
 
         """This function is used to update connecting line when it add on
            canvas and when it's grip item  moves
         :return:
         """
+        self.prepareGeometryChange()
         if self.startGripItem and self.endGripItem:
             item = self.startGripItem
             self.startPoint = item.parentItem().mapToScene(item.pos())
@@ -61,7 +74,7 @@ class Line(QGraphicsItem):
             self.startPoint = startPoint
         if endPoint:
             self.endPoint = endPoint
-        self.prepareGeometryChange()
+
         self.update(self.boundingRect())
 
     def removeFromCanvas(self):
@@ -70,3 +83,21 @@ class Line(QGraphicsItem):
         """
         if self.scene():
             self.scene().removeItem(self)
+
+    def mousePressEvent(self, event):
+        print('line clicked', self)
+        super(Line, self).mousePressEvent(event)
+
+    def showGripItem(self):
+        if self.startGripItem: self.startGripItem.show()
+        if self.endGripItem: self.endGripItem.show()
+        # if self.startGripItem: self.startGripItem.setVisible(True)
+        # if self.endGripItem: self.endGripItem.setVisible(True)
+
+    def hideGripItem(self):
+        if self.startGripItem : self.startGripItem.hide()
+        if self.endGripItem: self.endGripItem.hide()
+        # if self.startGripItem: self.startGripItem.setVisible(False)
+        # if self.endGripItem: self.endGripItem.setVisible(False)
+
+
