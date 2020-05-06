@@ -158,7 +158,7 @@ class appWindow(QMainWindow):
             elif event.key() == Qt.Key_O:
                 self.openProject()
                 
-            elif event.key() == Qt.Key_Q:
+            elif event.key() == Qt.Key_W:
                 self.close()
                 
             elif event.key() == Qt.Key_P:

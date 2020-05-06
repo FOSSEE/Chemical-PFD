@@ -30,7 +30,7 @@ class canvas(QWidget):
         self.painter = QGraphicsScene()        
         self.painter.setBackgroundBrush(QBrush(Qt.white)) #set white background
         
-        self.view = QGraphicsView(self.painter) #create a viewport for the canvas board
+        self.view = graphics.customView(self.painter, self) #create a viewport for the canvas board
         
         self.layout = QHBoxLayout(self) #create the layout of the canvas, the canvas could just subclass QGView instead
         self.layout.addWidget(self.view, alignment=Qt.AlignCenter)
@@ -69,7 +69,7 @@ class canvas(QWidget):
         #if view is visible use half of available width
         factor = 2 if self.parentFileWindow.sideViewTab is not None else 1
         #use minimum width required to fit the view
-        width = min((prect.width() - 20)//factor, width) 
+        width = min((prect.width() - 40)//factor, width) 
         height = min(prect.height() - 80, height)
         #set view dims
         self.view.setFixedWidth(width)

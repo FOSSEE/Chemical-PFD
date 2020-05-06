@@ -30,11 +30,15 @@ class customTabWidget(QTabWidget):
         self.plusButton = QPushButton('+', self) #create the new tab button
         #style the new tab button
         self.plusButton.setFlat(True)
-        self.plusButton.setStyleSheet("""QPushButton{
+        self.plusButton.setStyleSheet("""
+        QPushButton{
             background: rgba(230, 230, 227, 0%);
+            padding: 1px;
+            border: 0px solid #E6E6E3;
+            
         }
-        QPushButton:Hover{
-            background: rgba(230, 230, 227, 40%);
+        QPushButton:hover{
+            background: rgba(230, 230, 227, 60%);
         }""")
         
         #and parent it to the widget to add it at 0, 0
