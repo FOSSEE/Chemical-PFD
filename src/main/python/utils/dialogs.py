@@ -59,7 +59,41 @@ class paperDims(QDialog):
         self.deleteLater() #remove from memory
         #if ok was pressed return value else return None
         return (self._canvasSize, self._ppi) if self.result() else None
+
+class sideViewSwitchDialog(QDialog):
+    
+    def __init__(self, parent=None, tabList = None, initial = None):
+        super(sideViewSwitchDialog, self).__init__(parent=parent)
+        self.tabList = tabList
+        self.returnVal = initial
+        self.initial = initial
         
+        dialogBoxLayout = QFormLayout(self)
+        tabListComboBox = QComboBox()
+        tabListComboBox.addItems(self.tabList)
+        tabListComboBox.activated[str].connect(lambda x: setattr(self, 'returnVal', self.tabList.index(x)))
+        tabLabel = QLabel("Change Side View")
+        tabLabel.setBuddy(tabListComboBox) # label for the above combo box
+        tabListComboBox.setCurrentIndex(self.returnVal)
+        dialogBoxLayout.setWidget(1, QFormLayout.LabelRole, tabLabel)
+        dialogBoxLayout.setWidget(1, QFormLayout.FieldRole, tabListComboBox)
+        
+        # add ok and cancel buttons
+        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+        
+        dialogBoxLayout.addWidget(buttonBox)
+        self.setLayout(dialogBoxLayout)
+        self.resize(300,100) #resize to a certain size
+        
+    def exec_(self):
+        #overload exec_ to add return values and delete itself(currently being tested)
+        super(sideViewSwitchDialog, self).exec_()
+        self.deleteLater() #remove from memory
+        #if ok was pressed return value else return None
+        return self.returnVal if self.result() else self.initial
+
 def saveEvent(parent = None):
     #utility function to generate a Qt alert window requesting the user to save the file, returns user intention on window close
     alert = QMessageBox.question(parent, parent.objectName(), "All unsaved progress will be LOST!",

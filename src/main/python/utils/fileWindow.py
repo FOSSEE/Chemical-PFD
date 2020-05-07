@@ -1,6 +1,6 @@
 import pickle
 
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QPoint
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QFileDialog, QHBoxLayout,
                              QMdiSubWindow, QMenu, QPushButton, QSizePolicy,
@@ -45,8 +45,8 @@ class fileWindow(QMdiSubWindow):
         self.setWindowTitle(title)
         
         #This is done so that a right click menu is shown on right click
-        self.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.customContextMenuRequested.connect(self.contextMenu)
+        self.tabber.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.tabber.customContextMenuRequested.connect(self.contextMenu)
         
         # self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setWindowFlag(Qt.CustomizeWindowHint, True)
@@ -79,6 +79,8 @@ class fileWindow(QMdiSubWindow):
         self.sideViewCloseButton.clicked.connect(lambda: setattr(self, 'sideViewTab', None))
         self.splitter.setVisible(False)
         self.sideView.setVisible(False)
+        self.sideView.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.sideView.customContextMenuRequested.connect(self.sideViewContextMenu)
         
     def resizeHandler(self):
         # resize Handler to handle resize cases.
@@ -110,7 +112,8 @@ class fileWindow(QMdiSubWindow):
         menu.addAction("Adjust Canvas", self.adjustCanvasDialog)
         menu.addAction("Remove Side View" if self.sideViewTab == self.tabber.currentWidget() else "View Side-By-Side",
                         self.sideViewMode)
-        menu.exec_(self.mapToGlobal(point))
+        menu.addAction("Reset Zoom", lambda : setattr(self.tabber.currentWidget().view, 'zoom', 1))
+        menu.exec_(self.tabber.mapToGlobal(point))
     
     def sideViewMode(self): 
         #helper context menu function to toggle side view    
@@ -147,7 +150,21 @@ class fileWindow(QMdiSubWindow):
         #     x -= self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
         # self.sideViewCloseButton.move(x, 5)
         self.sideViewCloseButton.move(5, 5)
-            
+    
+    def sideViewContextMenu(self, point):
+        menu = QMenu("Context Menu", self.sideView)
+        menu.addAction("Close Side View", lambda : setattr(self, 'sideViewTab', None))
+        menu.addAction("Switch side view tab", self.sideViewSwitchTab)
+        menu.addAction("Reset Zoom", lambda : setattr(self.sideView, 'zoom', 1))
+        menu.exec_(self.sideView.mapToGlobal(point))
+
+    def sideViewSwitchTab(self):
+        tabList = [f'{i}. {j.objectName()}' for i, j in enumerate(self.tabList)] + ['None (Remove)']
+        initial = self.tabList.index(self.sideViewTab)
+        result = dialogs.sideViewSwitchDialog(self.tabber, tabList, initial).exec_()
+        if result != initial:
+            self.sideViewTab = self.tabber.widget(result) if result<self.tabCount else None
+    
     @property
     def sideViewTab(self):
         #returns current active if sideViewTab otherwise None
