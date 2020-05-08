@@ -153,13 +153,25 @@ class fileWindow(QMdiSubWindow):
     
     def sideViewContextMenu(self, point):
         menu = QMenu("Context Menu", self.sideView)
-        menu.addAction("Close Side View", lambda : setattr(self, 'sideViewTab', None))
-        menu.addAction("Switch side view tab", self.sideViewSwitchTab)
         menu.addAction("Reset Zoom", lambda : setattr(self.sideView, 'zoom', 1))
+        menu.addSection('Change Side View Tab')
+        if self.tabCount > 5:
+            menu.addAction("Show switch menu", self.sideViewSwitchTab)
+        else:
+            for i in range(self.tabCount):
+                j = self.tabber.widget(i)
+                if j == self.sideViewTab:
+                    continue
+                menu.addAction(f'{i}. {j.objectName()}', lambda index=i: self.sideViewSwitchCMenu(index))
+        menu.addAction("Remove side view", lambda : setattr(self, 'sideViewTab', None))
         menu.exec_(self.sideView.mapToGlobal(point))
 
+    def sideViewSwitchCMenu(self, index):
+        print(index)
+        self.sideViewTab = self.tabber.widget(index)
+        
     def sideViewSwitchTab(self):
-        tabList = [f'{i}. {j.objectName()}' for i, j in enumerate(self.tabList)] + ['None (Remove)']
+        tabList = [f'{i}. {j.objectName()}' for i, j in enumerate(self.tabList)]
         initial = self.tabList.index(self.sideViewTab)
         result = dialogs.sideViewSwitchDialog(self.tabber, tabList, initial).exec_()
         if result != initial:
