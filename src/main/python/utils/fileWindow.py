@@ -145,35 +145,37 @@ class fileWindow(QMdiSubWindow):
             return False
         
     def moveSideViewCloseButton(self):
-        # x = self.rect().width()//2 - 5
-        # if self.sideView.verticalScrollBar().isVisible():
-        #     x -= self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
-        # self.sideViewCloseButton.move(x, 5)
+        # used to place side view close button at appropriate position
         self.sideViewCloseButton.move(5, 5)
     
     def sideViewContextMenu(self, point):
+        # context menu for side view
         menu = QMenu("Context Menu", self.sideView)
         menu.addAction("Reset Zoom", lambda : setattr(self.sideView, 'zoom', 1))
         menu.addSection('Change Side View Tab')
         if self.tabCount > 5:
+            # just show switch dialog box, if there are 6 or more tabs open
             menu.addAction("Show switch menu", self.sideViewSwitchTab)
         else:
+            # enumerate all tabs from side view.
             for i in range(self.tabCount):
                 j = self.tabber.widget(i)
-                if j == self.sideViewTab:
+                if j == self.sideViewTab: 
                     continue
+                # evaluate i as index, weird lambda behaviour 
+                #see https://stackoverflow.com/a/33984811/7799568
                 menu.addAction(f'{i}. {j.objectName()}', lambda index=i: self.sideViewSwitchCMenu(index))
         menu.addAction("Remove side view", lambda : setattr(self, 'sideViewTab', None))
         menu.exec_(self.sideView.mapToGlobal(point))
 
     def sideViewSwitchCMenu(self, index):
-        print(index)
         self.sideViewTab = self.tabber.widget(index)
         
     def sideViewSwitchTab(self):
-        tabList = [f'{i}. {j.objectName()}' for i, j in enumerate(self.tabList)]
-        initial = self.tabList.index(self.sideViewTab)
-        result = dialogs.sideViewSwitchDialog(self.tabber, tabList, initial).exec_()
+        # displays a side view switch dialog box
+        tabList = [f'{i}. {j.objectName()}' for i, j in enumerate(self.tabList)] #names and index of all tabs
+        initial = self.tabList.index(self.sideViewTab) # current side view tab
+        result = dialogs.sideViewSwitchDialog(self.tabber, tabList, initial).exec_() #call dialog box 
         if result != initial:
             self.sideViewTab = self.tabber.widget(result) if result<self.tabCount else None
     

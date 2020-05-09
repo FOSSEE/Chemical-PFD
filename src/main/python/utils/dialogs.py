@@ -10,8 +10,8 @@ class paperDims(QDialog):
         super(paperDims, self).__init__(parent)
         
         #store initial values to show currently set value, also updated when changed. these are returned at EOL
-        self._canvasSize = size
-        self._ppi = ppi
+        self.returnCanvasSize = size
+        self.returnCanvasPPI = ppi
         
         self.setWindowTitle(name+" :Canvas Size") #Set Window Title
         #init layout
@@ -20,19 +20,19 @@ class paperDims(QDialog):
         sizeComboBox = QComboBox() #combo box for paper sizes
         sizeComboBox.addItems(sheetDimensionList)
         sizeComboBox.setCurrentIndex(4)
-        sizeComboBox.activated[str].connect(self.setCanvasSize)
+        sizeComboBox.activated[str].connect(lambda size: setattr(self, "returnCanvasSize", size))
         sizeLabel = QLabel("Canvas Size")
         sizeLabel.setBuddy(sizeComboBox) # label for the above combo box
-        sizeComboBox.setCurrentIndex(sheetDimensionList.index(self._canvasSize)) #set index to current value of canvas
+        sizeComboBox.setCurrentIndex(sheetDimensionList.index(self.returnCanvasSize)) #set index to current value of canvas
         dialogBoxLayout.setWidget(0, QFormLayout.LabelRole, sizeLabel)
         dialogBoxLayout.setWidget(0, QFormLayout.FieldRole, sizeComboBox)
         
         ppiComboBox = QComboBox() #combo box for ppis
         ppiComboBox.addItems(ppiList)
-        ppiComboBox.activated[str].connect(self.setCanvasPPI)
+        ppiComboBox.activated[str].connect(lambda ppi: setattr(self, "returnCanvasPPI", ppi))
         ppiLabel = QLabel("Canvas ppi")
         ppiLabel.setBuddy(ppiComboBox) # label for the above combo box
-        ppiComboBox.setCurrentIndex(ppiList.index(self._ppi)) #set index to current value of canvas
+        ppiComboBox.setCurrentIndex(ppiList.index(self.returnCanvasPPI)) #set index to current value of canvas
         dialogBoxLayout.setWidget(1, QFormLayout.LabelRole, ppiLabel)
         dialogBoxLayout.setWidget(1, QFormLayout.FieldRole, ppiComboBox)
         
@@ -44,24 +44,19 @@ class paperDims(QDialog):
         dialogBoxLayout.addWidget(buttonBox)
         self.setLayout(dialogBoxLayout)
         self.resize(300,100) #resize to a certain size
-    
-    def setCanvasSize(self, size):
-        #for standard combo box behaviour
-        self._canvasSize = size
-    
-    def setCanvasPPI(self, ppi):
-        #for standard combo box behaviour        
-        self._ppi = ppi
         
     def exec_(self):
         #overload exec_ to add return values and delete itself(currently being tested)
         super(paperDims, self).exec_()
         self.deleteLater() #remove from memory
         #if ok was pressed return value else return None
-        return (self._canvasSize, self._ppi) if self.result() else None
+        return (self.returnCanvasSize, self.returnCanvasPPI) if self.result() else None
 
 class sideViewSwitchDialog(QDialog):
-    
+    """
+    Custom dialog box to show, all available tabs to set the side view to.
+    Also has accept reject events. Structure is similar to paperDims dialog box.
+    """
     def __init__(self, parent=None, tabList = None, initial = None):
         super(sideViewSwitchDialog, self).__init__(parent=parent)
         self.tabList = tabList
