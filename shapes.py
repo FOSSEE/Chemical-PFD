@@ -5,11 +5,14 @@ from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
 from PyQt5.QtWidgets import QLineEdit, QGraphicsItem, QGraphicsEllipseItem, QGraphicsProxyWidget, QGraphicsPathItem, \
     QGraphicsSceneHoverEvent, QGraphicsColorizeEffect
 from PyQt5.QtGui import QPen, QColor, QFont, QCursor, QPainterPath, QPainter, QDrag, QBrush, QImage
-from PyQt5.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QMimeData, QFile, QIODevice
+from PyQt5.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QMimeData, QFile, QIODevice, QRect
 from PyQt5.QtXml import QDomDocument
 from PyQt5.uic.properties import QtGui, QtWidgets
+from xml.dom import minidom
+import re
 
 from line import Line
+from svghandler import SvgHandler
 
 
 class GripItem(QGraphicsPathItem):
@@ -17,15 +20,10 @@ class GripItem(QGraphicsPathItem):
     Extends PyQt5's QGraphicsPathItem to create the general structure of the Grabbable points for resizing shapes.
     Takes two parameters, reference item (On which the grip items are to appear) and the grip index
     """
-    circle = QPainterPath()
-    circle.addEllipse(QRectF(-10, -10, 20, 20))
-
-    def __init__(self, annotation_item, path=None, parent=None):
+    def __init__(self, annotation_item, path, parent=None):
         """
         Extends PyQt5's QGraphicsPathItem to create the general structure of the Grabbable points for resizing shapes.
         """
-        if path is None:
-            path = GripItem.circle
         QGraphicsPathItem.__init__(self, parent)
         self.m_annotation_item = annotation_item
         # self.m_index = index
@@ -87,7 +85,7 @@ class SizeGripItem(GripItem):
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
         self.setPen(QPen(QColor("black"), -1))
-        self.setZValue(1)
+        self.setZValue(2)
         self._direction = direction
         self.m_index = index
 
@@ -178,11 +176,13 @@ class SizeGripItem(GripItem):
 
 
 class LineGripItem(GripItem):
+    circle = QPainterPath()
+    circle.addEllipse(QRectF(-10, -10, 20, 20))
     def __init__(self, annotation_item, index, parent=None):
         """
         Extends grip items for connecting lines , with hover events and mouse events
         """
-        super(LineGripItem, self).__init__(annotation_item, parent=parent)
+        super(LineGripItem, self).__init__(annotation_item,path=LineGripItem.circle, parent=parent)
         self.m_index = index
         self.connectedLines = []
         self.tempLine = None
@@ -284,33 +284,18 @@ class NodeItem(QGraphicsSvgItem):
 
     def __init__(self, unitOpType, parent=None):
         QGraphicsSvgItem.__init__(self, parent)
+        self.m_renderer = QSvgRenderer()
         self.type = unitOpType
-        self.rect = QRectF(0, 0, 100, 100)
+        self.rect = QRectF(0, 0, 250, 300)
 
-        self.doc = QDomDocument("doc")
         self.file = QFile("svg/" + "Column" + ".svg")
         if not self.file.open(QIODevice.ReadOnly):
             print("Cannot open the file")
             exit(-1)
-        if not self.doc.setContent(self.file):
-            print("Cannot parse the content")
-            self.file.close()
-            exit(-1)
-        self.file.close()
-        print(self.doc.documentElement())
-        self.m_renderer = QSvgRenderer(self.doc.toByteArray())
-        self.setSharedRenderer(self.m_renderer)
-        docElem = self.doc.documentElement()
-        print(docElem.tagName())
-        nodeTag = docElem.firstChildElement()
-        print(nodeTag.tagName())
-        gList = self.doc.elementsByTagName("g")
-        print(gList.item(0))
-
-        # self._effect = QGraphicsColorizeEffect()
-        # self._effect.setColor(Qt.red)
-        # self._effect.setStrength(1)
-        # self.setGraphicsEffect(self._effect)
+        self.svghandler = SvgHandler(self.file)
+        self.updateRenderer()
+        # self.changeColour("red")
+        # self.changeStrokeWidth(4)
 
         self.setZValue(2)
         self.setAcceptHoverEvents(True)
@@ -321,6 +306,25 @@ class NodeItem(QGraphicsSvgItem):
 
         self.lineGripItems = []
         self.sizeGripItems = []
+
+    def changeStrokeWidth(self,value):
+        self.svghandler.setStrokeWidth(value)
+        self.updateRenderer()
+
+    def changeColour(self,value):
+        self.svghandler.setColor(value)
+        self.updateRenderer()
+        """graphics effect can also used to change colour of an svg image
+        """
+        # self._effect = QGraphicsColorizeEffect()
+        # self._effect.setColor(Qt.red)
+        # self._effect.setStrength(1)
+        # self.setGraphicsEffect(self._effect)
+
+    def updateRenderer(self):
+        byteArray = self.svghandler.doc.toByteArray()
+        self.m_renderer.load(byteArray)
+        self.setSharedRenderer(self.m_renderer)
 
     def boundingRect(self):
         return self.rect
@@ -438,7 +442,7 @@ class NodeItem(QGraphicsSvgItem):
             item.setBrush(QColor("red"))
         for item in self.sizeGripItems:
             item.setPen(QPen(QColor("black"), 2))
-            item.setBrush(QColor("red"))
+            # item.setBrush(QColor("red"))
 
     def hideGripItem(self):
         for item in self.lineGripItems:
@@ -449,12 +453,3 @@ class NodeItem(QGraphicsSvgItem):
             item.setPen(QPen(Qt.transparent))
             item.setBrush(Qt.transparent)
 
-    # def mousePressEvent(self, event):
-    #     # self.setSelected(True)
-    #     print(self.isSelected())
-    #     super(NodeItem, self).mousePressEvent(event)
-
-    # def mouseReleaseEvent(self, event):
-    #     print(self.isSelected())
-    #     # self.hideGripItem()
-    #     super(NodeItem, self).mouseReleaseEvent(event)
