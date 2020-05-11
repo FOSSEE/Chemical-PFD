@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QDialog, QPushButton, QFormLayout, QComboBox, QLabel, QMessageBox, QDialogButtonBox
-from .sizes import sheetDimensionList, ppiList
+from .data import sheetDimensionList, ppiList
 
 class paperDims(QDialog):
     """

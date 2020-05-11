@@ -3,15 +3,17 @@ import sys
 
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtCore import QObject, Qt, pyqtSignal
-from PyQt5.QtGui import QBrush, QColor, QImage, QPainter, QPalette
+from PyQt5.QtGui import QBrush, QColor, QImage, QPainter, QPalette, QPen
 from PyQt5.QtWidgets import (QComboBox, QFileDialog, QFormLayout, QVBoxLayout,
                              QHBoxLayout, QLabel, QMainWindow, QMenu,
-                             QPushButton, QWidget, QMdiArea, QSplitter)
+                             QPushButton, QWidget, QMdiArea, QSplitter, QGraphicsItem)
+from PyQt5 import QtWidgets
 
 from utils.canvas import canvas
 from utils.fileWindow import fileWindow
-from utils.sizes import ppiList, sheetDimensionList
+from utils.data import ppiList, sheetDimensionList
 from utils import dialogs
+from utils.toolbar import toolbar
 
 class appWindow(QMainWindow):
     """
@@ -44,7 +46,7 @@ class appWindow(QMainWindow):
         
         #create toolbar and add the toolbar plus mdi to layout
         self.createToolbar()
-        mainLayout.addWidget(self.toolbar)
+        # mainLayout.addWidget(self.toolbar)
         mainLayout.addWidget(QSplitter(Qt.Vertical, self))
         mainLayout.addWidget(self.mdi)
         
@@ -62,11 +64,19 @@ class appWindow(QMainWindow):
                 
     def createToolbar(self):
         #place holder for toolbar with fixed width, layout may change
-        self.toolbar = QWidget(self.mainWidget)
-        self.toolbar.setObjectName("Toolbar")
-        self.toolbar.setFixedWidth(200)
-        toolbarLayout = QFormLayout(self.toolbar)
-        self.toolbar.setLayout(toolbarLayout)
+        self.toolbar = toolbar(self.mainWidget)
+        # self.toolbar.setObjectName("Toolbar")
+        self.addToolBar(Qt.LeftToolBarArea, self.toolbar)   
+        self.toolbar.toolbuttonClicked.connect(self.toolButtonClicked)
+        self.toolbar.populateToolbar()
+        
+    def toolButtonClicked(self, object):
+        currentDiagram = self.mdi.currentSubWindow().tabber.currentWidget().painter
+        if currentDiagram:
+            graphic = getattr(QtWidgets, object['object'])(*object['args'])
+            graphic.setPen(QPen(Qt.black, 2))
+            graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
+            currentDiagram.addItem(graphic) 
 
     def newProject(self):
         #call to create a new file inside mdi area

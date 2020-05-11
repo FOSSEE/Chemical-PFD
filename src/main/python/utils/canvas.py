@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (QFileDialog, QApplication,
 
 from . import dialogs
 from .graphics import customView
-from .sizes import paperSizes, ppiList, sheetDimensionList
+from .data import paperSizes, ppiList, sheetDimensionList
 
 class canvas(QWidget):
     """

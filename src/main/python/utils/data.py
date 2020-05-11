@@ -34,3 +34,14 @@ paperSizes = {
 sheetDimensionList = [f'A{i}' for i in range(5)]
 
 ppiList = ["72", "96", "150", "300"]
+
+toolbarItems = {
+    'Ellipse': {
+        'name': 'Ellipse',
+        'icon': 'ellipse.png',
+        'object': 'QGraphicsEllipseItem',
+        'args': [20, 20, 300, 300]
+    }
+}
+
+defaultToolbarItems = toolbarItems.keys()
