@@ -65,10 +65,12 @@ class appWindow(QMainWindow):
     def createToolbar(self):
         #place holder for toolbar with fixed width, layout may change
         self.toolbar = toolbar(self.mainWidget)
-        # self.toolbar.setObjectName("Toolbar")
-        self.addToolBar(Qt.LeftToolBarArea, self.toolbar)   
+        self.toolbar.setObjectName("Toolbar")
+        self.addToolBar(Qt.LeftToolBarArea, self.toolbar)
+        # self.addDockWidget(Qt.LeftDockWidgetArea, self.toolbar)
         self.toolbar.toolbuttonClicked.connect(self.toolButtonClicked)
         self.toolbar.populateToolbar()
+        
         
     def toolButtonClicked(self, object):
         currentDiagram = self.mdi.currentSubWindow().tabber.currentWidget().painter
@@ -133,6 +135,7 @@ class appWindow(QMainWindow):
         #overload resize to also handle resize on file windows inside
         for i in self.mdi.subWindowList():
             i.resizeHandler()
+        # self.toolbar.resize()
         super(appWindow, self).resizeEvent(event)
         
     def closeEvent(self, event):
@@ -194,7 +197,7 @@ class appWindow(QMainWindow):
         
 if __name__ == '__main__':
     app = ApplicationContext()       # 1. Instantiate ApplicationContext
-    test = appWindow()
-    test.show()
+    main = appWindow()
+    main.show()
     exit_code = app.app.exec_()      # 2. Invoke appctxt.app.exec_()
     sys.exit(exit_code)
