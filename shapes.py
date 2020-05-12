@@ -166,7 +166,7 @@ class SizeGripItem(GripItem):
                 p.setX(value.x())
             elif self.direction == Qt.Vertical:
                 p.setY(value.y())
-            self.m_annotation_item.movePoint(self.m_index, p)
+            self.m_annotation_item.resize(self.m_index, p)
             return p
         return super(SizeGripItem, self).itemChange(change, value)
 
@@ -182,7 +182,8 @@ class LineGripItem(GripItem):
         """
         Extends grip items for connecting lines , with hover events and mouse events
         """
-        super(LineGripItem, self).__init__(annotation_item,path=LineGripItem.circle, parent=parent)
+        self.path = LineGripItem.circle
+        super(LineGripItem, self).__init__(annotation_item,path=self.path, parent=parent)
         self.m_index = index
         self.connectedLines = []
         self.tempLine = None
@@ -286,14 +287,17 @@ class NodeItem(QGraphicsSvgItem):
         QGraphicsSvgItem.__init__(self, parent)
         self.m_renderer = QSvgRenderer()
         self.type = unitOpType
-        self.rect = QRectF(0, 0, 250, 300)
 
-        self.file = QFile("svg/" + "Column" + ".svg")
+
+        self.file = QFile("svg/" + "Boiler" + ".svg")
         if not self.file.open(QIODevice.ReadOnly):
             print("Cannot open the file")
             exit(-1)
         self.svghandler = SvgHandler(self.file)
         self.updateRenderer()
+        self.rect = QRectF(0,0,300,400)
+        # self.rect=QRectF(0,0,self.m_renderer.defaultSize().width(),self.m_renderer.defaultSize().height())
+        # self.rect = self.m_renderer.viewBoxF()
         # self.changeColour("red")
         # self.changeStrokeWidth(4)
 
@@ -306,6 +310,13 @@ class NodeItem(QGraphicsSvgItem):
 
         self.lineGripItems = []
         self.sizeGripItems = []
+        self.ds=  0.70875001
+        self.cs = 0.70875001
+        self.dw=self.m_renderer.defaultSize().width()
+        self.dh=self.m_renderer.defaultSize().height()
+        self.vdw = self.m_renderer.viewBoxF().width()
+        self.vdh=self.m_renderer.viewBoxF().height()
+
 
     def changeStrokeWidth(self,value):
         self.svghandler.setStrokeWidth(value)
@@ -340,7 +351,7 @@ class NodeItem(QGraphicsSvgItem):
         self.prepareGeometryChange()
         self.update(self.rect)
 
-    def movePoint(self, i, p):
+    def resize(self, i, p):
         """Move grip item with changing rect of node item
         """
         x = self.boundingRect().x()
@@ -349,12 +360,21 @@ class NodeItem(QGraphicsSvgItem):
         height = self.boundingRect().height()
         p_new = self.sizeGripItems[i].pos()
         self.prepareGeometryChange()
+
         if i == 0 or i == 1:
             self.rect = QRectF(x + p.x() - p_new.x(), y + p.y() - p_new.y(), width - p.x() + p_new.x(),
                                height - p.y() + p_new.y())
 
         if i == 2 or i == 3:
             self.rect = QRectF(x, y, width + p.x() - p_new.x(), height + p.y() - p_new.y())
+
+        self.cs = self.ds*(self.boundingRect().width()/self.vdw)
+        # self.cs =self.s
+        print(self.boundingRect())
+        print(self.cs)
+        offset = (self.cs-self.ds)
+        offset = offset*(self.vdw/self.boundingRect().width())
+        # self.m_renderer.setViewBox(QRectF(offset/2.0,0,self.vdw-offset,self.vdh))
 
         # self.update_rect()
         self.updateSizeGripItem([i])
