@@ -1,8 +1,8 @@
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
-
-from PyQt5.QtCore import pyqtSignal, QSize, Qt
+from PyQt5.QtCore import QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QToolBar, QWidget, QGridLayout, QLineEdit, QToolButton, QScrollArea, QDockWidget, QVBoxLayout
+from PyQt5.QtWidgets import (QBoxLayout, QDockWidget, QGridLayout, QLineEdit,
+                             QScrollArea, QToolButton, QWidget)
 
 from .data import defaultToolbarItems, toolbarItems
 from .funcs import grouper
@@ -10,68 +10,90 @@ from .layout import flowLayout
 
 resourceManager = ApplicationContext()
 
-class toolbar(QToolBar):
+class toolbar(QDockWidget):
     toolbuttonClicked = pyqtSignal(dict)
     
     def __init__(self, parent = None):
         super(toolbar, self).__init__(parent)
-        self.toolbarItems = defaultToolbarItems
-        # self.widget = QWidget(self)
-        # self.layout = QVBoxLayout(self.widget)
-        self.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
+        self.toolbarButtonDict = dict()
+        self.toolbarItems(defaultToolbarItems)
+        self.diagAreaLayout = None
         
-        self.searchBox = QLineEdit(self)
-        # self.searchBox = QLineEdit(self.widget)
+        self.setFeatures(QDockWidget.DockWidgetFloatable | QDockWidget.DockWidgetMovable)
+        
+        self.widget = QWidget(self)
+        self.layout = QBoxLayout(QBoxLayout.TopToBottom, self.widget)
+        self.setAllowedAreas(Qt.AllDockWidgetAreas)
+        
+        self.searchBox = QLineEdit(self.widget)
+        
         self.searchBox.textChanged.connect(self.searchQuery)
-        self.addWidget(self.searchBox)
-        # self.layout.addWidget(self.searchBox)
+        self.layout.addWidget(self.searchBox, alignment=Qt.AlignHCenter)
         
-        self.addSeparator()
         self.diagArea = QScrollArea(self)
-        self.addWidget(self.diagArea)
-        # self.layout.addWidget(self.diagArea)
+        self.layout.addWidget(self.diagArea)
         self.diagAreaWidget = QWidget()
-        self.diagAreaWidget.setFixedWidth(200)
-        # self.setWidget(self.widget)
+
+        self.setWidget(self.widget)
               
-    def populateToolbar(self):
-        # layout = QGridLayout(self.diagAreaWidget)
-        # n = self.width() // 45
-        # for i, items in enumerate(grouper(n, self.toolbarItems)):
-        #     for j, item in enumerate(items):
-        #         if item is not None:
-        #             item = toolbarItems[item]
-        #             button = toolbarButton(self, item)
-        #             button.clicked.connect(lambda : self.toolbuttonClicked.emit(item))
-        #             layout.addWidget(button, i, j, 1, 1, alignment=Qt.AlignHCenter)
-        layout = flowLayout(self.diagAreaWidget)
-        for item in self.toolbarItems:
-            obj = toolbarItems[item]
-            button = toolbarButton(self, obj)
-            button.clicked.connect(lambda : self.toolbuttonClicked.emit(obj))
-            layout.addWidget(button)
+    def populateToolbar(self, list):
+        if self.diagAreaLayout:
+            self.diagAreaLayout.deleteLater()
+        self.diagAreaLayout = flowLayout(self.diagAreaWidget)
+        for item in list:
+            self.diagAreaLayout.addWidget(self.toolbarButtonDict[item])
         self.diagArea.setWidget(self.diagAreaWidget)
             
     def searchQuery(self):
         # shorten toolbaritems list with search items
         # self.populateToolbar() # populate with toolbar items
-        text = self.searchBox.toPlainText()
+        text = self.searchBox.text()
         if text == '':
-            self.toolbarItems = defaultToolbarItems
+            self.populateToolbar(self.toolbarItemList)
         else:
             pass
             #implement shortlisting
-    
+
     def resize(self):
-        pass
+        parent = self.parentWidget()
+        # print(self.orientation())
+        if parent.dockWidgetArea in [Qt.TopDockWidgetArea, Qt.BottomDockWidgetArea] and not self.isFloating():
+            self.layout.setDirection(QBoxLayout.LeftToRight)
+            self.setFixedHeight(.12*parent.height())
+            self.setFixedWidth(parent.width())
+            self.diagAreaWidget.setFixedHeight(.12*parent.height() - 45)
+        else:
+            self.layout.setDirection(QBoxLayout.TopToBottom)
+            self.setFixedWidth(.12*parent.width())
+            self.setFixedHeight(self.height())
+            self.diagAreaWidget.setFixedWidth(.12*parent.width() - 45)
     
     def resizeEvent(self, event):
-        self.resize()
-        self.setFixedWidth(.11*self.parentWidget().width())
-        self.diagAreaWidget.setFixedWidth(.11*self.parentWidget().width() - 30)
-        self.diagArea.setFixedHeight(.7*self.parentWidget().height())
+        parent = self.parentWidget()
+        self.layout.setDirection(QBoxLayout.TopToBottom)
+        self.setFixedWidth(.12*parent.width())
+        self.setFixedHeight(self.height())
+        width = .12*parent.width() - 45
+        self.diagAreaWidget.setFixedWidth(width)
+        self.diagAreaWidget.setFixedHeight(self.diagAreaLayout.heightForWidth(width))
         return super(toolbar, self).resizeEvent(event)
 
+    # @property
+    # def toolbarItems(self):
+    #     return self._toolbarItems
+    
+    # @toolbarItems.setter
+    def toolbarItems(self, items):
+        for item in items:
+            obj = toolbarItems[item]
+            button = toolbarButton(self, obj)
+            button.clicked.connect(lambda : self.toolbuttonClicked.emit(obj))
+            self.toolbarButtonDict[item] = button
+            
+    @property
+    def toolbarItemList(self):
+        return self.toolbarButtonDict.keys()
+            
 class toolbarButton(QToolButton):
     
     def __init__(self, parent = None, item = None):
@@ -79,5 +101,10 @@ class toolbarButton(QToolButton):
         self.setIcon(QIcon(resourceManager.get_resource(f'toolbar/{item["icon"]}')))
         self.setIconSize(QSize(40, 40))
         self.setText(f'item["name"]')
-        self.setFixedSize(30, 30)
+        # self.setFixedSize(30, 30)
+
+    def sizeHint(self):
+        return self.minimumSizeHint()
     
+    def minimumSizeHint(self):
+        return QSize(30, 30)

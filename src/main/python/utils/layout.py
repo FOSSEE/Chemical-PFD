@@ -9,7 +9,6 @@ class flowLayout(QLayout):
             self.setContentsMargins(margin, margin, margin, margin)
 
         self.setSpacing(spacing)
-
         self.itemList = []
 
     def __del__(self):
@@ -48,7 +47,7 @@ class flowLayout(QLayout):
     def setGeometry(self, rect):
         super(flowLayout, self).setGeometry(rect)
         self.doLayout(rect, False)
-
+        
     def sizeHint(self):
         return self.minimumSize()
 
@@ -70,8 +69,8 @@ class flowLayout(QLayout):
 
         for item in self.itemList:
             wid = item.widget()
-            spaceX = self.spacing() + wid.style().layoutSpacing(QSizePolicy.PushButton, QSizePolicy.PushButton, Qt.Horizontal)
-            spaceY = self.spacing() + wid.style().layoutSpacing(QSizePolicy.PushButton, QSizePolicy.PushButton, Qt.Vertical)
+            spaceX = self.spacing() + wid.style().layoutSpacing(QSizePolicy.ToolButton, QSizePolicy.ToolButton, Qt.Horizontal)
+            spaceY = self.spacing() + wid.style().layoutSpacing(QSizePolicy.ToolButton, QSizePolicy.ToolButton, Qt.Vertical)
             nextX = x + item.sizeHint().width() + spaceX
             if nextX - spaceX > rect.right() and lineHeight > 0:
                 x = rect.x()

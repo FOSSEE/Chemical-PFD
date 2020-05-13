@@ -22,11 +22,10 @@ class appWindow(QMainWindow):
     """
     def __init__(self, parent=None):
         super(appWindow, self).__init__(parent)
-        self.mainWidget = QWidget(self) #create new widget
         
         #create the menu bar
         titleMenu = self.menuBar() #fetch reference to current menu bar
-        self.mainWidget.setObjectName("Main Widget")
+        # self.mainWidget.setObjectName("Main Widget")
         
         self.menuFile = titleMenu.addMenu('File') #File Menu
         self.menuFile.addAction("New", self.newProject)
@@ -36,19 +35,12 @@ class appWindow(QMainWindow):
         self.menuGenerate = titleMenu.addMenu('Generate') #Generate menu
         self.menuGenerate.addAction("Image", self.saveImage)
         self.menuGenerate.addAction("Report", self.generateReport)
-                
-        # create new layout for the main widget
-        mainLayout = QHBoxLayout()
-        mainLayout.setObjectName("Main Layout")
         
         self.mdi = QMdiArea(self) #create area for files to be displayed
         self.mdi.setObjectName('mdi area')
         
         #create toolbar and add the toolbar plus mdi to layout
         self.createToolbar()
-        # mainLayout.addWidget(self.toolbar)
-        mainLayout.addWidget(QSplitter(Qt.Vertical, self))
-        mainLayout.addWidget(self.mdi)
         
         #set flags so that window doesnt look weird
         self.mdi.setOption(QMdiArea.DontMaximizeSubWindowOnActivation, True) 
@@ -57,19 +49,20 @@ class appWindow(QMainWindow):
         self.mdi.setDocumentMode(False)
         
         #declare main window layout
-        self.mainWidget.setLayout(mainLayout)
-        self.setCentralWidget(self.mainWidget)
+        # self.mainWidget.setLayout(mainLayout)
+        self.setCentralWidget(self.mdi)
         self.resize(1280, 720) #set collapse dim
         self.mdi.subWindowActivated.connect(self.tabSwitched)
+        
                 
     def createToolbar(self):
         #place holder for toolbar with fixed width, layout may change
-        self.toolbar = toolbar(self.mainWidget)
+        self.toolbar = toolbar(self)
         self.toolbar.setObjectName("Toolbar")
-        self.addToolBar(Qt.LeftToolBarArea, self.toolbar)
-        # self.addDockWidget(Qt.LeftDockWidgetArea, self.toolbar)
+        # self.addToolBar(Qt.LeftToolBarArea, self.toolbar)
+        self.addDockWidget(Qt.LeftDockWidgetArea, self.toolbar)
         self.toolbar.toolbuttonClicked.connect(self.toolButtonClicked)
-        self.toolbar.populateToolbar()
+        self.toolbar.populateToolbar(self.toolbar.toolbarItemList)
         
         
     def toolButtonClicked(self, object):
@@ -135,7 +128,7 @@ class appWindow(QMainWindow):
         #overload resize to also handle resize on file windows inside
         for i in self.mdi.subWindowList():
             i.resizeHandler()
-        # self.toolbar.resize()
+        self.toolbar.resize()
         super(appWindow, self).resizeEvent(event)
         
     def closeEvent(self, event):
