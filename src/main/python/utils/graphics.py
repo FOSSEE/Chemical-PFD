@@ -1,5 +1,7 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QGraphicsView
+from PyQt5.QtGui import QPen
+from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsProxyWidget, QGraphicsItem
+from PyQt5 import QtWidgets
 
 class customView(QGraphicsView):
     """
@@ -12,7 +14,24 @@ class customView(QGraphicsView):
             super(customView, self).__init__(parent)
         self._zoom = 1
         self.setDragMode(True)
+        self.setAcceptDrops(True)
+    
+    def dragEnterEvent(self, QDragEnterEvent):
+        if QDragEnterEvent.mimeData().hasText():
+            QDragEnterEvent.acceptProposedAction()
         
+    def dragMoveEvent(self, QDragMoveEvent):
+        if QDragMoveEvent.mimeData().hasText():
+            QDragMoveEvent.acceptProposedAction()
+    
+    def dropEvent(self, QDropEvent):
+        if QDropEvent.mimeData().hasText():     
+            graphic = getattr(QtWidgets, QDropEvent.mimeData().text())(QDropEvent.pos().x(), QDropEvent.pos().y(), 300, 300)
+            graphic.setPen(QPen(Qt.black, 2))
+            graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
+            self.scene().addItem(graphic) 
+            QDropEvent.acceptProposedAction()
+     
     def wheelEvent(self, QWheelEvent):
         #overload wheelevent, to zoom if control is pressed, else scroll normally
         if Qt.ControlModifier: #check if control is pressed
@@ -39,3 +58,23 @@ class customView(QGraphicsView):
         temp = self.zoom
         self._zoom = value
         self.scale(self.zoom / temp, self.zoom / temp)
+        
+class customScene(QGraphicsScene):
+    # def __init__(self, parent = None):
+    #     super(customScene, self).__init__(parent)
+    def dragEnterEvent(self, e):
+        e.acceptProposedAction()
+
+    def dropEvent(self, e):
+        # find item at these coordinates
+        item = self.itemAt(e.scenePos())
+        if item.setAcceptDrops == True: 
+            # pass on event to item at the coordinates
+            try:
+               item.dropEvent(e)
+            except RuntimeError: 
+                pass #This will supress a Runtime Error generated when dropping into a widget with no MyProxy        
+
+    def dragMoveEvent(self, e):
+        e.acceptProposedAction()
+        

@@ -1,8 +1,8 @@
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
-from PyQt5.QtCore import QSize, Qt, pyqtSignal
-from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import QSize, Qt, pyqtSignal, QMimeData
+from PyQt5.QtGui import QIcon, QDrag
 from PyQt5.QtWidgets import (QBoxLayout, QDockWidget, QGridLayout, QLineEdit,
-                             QScrollArea, QToolButton, QWidget)
+                             QScrollArea, QToolButton, QWidget, QApplication)
 
 from .data import defaultToolbarItems, toolbarItems
 from .funcs import grouper
@@ -100,9 +100,31 @@ class toolbarButton(QToolButton):
         super(toolbarButton, self).__init__(parent)
         self.setIcon(QIcon(resourceManager.get_resource(f'toolbar/{item["icon"]}')))
         self.setIconSize(QSize(40, 40))
-        self.setText(f'item["name"]')
-        # self.setFixedSize(30, 30)
+        self.dragStartPosition = 0
+        self.itemObject = item['object']
+        self.setText(item["name"])
+        self.setToolTip(item["name"])
 
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            # if event.wasHeld:
+            self.dragStartPosition = event.pos()
+            # else:
+            #     # super(toolbarButton, self).mousePressEvent(event)
+            #     self.clicked.emit()
+    
+    def mouseMoveEvent(self, event):
+        if not (event.buttons() and Qt.LeftButton):
+            return
+        if (event.pos() - self.dragStartPosition).manhattanLength() < QApplication.startDragDistance():
+            return
+        
+        drag = QDrag(self)
+        mimeData = QMimeData()
+        mimeData.setText(self.itemObject)
+        drag.setMimeData(mimeData)
+        drag.exec(Qt.CopyAction)
+        
     def sizeHint(self):
         return self.minimumSizeHint()
     

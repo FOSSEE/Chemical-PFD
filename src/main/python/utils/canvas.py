@@ -2,12 +2,11 @@ import pickle
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QBrush, QPalette
-from PyQt5.QtWidgets import (QFileDialog, QApplication,
-                             QGraphicsScene, QGraphicsView, QHBoxLayout, QMenu,
+from PyQt5.QtWidgets import (QFileDialog, QApplication, QHBoxLayout, QMenu,
                              QTabWidget, QWidget, QSpacerItem, QStyle)
 
 from . import dialogs
-from .graphics import customView
+from .graphics import customView, customScene
 from .data import paperSizes, ppiList, sheetDimensionList
 
 class canvas(QWidget):
@@ -28,7 +27,7 @@ class canvas(QWidget):
         # when we will draw items on this, this might be changed if QGraphicScene is subclassed.
         
         #set layout and background color
-        self.painter = QGraphicsScene()        
+        self.painter = customScene()        
         self.painter.setBackgroundBrush(QBrush(Qt.white)) #set white background
         
         self.view = customView(self.painter, self) #create a viewport for the canvas board
