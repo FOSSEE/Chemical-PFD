@@ -64,7 +64,6 @@ class appWindow(QMainWindow):
         self.toolbar.toolbuttonClicked.connect(self.toolButtonClicked)
         self.toolbar.populateToolbar(self.toolbar.toolbarItemList)
         
-        
     def toolButtonClicked(self, object):
         currentDiagram = self.mdi.currentSubWindow().tabber.currentWidget().painter
         if currentDiagram:

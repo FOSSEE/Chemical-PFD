@@ -60,8 +60,6 @@ class customView(QGraphicsView):
         self.scale(self.zoom / temp, self.zoom / temp)
         
 class customScene(QGraphicsScene):
-    # def __init__(self, parent = None):
-    #     super(customScene, self).__init__(parent)
     def dragEnterEvent(self, e):
         e.acceptProposedAction()
 
