@@ -106,12 +106,9 @@ class toolbarButton(QToolButton):
         self.setToolTip(item["name"])
 
     def mousePressEvent(self, event):
+        super(toolbarButton, self).mousePressEvent(event)
         if event.button() == Qt.LeftButton:
-            # if event.wasHeld:
             self.dragStartPosition = event.pos()
-            # else:
-            #     # super(toolbarButton, self).mousePressEvent(event)
-            #     self.clicked.emit()
     
     def mouseMoveEvent(self, event):
         if not (event.buttons() and Qt.LeftButton):

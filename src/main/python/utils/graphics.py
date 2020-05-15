@@ -25,8 +25,8 @@ class customView(QGraphicsView):
             QDragMoveEvent.acceptProposedAction()
     
     def dropEvent(self, QDropEvent):
-        if QDropEvent.mimeData().hasText():     
-            graphic = getattr(QtWidgets, QDropEvent.mimeData().text())(QDropEvent.pos().x(), QDropEvent.pos().y(), 300, 300)
+        if QDropEvent.mimeData().hasText():
+            graphic = getattr(QtWidgets, QDropEvent.mimeData().text())(QDropEvent.pos().x()-150, QDropEvent.pos().y()-150, 300, 300)
             graphic.setPen(QPen(Qt.black, 2))
             graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
             self.scene().addItem(graphic) 
