@@ -3,10 +3,12 @@ from PyQt5.QtCore import QSize, Qt, pyqtSignal, QMimeData
 from PyQt5.QtGui import QIcon, QDrag
 from PyQt5.QtWidgets import (QBoxLayout, QDockWidget, QGridLayout, QLineEdit,
                              QScrollArea, QToolButton, QWidget, QApplication)
+from re import search, IGNORECASE
 
-from .data import defaultToolbarItems, toolbarItems
+from .data import toolbarItems
 from .funcs import grouper
 from .layout import flowLayout
+
 
 resourceManager = ApplicationContext()
 
@@ -16,8 +18,7 @@ class toolbar(QDockWidget):
     def __init__(self, parent = None):
         super(toolbar, self).__init__(parent)
         self.toolbarButtonDict = dict()
-        self.toolbarItems(defaultToolbarItems)
-        self.diagAreaLayout = None
+        self.toolbarItems(toolbarItems.keys())
         
         self.setFeatures(QDockWidget.DockWidgetFloatable | QDockWidget.DockWidgetMovable)
         
@@ -33,13 +34,16 @@ class toolbar(QDockWidget):
         self.diagArea = QScrollArea(self)
         self.layout.addWidget(self.diagArea)
         self.diagAreaWidget = QWidget()
+        self.diagAreaLayout = flowLayout(self.diagAreaWidget)
 
         self.setWidget(self.widget)
-              
+    
+    def clearLayout(self):
+        for i in reversed(range(self.diagAreaLayout.count())): 
+            self.diagAreaLayout.itemAt(i).widget().setParent(self)
+            
     def populateToolbar(self, list):
-        if self.diagAreaLayout:
-            self.diagAreaLayout.deleteLater()
-        self.diagAreaLayout = flowLayout(self.diagAreaWidget)
+        self.clearLayout()
         for item in list:
             self.diagAreaLayout.addWidget(self.toolbarButtonDict[item])
         self.diagArea.setWidget(self.diagAreaWidget)
@@ -51,12 +55,10 @@ class toolbar(QDockWidget):
         if text == '':
             self.populateToolbar(self.toolbarItemList)
         else:
-            pass
-            #implement shortlisting
+            self.populateToolbar(filter(lambda x: search(text, x, IGNORECASE), self.toolbarItemList))
 
     def resize(self):
         parent = self.parentWidget()
-        # print(self.orientation())
         if parent.dockWidgetArea in [Qt.TopDockWidgetArea, Qt.BottomDockWidgetArea] and not self.isFloating():
             self.layout.setDirection(QBoxLayout.LeftToRight)
             self.setFixedHeight(.12*parent.height())
@@ -78,11 +80,6 @@ class toolbar(QDockWidget):
         self.diagAreaWidget.setFixedHeight(self.diagAreaLayout.heightForWidth(width))
         return super(toolbar, self).resizeEvent(event)
 
-    # @property
-    # def toolbarItems(self):
-    #     return self._toolbarItems
-    
-    # @toolbarItems.setter
     def toolbarItems(self, items):
         for item in items:
             obj = toolbarItems[item]
