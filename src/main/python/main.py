@@ -144,7 +144,9 @@ class appWindow(QMainWindow):
             
     @property
     def activeFiles(self):
-        return [i for i in self.mdi.subWindowList() if i.tabCount]
+        for i in self.mdi.subWindowList():
+            if i.tabCount:
+                yield i
     
     @property
     def count(self):

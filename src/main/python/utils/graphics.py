@@ -23,6 +23,9 @@ class customView(QGraphicsView):
     def dragMoveEvent(self, QDragMoveEvent):
         if QDragMoveEvent.mimeData().hasText():
             QDragMoveEvent.acceptProposedAction()
+            
+    def dragLeaveEvent(self, QDragLeaveEvent):
+        QDragLeaveEvent.accept()
     
     def dropEvent(self, QDropEvent):
         if QDropEvent.mimeData().hasText():

@@ -89,7 +89,8 @@ class toolbar(QDockWidget):
             
     @property
     def toolbarItemList(self):
-        return self.toolbarButtonDict.keys()
+        for i in self.toolbarButtonDict.keys():
+            yield  i
             
 class toolbarButton(QToolButton):
     

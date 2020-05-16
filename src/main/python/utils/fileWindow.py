@@ -187,7 +187,8 @@ class fileWindow(QMdiSubWindow):
     @property
     def tabList(self):
         #returns a list of tabs in the given window
-        return [self.tabber.widget(i) for i in range(self.tabCount)]
+        for i in range(self.tabCount):
+            yield self.tabber.widget(i)
     
     @property
     def tabCount(self):
