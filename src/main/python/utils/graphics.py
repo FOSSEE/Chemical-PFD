@@ -5,7 +5,7 @@ from PyQt5 import QtWidgets
 
 class customView(QGraphicsView):
     """
-    Defines custom QGraphicsView with zoom features, overriding wheel event
+    Defines custom QGraphicsView with zoom features and drag-drop accept event, overriding wheel event
     """
     def __init__(self, scene = None, parent=None):
         if scene is not None: #overloaded constructor
@@ -13,22 +13,28 @@ class customView(QGraphicsView):
         else:
             super(customView, self).__init__(parent)
         self._zoom = 1
-        self.setDragMode(True)
-        self.setAcceptDrops(True)
+        self.setDragMode(True) #sets pannable using mouse
+        self.setAcceptDrops(True) #sets ability to accept drops
     
+    #following four functions are required to be overridden for drag-drop functionality
     def dragEnterEvent(self, QDragEnterEvent):
+        #defines acceptable drop items
         if QDragEnterEvent.mimeData().hasText():
             QDragEnterEvent.acceptProposedAction()
         
     def dragMoveEvent(self, QDragMoveEvent):
+        #defines acceptable drop items
         if QDragMoveEvent.mimeData().hasText():
             QDragMoveEvent.acceptProposedAction()
             
     def dragLeaveEvent(self, QDragLeaveEvent):
+        #accept any drag leave event, avoid unnecessary logging
         QDragLeaveEvent.accept()
     
     def dropEvent(self, QDropEvent):
+        #defines item drop, fetches text, creates corresponding QGraphicItem and adds it to scene
         if QDropEvent.mimeData().hasText():
+            #QDropEvent.mimeData().text() defines intended drop item, the pos values define position
             graphic = getattr(QtWidgets, QDropEvent.mimeData().text())(QDropEvent.pos().x()-150, QDropEvent.pos().y()-150, 300, 300)
             graphic.setPen(QPen(Qt.black, 2))
             graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
@@ -63,19 +69,9 @@ class customView(QGraphicsView):
         self.scale(self.zoom / temp, self.zoom / temp)
         
 class customScene(QGraphicsScene):
-    def dragEnterEvent(self, e):
-        e.acceptProposedAction()
-
-    def dropEvent(self, e):
-        # find item at these coordinates
-        item = self.itemAt(e.scenePos())
-        if item.setAcceptDrops == True: 
-            # pass on event to item at the coordinates
-            try:
-               item.dropEvent(e)
-            except RuntimeError: 
-                pass #This will supress a Runtime Error generated when dropping into a widget with no MyProxy        
-
-    def dragMoveEvent(self, e):
-        e.acceptProposedAction()
+    """
+    re-implement QGraphicsScene for future functionality 
+    hint: QUndoFramework
+    """
+    pass
         
