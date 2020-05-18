@@ -32,6 +32,10 @@ class appWindow(QMainWindow):
         self.menuFile.addAction("Open", self.openProject)
         self.menuFile.addAction("Save", self.saveProject)
         
+        self.menuEdit = titleMenu.addMenu('Edit')
+        self.undo = self.menuEdit.addAction("Undo")
+        self.redo = self.menuEdit.addAction("Redo")
+        
         self.menuGenerate = titleMenu.addMenu('Generate') #Generate menu
         self.menuGenerate.addAction("Image", self.saveImage)
         self.menuGenerate.addAction("Report", self.generateReport)
@@ -53,7 +57,10 @@ class appWindow(QMainWindow):
         self.setCentralWidget(self.mdi)
         self.resize(1280, 720) #set collapse dim
         self.mdi.subWindowActivated.connect(self.tabSwitched)
-        
+    
+    def updateMenuBar(self):
+        self.undo.setAction(self.activeScene.painter.undoAction)    
+        self.redo.setAction(self.activeScene.painter.redoAction) 
                 
     def createToolbar(self):
         #place holder for toolbar with fixed width, layout may change
@@ -70,7 +77,7 @@ class appWindow(QMainWindow):
             graphic = getattr(QtWidgets, object['object'])(*object['args'])
             graphic.setPen(QPen(Qt.black, 2))
             graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
-            currentDiagram.addItem(graphic) 
+            currentDiagram.addItemPlus(graphic) 
 
     def newProject(self):
         #call to create a new file inside mdi area
@@ -81,9 +88,11 @@ class appWindow(QMainWindow):
             project.newDiagram() #create a new tab in the new file
         project.resizeHandler()
         project.fileCloseEvent.connect(self.fileClosed) #closed file signal to switch to sub window view
+        project.tabChangeEvent.connect(self.updateMenuBar)
         if self.count > 1: #switch to tab view if needed
             self.mdi.setViewMode(QMdiArea.TabbedView)
         project.show()
+        project.tabber.currentWidget().painter.createUndoView(self)
                 
     def openProject(self):
         #show the open file dialog to open a saved file, then unpickle it.
@@ -142,13 +151,17 @@ class appWindow(QMainWindow):
         if self.count <= 2 :
             self.mdi.setViewMode(QMdiArea.SubWindowView)
             
-    @property
+    @property   
     def activeFiles(self):
         return [i for i in self.mdi.subWindowList() if i.tabCount]
     
     @property
     def count(self):
         return len(self.mdi.subWindowList())
+    
+    @property
+    def activeScene(self):
+        return self.mdi.currentSubWindow().tabber.currentWidget()
     
     #Key input handler
     def keyPressEvent(self, event):
@@ -176,16 +189,18 @@ class appWindow(QMainWindow):
                 #todo implement selectAll
                 for item in self.mdi.activeSubWindow().tabber.currentWidget().items:
                     item.setSelected(True)
-                    
-            #todo copy, paste, undo redo
             
+            #todo copy, paste, undo redo
+            else:
+                return
+            event.accept()
             
         elif event.key() == Qt.Key_Delete or event.key() == Qt.Key_Backspace:
-            for item in self.mdi.activeSubWindow().tabber.currentWidget().painter.selectedItems():
-                item.setEnabled(False)
+            for item in reversed(self.mdi.activeSubWindow().tabber.currentWidget().painter.selectedItems()):
+                # self.mdi.currentSubWindow().tabber.currentWidget().deleteItem(item)
+                pass
                 #donot delete, to manage undo redo
         
-        event.accept()
         
 if __name__ == '__main__':
     app = ApplicationContext()       # 1. Instantiate ApplicationContext

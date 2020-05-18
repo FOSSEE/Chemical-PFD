@@ -100,3 +100,11 @@ def saveEvent(parent = None):
             if not parent.saveProject(): #the parent's saveProject method is called which returns false if saving was cancelled by the user
                 return False
     return True
+
+def showUndoDialog(undoView, parent):
+    dialogBox = QDialog(parent)
+    dialogBox.resize(400, 400)
+    layout = QFormLayout(dialogBox)
+    layout.addWidget(undoView)
+    dialogBox.setWindowTitle("Undo Stack")
+    dialogBox.show()
