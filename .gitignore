@@ -1,0 +1,5 @@
+*.pyc
+src/main/python/experimental/*
+*.pfd
+.vscode
+.vscode/*.json
