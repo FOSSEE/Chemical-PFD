@@ -1,10 +1,11 @@
 from PyQt5.QtCore import Qt, QPointF
 from PyQt5.QtGui import QPen, QKeySequence
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsProxyWidget, QGraphicsItem, QUndoStack, QAction, QUndoView
-from PyQt5 import QtWidgets
 
 from .undo import *
 from .dialogs import showUndoDialog
+
+import shapes
 
 class customView(QGraphicsView):
     """
@@ -42,7 +43,7 @@ class customView(QGraphicsView):
         #defines item drop, fetches text, creates corresponding QGraphicItem and adds it to scene
         if QDropEvent.mimeData().hasText():
             #QDropEvent.mimeData().text() defines intended drop item, the pos values define position
-            graphic = getattr(QtWidgets, QDropEvent.mimeData().text())(QDropEvent.pos().x()-150, QDropEvent.pos().y()-150, 300, 300)
+            graphic = getattr(shapes, QDropEvent.mimeData().text())(QDropEvent.pos().x()-150, QDropEvent.pos().y()-150, 300, 300)
             graphic.setPen(QPen(Qt.black, 2))
             graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
             self.scene().addItemPlus(graphic) 

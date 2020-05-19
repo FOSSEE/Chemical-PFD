@@ -7,13 +7,14 @@ from PyQt5.QtGui import QBrush, QColor, QImage, QPainter, QPalette, QPen
 from PyQt5.QtWidgets import (QComboBox, QFileDialog, QFormLayout, QVBoxLayout,
                              QHBoxLayout, QLabel, QMainWindow, QMenu,
                              QPushButton, QWidget, QMdiArea, QSplitter, QGraphicsItem)
-from PyQt5 import QtWidgets
 
 from utils.canvas import canvas
 from utils.fileWindow import fileWindow
 from utils.data import ppiList, sheetDimensionList
 from utils import dialogs
 from utils.toolbar import toolbar
+
+import shapes
 
 class appWindow(QMainWindow):
     """
@@ -74,7 +75,7 @@ class appWindow(QMainWindow):
     def toolButtonClicked(self, object):
         currentDiagram = self.mdi.currentSubWindow().tabber.currentWidget().painter
         if currentDiagram:
-            graphic = getattr(QtWidgets, object['object'])(*object['args'])
+            graphic = getattr(shapes, object['object'])(*object['args'])
             graphic.setPen(QPen(Qt.black, 2))
             graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
             currentDiagram.addItemPlus(graphic) 
