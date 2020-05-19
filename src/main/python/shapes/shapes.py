@@ -1,38 +1,29 @@
-import random
-
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
 from PyQt5.QtWidgets import QLineEdit, QGraphicsItem, QGraphicsEllipseItem, QGraphicsProxyWidget, QGraphicsPathItem, \
     QGraphicsSceneHoverEvent, QGraphicsColorizeEffect
 from PyQt5.QtGui import QPen, QColor, QFont, QCursor, QPainterPath, QPainter, QDrag, QBrush, QImage
 from PyQt5.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QMimeData, QFile, QIODevice, QRect
-from PyQt5.QtXml import QDomDocument
-from PyQt5.uic.properties import QtGui, QtWidgets
-from xml.dom import minidom
-import re
 
 from line import Line
-from svghandler import SvgHandler
 
 
 class GripItem(QGraphicsPathItem):
     """
-    Extends PyQt5's QGraphicsPathItem to create the general structure of the Grabbable points for resizing shapes.
-    Takes two parameters, reference item (On which the grip items are to appear) and the grip index
+    Extends QGraphicsPathItem to create the structure of the Grabbable points for resizing shapes and connecting lines.
+    Takes two parameters, reference item (On which the grip items are to appear) and the path of the item
     """
+
     def __init__(self, annotation_item, path, parent=None):
         """
         Extends PyQt5's QGraphicsPathItem to create the general structure of the Grabbable points for resizing shapes.
         """
         QGraphicsPathItem.__init__(self, parent)
         self.m_annotation_item = annotation_item
-        # self.m_index = index
-
+        # set path of item
         self.setPath(path)
-
         self.setAcceptHoverEvents(True)
         self.setCursor(QCursor(Qt.PointingHandCursor))
-        # self.setVisible(False)
 
     # def hoverEnterEvent(self, event):
     #     """
@@ -56,15 +47,6 @@ class GripItem(QGraphicsPathItem):
         """
         self.setSelected(False)
         super(GripItem, self).mouseReleaseEvent(event)
-
-    # def itemChange(self, change, value):
-    #     """
-    #     Calls movepoint from reference item, with the index of this grip item
-    #     """
-    #     if change == QGraphicsItem.ItemPositionChange and self.isEnabled():
-    #         self.m_annotation_item.movePoint(self.m_index, value)
-    #     return super(GripItem, self).itemChange(change, value)
-
 
 class SizeGripItem(GripItem):
     """
@@ -96,7 +78,9 @@ class SizeGripItem(GripItem):
         """
         return self._direction
 
-    def update_path(self):
+    def updatePath(self):
+        """updates path of size grip item
+        """
         if self._direction is Qt.Horizontal:
             self.height = self.m_annotation_item.boundingRect().height()
         else:
@@ -105,10 +89,10 @@ class SizeGripItem(GripItem):
         path.addRect(QRectF(0, 0, self.width, self.height))
         self.setPath(path)
 
-    def update_position(self):
-        """updates grip items
+    def updatePosition(self):
+        """updates position of grip items
         """
-        self.update_path()
+        self.updatePath()
         pos = self.m_annotation_item.mapToScene(self.point(self.m_index))
         x = self.m_annotation_item.boundingRect().x()
         y = self.m_annotation_item.boundingRect().y()
@@ -136,9 +120,8 @@ class SizeGripItem(GripItem):
         """
         Changes cursor to horizontal resize or vertical resize depending on the direction of the grip item on mouse enter
         """
-        self.setPen(QPen(QColor("black"), 2))
-        self.setBrush(QColor("red"))
-        # self.setVisible(True)
+        # self.setPen(QPen(QColor("black"), 2))
+        # self.setBrush(QColor("red"))
         if self._direction == Qt.Horizontal:
             self.setCursor(QCursor(Qt.SizeHorCursor))
         else:
@@ -149,17 +132,15 @@ class SizeGripItem(GripItem):
         """
         reverts cursor to default on mouse leave
         """
-        # self.setVisible(False)
-        self.setPen(QPen(Qt.transparent))
-        self.setBrush(Qt.transparent)
+        # self.setPen(QPen(Qt.transparent))
+        # self.setBrush(Qt.transparent)
         self.setCursor(QCursor(Qt.ArrowCursor))
         super(SizeGripItem, self).hoverLeaveEvent(event)
 
     def itemChange(self, change, value):
         """
-        Moves position of grip item on resize or reference circle's position change
+        Moves position of grip item on resize
         """
-
         if change == QGraphicsItem.ItemPositionChange and self.isEnabled():
             p = QPointF(self.pos())
             if self.direction == Qt.Horizontal:
@@ -171,34 +152,34 @@ class SizeGripItem(GripItem):
         return super(SizeGripItem, self).itemChange(change, value)
 
     def removeFromCanvas(self):
+        # used to remove grip item from scene
         if self.scene():
             self.scene().removeItem(self)
 
 
 class LineGripItem(GripItem):
+    """Extends grip items for connecting lines , with hover events and mouse events
+    """
     circle = QPainterPath()
     circle.addEllipse(QRectF(-10, -10, 20, 20))
-    def __init__(self, annotation_item, index, parent=None):
-        """
-        Extends grip items for connecting lines , with hover events and mouse events
-        """
+
+    def __init__(self, annotation_item, index, location, parent=None):
         self.path = LineGripItem.circle
-        super(LineGripItem, self).__init__(annotation_item,path=self.path, parent=parent)
+        super(LineGripItem, self).__init__(annotation_item, path=self.path, parent=parent)
         self.m_index = index
+        self.m_location = location
         self.connectedLines = []
+        # stores current line which is in process
         self.tempLine = None
+        # keep previous hovered item when line drawing in process
         self.previousHoveredItem = None
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
-        # self.setZValue(2)
         self.setPen(QPen(QColor("black"), -1))
-        # self.setBrush(QColor("red"))
-        # self.setVisible(False)
 
     def point(self, index):
         """
         yields a list of positions of grip items in a node item
         """
-        radiusOfGripItem = self.boundingRect().width() / 2
         x = self.m_annotation_item.boundingRect().width()
         y = self.m_annotation_item.boundingRect().height()
         if 0 <= index < 4:
@@ -209,8 +190,7 @@ class LineGripItem(GripItem):
                 QPointF(x, y / 2)
             ][index]
 
-    def update_position(self):
-        # print('updating grip item ', self.m_index)
+    def updatePosition(self):
         pos = self.point(self.m_index)
         x = self.m_annotation_item.boundingRect().x()
         y = self.m_annotation_item.boundingRect().y()
@@ -223,133 +203,122 @@ class LineGripItem(GripItem):
             line.updateLine()
 
     def mousePressEvent(self, mouseEvent):
+        """Handle all mouse press for this item
+        """
         if mouseEvent.button() != Qt.LeftButton:
             return
-        radiusOfGripItem = self.boundingRect().width() / 2
+        # initialize a line and add on scene
         startPoint = endPoint = self.parentItem().mapToScene(self.pos())
-
         self.tempLine = Line(startPoint, endPoint)
+        self.tempLine.setStartGripItem(self)
         self.scene().addItem(self.tempLine)
         super().mousePressEvent(mouseEvent)
 
     def mouseMoveEvent(self, mouseEvent):
+        """Handle all mouse move for this item
+        """
+        #if line get started then update it's end point
         if self.tempLine:
             endPoint = mouseEvent.scenePos()
             self.tempLine.updateLine(endPoint=endPoint)
-        super().mouseMoveEvent(mouseEvent)
+
         item = self.scene().itemAt(mouseEvent.scenePos().x(), mouseEvent.scenePos().y(),
                                    self.m_annotation_item.transform())
-        # print(self.m_annotation_item.transform())
 
         if self.previousHoveredItem and item != self.previousHoveredItem and \
                 item not in self.previousHoveredItem.lineGripItems:
             self.previousHoveredItem.hideGripItem()
+        super().mouseMoveEvent(mouseEvent)
 
         if type(item) == NodeItem:
             self.previousHoveredItem = item
             item.showGripItem()
 
     def mouseReleaseEvent(self, mouseEvent):
+        """Handle all mouse release for this item"""
+        super().mouseReleaseEvent(mouseEvent)
+        # set final position of line
         if self.tempLine:
             item = self.scene().itemAt(mouseEvent.scenePos().x(), mouseEvent.scenePos().y(),
                                        self.transform())
-            if type(item) == LineGripItem:
+
+            if type(item) == LineGripItem and item != self:
+                self.tempLine.setEndGripItem(item)
                 endPoint = item.parentItem().mapToScene(item.pos())
                 self.tempLine.updateLine(endPoint=endPoint)
                 self.connectedLines.append(self.tempLine)
                 item.connectedLines.append(self.tempLine)
-                self.tempLine.setStartGripItem(self)
-                self.tempLine.setEndGripItem(item)
 
-            else:
+
+
+            elif self.tempLine and self.scene():
                 self.scene().removeItem(self.tempLine)
-        super().mouseReleaseEvent(mouseEvent)
         self.tempLine = None
         self.previousHoveredItem = None
 
     def removeConnectedLines(self):
+        """removes all connected line to grip"""
         for line in self.connectedLines:
             line.removeFromCanvas()
 
     def show(self):
+        """ shows line grip item
+        """
         self.setPen(QPen(QColor("black"), 2))
         self.setBrush(QColor("red"))
 
     def hide(self):
+        """ hides line grip item
+        """
         if (self.parentItem().isSelected() or self.isSelected()) is False:
             self.setPen(QPen(Qt.transparent))
             self.setBrush(Qt.transparent)
 
 
 class NodeItem(QGraphicsSvgItem):
+    """
+        Extends PyQt5's QGraphicsSvgItem to create the basic structure of shapes with given unit operation type
+    """
 
-    def __init__(self, unitOpType, parent=None):
+    def __init__(self, unitOperationType, parent=None):
         QGraphicsSvgItem.__init__(self, parent)
-        self.m_renderer = QSvgRenderer()
-        self.type = unitOpType
-
-
-        self.file = QFile("svg/" + "Boiler" + ".svg")
-        if not self.file.open(QIODevice.ReadOnly):
-            print("Cannot open the file")
-            exit(-1)
-        self.svghandler = SvgHandler(self.file)
-        self.updateRenderer()
-        self.rect = QRectF(0,0,300,400)
-        # self.rect=QRectF(0,0,self.m_renderer.defaultSize().width(),self.m_renderer.defaultSize().height())
-        # self.rect = self.m_renderer.viewBoxF()
-        # self.changeColour("red")
-        # self.changeStrokeWidth(4)
-
-        self.setZValue(2)
-        self.setAcceptHoverEvents(True)
-        self.setAcceptDrops(True)
+        self.m_type = unitOperationType
+        self.m_renderer = QSvgRenderer("svg/" + unitOperationType + ".svg")
+        self.setSharedRenderer(self.m_renderer)
+        # set initial size of item
+        self.width = 100
+        self.height = 150
+        self.rect = QRectF(-self.width / 2, -self.height / 2, self.width, self.height)
+        # set graphical settings for this item
         self.setFlags(QGraphicsSvgItem.ItemIsMovable |
                       QGraphicsSvgItem.ItemIsSelectable |
                       QGraphicsSvgItem.ItemSendsGeometryChanges)
-
+        self.setAcceptHoverEvents(True)
+        self.setZValue(2)
+        # grip items connected to this item
         self.lineGripItems = []
         self.sizeGripItems = []
-        self.ds=  0.70875001
-        self.cs = 0.70875001
-        self.dw=self.m_renderer.defaultSize().width()
-        self.dh=self.m_renderer.defaultSize().height()
-        self.vdw = self.m_renderer.viewBoxF().width()
-        self.vdh=self.m_renderer.viewBoxF().height()
-
-
-    def changeStrokeWidth(self,value):
-        self.svghandler.setStrokeWidth(value)
-        self.updateRenderer()
-
-    def changeColour(self,value):
-        self.svghandler.setColor(value)
-        self.updateRenderer()
-        """graphics effect can also used to change colour of an svg image
-        """
-        # self._effect = QGraphicsColorizeEffect()
-        # self._effect.setColor(Qt.red)
-        # self._effect.setStrength(1)
-        # self.setGraphicsEffect(self._effect)
-
-    def updateRenderer(self):
-        byteArray = self.svghandler.doc.toByteArray()
-        self.m_renderer.load(byteArray)
-        self.setSharedRenderer(self.m_renderer)
 
     def boundingRect(self):
+        """Overrides QGraphicsSvgItem's boundingRect() virtual public function and
+        returns a valid bounding
+        """
         return self.rect
 
     def paint(self, painter, option, widget):
+        """
+            Paints the contents of an item in local coordinates.
+            :param painter: QPainter instance
+            :param option: QStyleOptionGraphicsItem instance
+            :param widget: QWidget instance
+        """
         if not self.m_renderer:
             QGraphicsSvgItem.paint(self, painter, option, widget)
         self.m_renderer.render(painter, self.boundingRect())
-
-    def update_rect(self):
-        """Update rect of node item
-        """
-        self.prepareGeometryChange()
-        self.update(self.rect)
+        if self.isSelected():
+            self.showGripItem()
+        else:
+            self.hideGripItem()
 
     def resize(self, i, p):
         """Move grip item with changing rect of node item
@@ -368,22 +337,26 @@ class NodeItem(QGraphicsSvgItem):
         if i == 2 or i == 3:
             self.rect = QRectF(x, y, width + p.x() - p_new.x(), height + p.y() - p_new.y())
 
-        self.cs = self.ds*(self.boundingRect().width()/self.vdw)
-        # self.cs =self.s
-        print(self.boundingRect())
-        print(self.cs)
-        offset = (self.cs-self.ds)
-        offset = offset*(self.vdw/self.boundingRect().width())
-        # self.m_renderer.setViewBox(QRectF(offset/2.0,0,self.vdw-offset,self.vdh))
-
-        # self.update_rect()
         self.updateSizeGripItem([i])
         self.updateLineGripItem()
 
     def addGripItem(self):
         """adds grip items
         """
-        if self.scene() and not self.lineGripItems:
+        if self.scene():
+            # add grip items for connecting lines
+            for i, (location) in enumerate(
+                    (
+                            "top",
+                            "left",
+                            "bottom",
+                            "right"
+                    )
+            ):
+                item = LineGripItem(self, i, location, parent=self)
+                self.scene().addItem(item)
+                self.lineGripItems.append(item)
+            # add grip for resize it
             for i, (direction) in enumerate(
                     (
                             Qt.Vertical,
@@ -392,29 +365,29 @@ class NodeItem(QGraphicsSvgItem):
                             Qt.Horizontal,
                     )
             ):
-                item = LineGripItem(self, i)
-                item.setParentItem(self)
-                self.scene().addItem(item)
-                self.lineGripItems.append(item)
                 item = SizeGripItem(self, i, direction)
                 self.scene().addItem(item)
                 self.sizeGripItems.append(item)
 
     def updateLineGripItem(self, index_no_updates=None):
+        """
+        updates line grip items
+        """
         # index_no_updates = index_no_updates or []
         for item in self.lineGripItems:
-            item.update_position()
+            item.updatePosition()
 
     def updateSizeGripItem(self, index_no_updates=None):
-        """updates grip items
+        """
+        updates size grip items
         """
         index_no_updates = index_no_updates or []
         for i, item in zip(range(len(self.sizeGripItems)), self.sizeGripItems):
             if i not in index_no_updates:
-                item.update_position()
+                item.updatePosition()
 
     def itemChange(self, change, value):
-        """Overloads and extends QGraphicsSvgItem to also update gripitem
+        """Overloads and extends QGraphicsSvgItem to also update grip items
         """
         if change == QGraphicsItem.ItemPositionHasChanged:
             self.updateLineGripItem()
@@ -426,12 +399,6 @@ class NodeItem(QGraphicsSvgItem):
             self.updateSizeGripItem()
             return
         return super(NodeItem, self).itemChange(change, value)
-
-    def addOnCanvas(self, scene):
-        """This function is used to add Node Item on canvas
-        :return:
-        """
-        scene.addItem(self)
 
     def removeFromCanvas(self):
         """This function is used to remove item from canvas
@@ -452,19 +419,21 @@ class NodeItem(QGraphicsSvgItem):
     def hoverLeaveEvent(self, event):
         """defines shape highlighting on Mouse Leave
         """
-        # if self.isSelected() is False:
         self.hideGripItem()
         super(NodeItem, self).hoverLeaveEvent(event)
 
     def showGripItem(self):
+        """shows grip items of svg item
+        """
         for item in self.lineGripItems:
             item.setPen(QPen(QColor("black"), 2))
             item.setBrush(QColor("red"))
         for item in self.sizeGripItems:
             item.setPen(QPen(QColor("black"), 2))
-            # item.setBrush(QColor("red"))
 
     def hideGripItem(self):
+        """hide grip items of svg item
+        """
         for item in self.lineGripItems:
             if item.isSelected() is False:
                 item.setPen(QPen(Qt.transparent))
@@ -472,4 +441,3 @@ class NodeItem(QGraphicsSvgItem):
         for item in self.sizeGripItems:
             item.setPen(QPen(Qt.transparent))
             item.setBrush(Qt.transparent)
-
