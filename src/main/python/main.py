@@ -34,8 +34,10 @@ class appWindow(QMainWindow):
         self.menuFile.addAction("Save", self.saveProject)
         
         self.menuEdit = titleMenu.addMenu('Edit')
-        self.undo = self.menuEdit.addAction("Undo")
-        self.redo = self.menuEdit.addAction("Redo")
+        self.undo = self.menuEdit.addAction("Undo", lambda x=self: x.activeScene.painter.undoAction.trigger())
+        self.redo = self.menuEdit.addAction("Redo", lambda x=self: x.activeScene.painter.redoAction.trigger())
+        
+        self.menuEdit.addAction("Show Undo Stack", lambda x=self: x.activeScene.painter.createUndoView(self) )
         
         self.menuGenerate = titleMenu.addMenu('Generate') #Generate menu
         self.menuGenerate.addAction("Image", self.saveImage)
@@ -54,14 +56,15 @@ class appWindow(QMainWindow):
         self.mdi.setDocumentMode(False)
         
         #declare main window layout
-        # self.mainWidget.setLayout(mainLayout)
         self.setCentralWidget(self.mdi)
         self.resize(1280, 720) #set collapse dim
         self.mdi.subWindowActivated.connect(self.tabSwitched)
     
     def updateMenuBar(self):
-        self.undo.setAction(self.activeScene.painter.undoAction)    
-        self.redo.setAction(self.activeScene.painter.redoAction) 
+        # self.undo.setAction(self.activeScene.painter.undoAction)
+        self.undo.triggered(self.activeScene.painter.undoAction.trigger)
+        self.redo.triggered(self.activeScene.painter.redoAction.trigger)
+        # self.redo.setAction(self.activeScene.painter.redoAction) 
                 
     def createToolbar(self):
         #place holder for toolbar with fixed width, layout may change
@@ -93,7 +96,6 @@ class appWindow(QMainWindow):
         if self.count > 1: #switch to tab view if needed
             self.mdi.setViewMode(QMdiArea.TabbedView)
         project.show()
-        project.tabber.currentWidget().painter.createUndoView(self)
                 
     def openProject(self):
         #show the open file dialog to open a saved file, then unpickle it.

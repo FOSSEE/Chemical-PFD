@@ -100,9 +100,6 @@ class customScene(QGraphicsScene):
     
     def createUndoView(self, parent):
         undoView = QUndoView(self.undoStack, parent)
-        # undoView.resize(400, 400)
-        # undoView.show()
-        # undoView.setAttribute(Qt.WA_QuitOnClose, False)
         showUndoDialog(undoView, parent)
 
     def deleteItem(self):
