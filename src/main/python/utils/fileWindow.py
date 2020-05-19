@@ -18,6 +18,7 @@ class fileWindow(QMdiSubWindow):
     canvases. Pre-Defined so that a file can be instantly created without defining the structure again.
     """
     fileCloseEvent = pyqtSignal(int)
+    tabChangeEvent = pyqtSignal()
     
     def __init__(self, parent = None, title = 'New Project', size = 'A4', ppi = '72'):
         super(fileWindow, self).__init__(parent)
@@ -203,6 +204,7 @@ class fileWindow(QMdiSubWindow):
     def changeTab(self, currentIndex):
         #placeholder function to detect tab change
         self.resizeHandler()        
+        self.tabChangeEvent.emit()
     
     def closeTab(self, currentIndex):
         #show save alert on tab close

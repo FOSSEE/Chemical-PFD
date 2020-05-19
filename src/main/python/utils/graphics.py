@@ -1,7 +1,11 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPen
-from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsProxyWidget, QGraphicsItem
-from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt, QPointF
+from PyQt5.QtGui import QPen, QKeySequence
+from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsProxyWidget, QGraphicsItem, QUndoStack, QAction, QUndoView
+
+from .undo import *
+from .dialogs import showUndoDialog
+
+import shapes
 
 class customView(QGraphicsView):
     """
@@ -15,6 +19,10 @@ class customView(QGraphicsView):
         self._zoom = 1
         self.setDragMode(True) #sets pannable using mouse
         self.setAcceptDrops(True) #sets ability to accept drops
+        if scene:
+            self.addAction(scene.undoAction)
+            self.addAction(scene.redoAction)
+            self.addAction(scene.deleteAction)
     
     #following four functions are required to be overridden for drag-drop functionality
     def dragEnterEvent(self, QDragEnterEvent):
@@ -35,10 +43,10 @@ class customView(QGraphicsView):
         #defines item drop, fetches text, creates corresponding QGraphicItem and adds it to scene
         if QDropEvent.mimeData().hasText():
             #QDropEvent.mimeData().text() defines intended drop item, the pos values define position
-            graphic = getattr(QtWidgets, QDropEvent.mimeData().text())(QDropEvent.pos().x()-150, QDropEvent.pos().y()-150, 300, 300)
+            graphic = getattr(shapes, QDropEvent.mimeData().text())(QDropEvent.pos().x()-150, QDropEvent.pos().y()-150, 300, 300)
             graphic.setPen(QPen(Qt.black, 2))
             graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
-            self.scene().addItem(graphic) 
+            self.scene().addItemPlus(graphic) 
             QDropEvent.acceptProposedAction()
      
     def wheelEvent(self, QWheelEvent):
@@ -73,5 +81,56 @@ class customScene(QGraphicsScene):
     re-implement QGraphicsScene for future functionality 
     hint: QUndoFramework
     """
-    pass
+    def __init__(self, *args, parent=None):
+        super(customScene, self).__init__(*args,  parent=parent)
         
+        self.undoStack = QUndoStack(self)
+        self.createActions()
+        
+
+    def createActions(self):
+        self.deleteAction = QAction("Delete Item", self)
+        self.deleteAction.setShortcut(Qt.Key_Delete)
+        self.deleteAction.triggered.connect(self.deleteItem)
+        
+        self.undoAction = self.undoStack.createUndoAction(self, "Undo")
+        self.undoAction.setShortcut(QKeySequence.Undo)
+        self.redoAction = self.undoStack.createRedoAction(self, "Redo")
+        self.redoAction.setShortcut(QKeySequence.Redo)
+    
+    def createUndoView(self, parent):
+        undoView = QUndoView(self.undoStack, parent)
+        # undoView.resize(400, 400)
+        # undoView.show()
+        # undoView.setAttribute(Qt.WA_QuitOnClose, False)
+        showUndoDialog(undoView, parent)
+
+    def deleteItem(self):
+        if self.selectedItems():
+            for item in self.selectedItems():
+                self.undoStack.push(deleteCommand(item, self))
+            
+    def itemMoved(self, movedItem, lastPos):
+        self.undoStack.push(moveCommand(movedItem, lastPos))
+    
+    def addItemPlus(self, item):
+        # returnVal =  self.addItem(item)
+        self.undoStack.push(addCommand(item, self))
+        # return returnVal
+    
+    def mousePressEvent(self, event):
+        bdsp = event.buttonDownScenePos(Qt.LeftButton)
+        point = QPointF(bdsp.x(), bdsp.y())
+        itemList = self.items(point)
+        self.movingItem = itemList[0] if itemList else None
+        if self.movingItem and event.button() == Qt.LeftButton:
+            self.oldPos = self.movingItem.pos()
+        self.clearSelection()
+        return super(customScene, self).mousePressEvent(event)
+    
+    def mouseReleaseEvent(self, event):
+        if self.movingItem and event.button() == Qt.LeftButton:
+            if self.oldPos != self.movingItem.pos():
+                self.itemMoved(self.movingItem, self.oldPos)
+            self.movingItem = None
+        return super(customScene, self).mouseReleaseEvent(event)
