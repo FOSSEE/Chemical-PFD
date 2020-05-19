@@ -320,24 +320,24 @@ class NodeItem(QGraphicsSvgItem):
         else:
             self.hideGripItem()
 
-    def resize(self, i, p):
+    def resize(self, index, p):
         """Move grip item with changing rect of node item
         """
         x = self.boundingRect().x()
         y = self.boundingRect().y()
         width = self.boundingRect().width()
         height = self.boundingRect().height()
-        p_new = self.sizeGripItems[i].pos()
+        pos_new = self.sizeGripItems[index].pos()
         self.prepareGeometryChange()
 
-        if i == 0 or i == 1:
-            self.rect = QRectF(x + p.x() - p_new.x(), y + p.y() - p_new.y(), width - p.x() + p_new.x(),
-                               height - p.y() + p_new.y())
+        if index == 0 or index == 1:
+            self.rect = QRectF(x + p.x() - pos_new.x(), y + p.y() - pos_new.y(), width - p.x() + pos_new.x(),
+                               height - p.y() + pos_new.y())
 
-        if i == 2 or i == 3:
-            self.rect = QRectF(x, y, width + p.x() - p_new.x(), height + p.y() - p_new.y())
+        if index == 2 or index == 3:
+            self.rect = QRectF(x, y, width + p.x() - pos_new.x(), height + p.y() - pos_new.y())
 
-        self.updateSizeGripItem([i])
+        self.updateSizeGripItem([index])
         self.updateLineGripItem()
 
     def addGripItem(self):
