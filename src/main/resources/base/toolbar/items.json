@@ -1,10 +1,4 @@
 {
-	"Ellipse": {
-		"name": "Ellipse",
-		"icon": "ellipse.png",
-		"object": "QGraphicsEllipseItem",
-		"args": [20, 20, 300, 300]
-	},
     "airBlownCooler": {
         "name": "Air blown cooler",
         "icon": "AirBlownCooler.png",
