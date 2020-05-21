@@ -1,3 +1,4 @@
+# from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
 from PyQt5.QtWidgets import QLineEdit, QGraphicsItem, QGraphicsEllipseItem, QGraphicsProxyWidget, QGraphicsPathItem, \
@@ -5,7 +6,10 @@ from PyQt5.QtWidgets import QLineEdit, QGraphicsItem, QGraphicsEllipseItem, QGra
 from PyQt5.QtGui import QPen, QColor, QFont, QCursor, QPainterPath, QPainter, QDrag, QBrush, QImage
 from PyQt5.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QMimeData, QFile, QIODevice, QRect
 
-from line import Line
+from .line import Line
+
+
+# resourceManager = ApplicationContext()
 
 
 class GripItem(QGraphicsPathItem):
@@ -47,6 +51,7 @@ class GripItem(QGraphicsPathItem):
         """
         self.setSelected(False)
         super(GripItem, self).mouseReleaseEvent(event)
+
 
 class SizeGripItem(GripItem):
     """
@@ -217,7 +222,7 @@ class LineGripItem(GripItem):
     def mouseMoveEvent(self, mouseEvent):
         """Handle all mouse move for this item
         """
-        #if line get started then update it's end point
+        # if line get started then update it's end point
         if self.tempLine:
             endPoint = mouseEvent.scenePos()
             self.tempLine.updateLine(endPoint=endPoint)
@@ -284,6 +289,7 @@ class NodeItem(QGraphicsSvgItem):
         QGraphicsSvgItem.__init__(self, parent)
         self.m_type = unitOperationType
         self.m_renderer = QSvgRenderer("svg/" + unitOperationType + ".svg")
+        # self.m_renderer = QSvgRenderer(resourceManager.get_resource(f'toolbar/{unitOperationType}.svg'))
         self.setSharedRenderer(self.m_renderer)
         # set initial size of item
         self.width = 100
@@ -331,7 +337,8 @@ class NodeItem(QGraphicsSvgItem):
         self.prepareGeometryChange()
 
         if index == 0 or index == 1:
-            self.rect = QRectF(x + new_pos.x() - old_pos.x(), y + new_pos.y() - old_pos.y(), width - new_pos.x() + old_pos.x(),
+            self.rect = QRectF(x + new_pos.x() - old_pos.x(), y + new_pos.y() - old_pos.y(),
+                               width - new_pos.x() + old_pos.x(),
                                height - new_pos.y() + old_pos.y())
 
         if index == 2 or index == 3:
@@ -354,7 +361,7 @@ class NodeItem(QGraphicsSvgItem):
                     )
             ):
                 item = LineGripItem(self, i, location, parent=self)
-                self.scene().addItem(item)
+                # self.scene().addItem(item)
                 self.lineGripItems.append(item)
             # add grip for resize it
             for i, (direction) in enumerate(
@@ -441,3 +448,283 @@ class NodeItem(QGraphicsSvgItem):
         for item in self.sizeGripItems:
             item.setPen(QPen(Qt.transparent))
             item.setBrush(Qt.transparent)
+
+#classes of pfd-symbols
+class AirBlownCooler(NodeItem):
+    def __init__(self):
+        super(AirBlownCooler, self).__init__("AirBlownCooler", parent=None)
+
+
+class Bag(NodeItem):
+    def __init__(self):
+        super(Bag, self).__init__("Bag", parent=None)
+
+
+class Boiler(NodeItem):
+    def __init__(self):
+        super(Boiler, self).__init__("Boiler", parent=None)
+
+
+class Breaker(NodeItem):
+    def __init__(self):
+        super(Breaker, self).__init__("Breaker", parent=None)
+
+
+class BriquettingMachine(NodeItem):
+    def __init__(self):
+        super(BriquettingMachine, self).__init__("BriquettingMachine", parent=None)
+
+
+class Centrifugal(NodeItem):
+    def __init__(self):
+        super(Centrifugal, self).__init__("Centrifugal", parent=None)
+
+
+class CentrifugalCompressor(NodeItem):
+    def __init__(self):
+        super(CentrifugalCompressor, self).__init__("CentrifugalCompressor", parent=None)
+
+
+class Centrifugalpump(NodeItem):
+    def __init__(self):
+        super(Centrifugalpump, self).__init__("Centrifugalpump", parent=None)
+
+
+class CentrifugalPump2(NodeItem):
+    def __init__(self):
+        super(CentrifugalPump2, self).__init__("CentrifugalPump2", parent=None)
+
+
+class CentrifugalPump3(NodeItem):
+    def __init__(self):
+        super(CentrifugalPump3, self).__init__("CentrifugalPump3", parent=None)
+
+
+class Column(NodeItem):
+    def __init__(self):
+        super(Column, self).__init__("Column", parent=None)
+
+
+class Compressor(NodeItem):
+    def __init__(self):
+        super(Compressor, self).__init__("Compressor", parent=None)
+
+
+class CompressorSilencers(NodeItem):
+    def __init__(self):
+        super(CompressorSilencers, self).__init__("CompressorSilencers", parent=None)
+
+
+class Condenser(NodeItem):
+    def __init__(self):
+        super(Condenser, self).__init__("Condenser", parent=None)
+
+
+class Cooler(NodeItem):
+    def __init__(self):
+        super(Cooler, self).__init__("Cooler", parent=None)
+
+
+class CoolingTower3(NodeItem):
+    def __init__(self):
+        super(CoolingTower3, self).__init__("CoolingTower3", parent=None)
+
+
+class CoolingTwoer2(NodeItem):
+    def __init__(self):
+        super(CoolingTwoer2, self).__init__("CoolingTwoer2", parent=None)
+
+
+class Crusher(NodeItem):
+    def __init__(self):
+        super(Crusher, self).__init__("Crusher", parent=None)
+
+
+class DoublePipeHeat(NodeItem):
+    def __init__(self):
+        super(DoublePipeHeat, self).__init__("DoublePipeHeat", parent=None)
+
+
+class ExtractorHood(NodeItem):
+    def __init__(self):
+        super(ExtractorHood, self).__init__("ExtractorHood", parent=None)
+
+
+class FiredHeater(NodeItem):
+    def __init__(self):
+        super(FiredHeater, self).__init__("FiredHeater", parent=None)
+
+
+class ForcedDraftCooling(NodeItem):
+    def __init__(self):
+        super(ForcedDraftCooling, self).__init__("ForcedDraftCooling", parent=None)
+
+
+class Furnace(NodeItem):
+    def __init__(self):
+        super(Furnace, self).__init__("Furnace", parent=None)
+
+
+class GasBottle(NodeItem):
+    def __init__(self):
+        super(GasBottle, self).__init__("GasBottle", parent=None)
+
+
+class HalfPipeMixingVessel(NodeItem):
+    def __init__(self):
+        super(HalfPipeMixingVessel, self).__init__("HalfPipeMixingVessel", parent=None)
+
+
+class Heater(NodeItem):
+    def __init__(self):
+        super(Heater, self).__init__("Heater", parent=None)
+
+
+class HeatExchanger(NodeItem):
+    def __init__(self):
+        super(HeatExchanger, self).__init__("HeatExchanger", parent=None)
+
+
+class HeatExchanger2(NodeItem):
+    def __init__(self):
+        super(HeatExchanger2, self).__init__("HeatExchanger2", parent=None)
+
+
+class HorizontalVessel(NodeItem):
+    def __init__(self):
+        super(HorizontalVessel, self).__init__("HorizontalVessel", parent=None)
+
+
+class InducedDraftCooling(NodeItem):
+    def __init__(self):
+        super(InducedDraftCooling, self).__init__("InducedDraftCooling", parent=None)
+
+
+class jacketedMixingVessel(NodeItem):
+    def __init__(self):
+        super(jacketedMixingVessel, self).__init__("jacketedMixingVessel", parent=None)
+
+
+class LiquidRingCompressor(NodeItem):
+    def __init__(self):
+        super(LiquidRingCompressor, self).__init__("LiquidRingCompressor", parent=None)
+
+
+class Mixing(NodeItem):
+    def __init__(self):
+        super(Mixing, self).__init__("Mixing", parent=None)
+
+
+class MixingReactor(NodeItem):
+    def __init__(self):
+        super(MixingReactor, self).__init__("MixingReactor", parent=None)
+
+
+class OilBurner(NodeItem):
+    def __init__(self):
+        super(OilBurner, self).__init__("OilBurner", parent=None)
+
+
+class OpenTank(NodeItem):
+    def __init__(self):
+        super(OpenTank, self).__init__("OpenTank", parent=None)
+
+
+class ProportionalPump(NodeItem):
+    def __init__(self):
+        super(ProportionalPump, self).__init__("ProportionalPump", parent=None)
+
+
+class Pump(NodeItem):
+    def __init__(self):
+        super(Pump, self).__init__("Pump", parent=None)
+
+
+class Pump2(NodeItem):
+    def __init__(self):
+        super(Pump2, self).__init__("Pump2", parent=None)
+
+
+class ReboilerHeatExchange(NodeItem):
+    def __init__(self):
+        super(ReboilerHeatExchange, self).__init__("ReboilerHeatExchange", parent=None)
+
+
+class ReciprocatingCompressor(NodeItem):
+    def __init__(self):
+        super(ReciprocatingCompressor, self).__init__("ReciprocatingCompressor", parent=None)
+
+
+class RotaryCompresor(NodeItem):
+    def __init__(self):
+        super(RotaryCompresor, self).__init__("RotaryCompresor", parent=None)
+
+
+class RotaryGearPump(NodeItem):
+    def __init__(self):
+        super(RotaryGearPump, self).__init__("RotaryGearPump", parent=None)
+
+
+class ScrewPump(NodeItem):
+    def __init__(self):
+        super(ScrewPump, self).__init__("ScrewPump", parent=None)
+
+
+class SelectableCompressor(NodeItem):
+    def __init__(self):
+        super(SelectableCompressor, self).__init__("SelectableCompressor", parent=None)
+
+
+class SelectableFan(NodeItem):
+    def __init__(self):
+        super(SelectableFan, self).__init__("SelectableFan", parent=None)
+
+
+class SinglePassHeat(NodeItem):
+    def __init__(self):
+        super(SinglePassHeat, self).__init__("SinglePassHeat", parent=None)
+
+
+class SpiralHeatExchanger(NodeItem):
+    def __init__(self):
+        super(SpiralHeatExchanger, self).__init__("SpiralHeatExchanger", parent=None)
+
+
+class StraightTubersHeat(NodeItem):
+    def __init__(self):
+        super(StraightTubersHeat, self).__init__("StraightTubersHeat", parent=None)
+
+
+class Tank(NodeItem):
+    def __init__(self):
+        super(Tank, self).__init__("Tank", parent=None)
+
+
+class TurbinePump(NodeItem):
+    def __init__(self):
+        super(TurbinePump, self).__init__("TurbinePump", parent=None)
+
+
+class UTubeHeatExchanger(NodeItem):
+    def __init__(self):
+        super(UTubeHeatExchanger, self).__init__("UTubeHeatExchanger", parent=None)
+
+
+class VaccumPump(NodeItem):
+    def __init__(self):
+        super(VaccumPump, self).__init__("VaccumPump", parent=None)
+
+
+class VerticalPump(NodeItem):
+    def __init__(self):
+        super(VerticalPump, self).__init__("VerticalPump", parent=None)
+
+
+class VerticalVessel(NodeItem):
+    def __init__(self):
+        super(VerticalVessel, self).__init__("VerticalVessel", parent=None)
+
+
+class WastewaterTreatment(NodeItem):
+    def __init__(self):
+        super(WastewaterTreatment, self).__init__("WastewaterTreatment", parent=None)
