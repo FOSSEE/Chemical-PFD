@@ -62,9 +62,8 @@ class appWindow(QMainWindow):
     
     def updateMenuBar(self):
         # self.undo.setAction(self.activeScene.painter.undoAction)
-        self.undo.triggered(self.activeScene.painter.undoAction.trigger)
-        self.redo.triggered(self.activeScene.painter.redoAction.trigger)
-        # self.redo.setAction(self.activeScene.painter.redoAction) 
+        self.undo.triggered.connect(self.activeScene.painter.undoAction.trigger())
+        self.redo.triggered.connect(self.activeScene.painter.redoAction.trigger())
                 
     def createToolbar(self):
         #place holder for toolbar with fixed width, layout may change

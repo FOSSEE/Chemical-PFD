@@ -1,5 +1,6 @@
-from itertools import zip_longest
+from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
-def grouper(n, iterable, fillvalue=None):
-    args = [iter(iterable)] * n
-    return zip_longest(fillvalue=fillvalue, *args)
+importTool = ApplicationContext()
+
+def fileImporter(file):
+    return importTool.get_resource(file)

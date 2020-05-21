@@ -6,10 +6,10 @@ from PyQt5.QtWidgets import (QBoxLayout, QDockWidget, QGridLayout, QLineEdit,
 from re import search, IGNORECASE
 
 from .data import toolbarItems
-from .funcs import grouper
+from .funcs import fileImporter
 from .layout import flowLayout
 
-resourceManager = ApplicationContext() #Used to load images, mainly toolbar icons
+# resourceManager = ApplicationContext() #Used to load images, mainly toolbar icons
 
 class toolbar(QDockWidget):
     """
@@ -103,7 +103,7 @@ class toolbarButton(QToolButton):
     def __init__(self, parent = None, item = None):
         super(toolbarButton, self).__init__(parent)
         #uses fbs resource manager to get icons
-        self.setIcon(QIcon(resourceManager.get_resource(f'toolbar/{item["icon"]}')))
+        self.setIcon(QIcon(fileImporter(f'toolbar/{item["icon"]}')))
         self.setIconSize(QSize(40, 40)) #unecessary but left for future references
         self.dragStartPosition = None #intialize value for drag event
         self.itemObject = item['object'] #refer current item object, to handle drag mime
