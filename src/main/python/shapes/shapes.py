@@ -3,10 +3,10 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
 from PyQt5.QtWidgets import QLineEdit, QGraphicsItem, QGraphicsEllipseItem, QGraphicsProxyWidget, QGraphicsPathItem, \
     QGraphicsSceneHoverEvent, QGraphicsColorizeEffect
-from PyQt5.QtGui import QPen, QColor, QFont, QCursor, QPainterPath, QPainter, QDrag, QBrush, QImage
+from PyQt5.QtGui import QPen, QColor, QFont, QCursor, QPainterPath, QPainter, QDrag, QBrush, QImage, QTransform
 from PyQt5.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QMimeData, QFile, QIODevice, QRect
 
-from .line import Line
+from line import Line
 
 
 # resourceManager = ApplicationContext()
@@ -66,7 +66,7 @@ class SizeGripItem(GripItem):
             self.width = annotation_item.boundingRect().width()
 
         path = QPainterPath()
-        path.addRect(QRectF(0, 0, self.width, self.height))
+        path.addRect(QRectF(-self.width/2, -self.height/2, self.width, self.height))
         super(SizeGripItem, self).__init__(annotation_item, path=path, parent=parent)
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
@@ -83,26 +83,28 @@ class SizeGripItem(GripItem):
         """
         return self._direction
 
+    def paint(self, painter, option, widget):
+        if self.isSelected() and not self.parentItem().isSelected():
+            self.parentItem().setSelected(True)
+            self.parentItem().setFlag(QGraphicsSvgItem.ItemIsMovable, False)
+        super().paint(painter, option, widget)
+
     def updatePath(self):
         """updates path of size grip item
         """
         if self._direction is Qt.Horizontal:
-            self.height = self.m_annotation_item.boundingRect().height()
+            self.height = self.parentItem().boundingRect().height()
         else:
-            self.width = self.m_annotation_item.boundingRect().width()
+            self.width = self.parentItem().boundingRect().width()
         path = QPainterPath()
-        path.addRect(QRectF(0, 0, self.width, self.height))
+        path.addRect(QRectF(-self.width/2, -self.height/2, self.width, self.height))
         self.setPath(path)
 
     def updatePosition(self):
         """updates position of grip items
         """
         self.updatePath()
-        pos = self.m_annotation_item.mapToScene(self.point(self.m_index))
-        x = self.m_annotation_item.boundingRect().x()
-        y = self.m_annotation_item.boundingRect().y()
-        pos.setX(pos.x() + x)
-        pos.setY(pos.y() + y)
+        pos = self.point(self.m_index)
         self.setEnabled(False)
         self.setPos(pos)
         self.setEnabled(True)
@@ -111,14 +113,14 @@ class SizeGripItem(GripItem):
         """
         yields a list of positions of grip items in a node item
         """
-        x = self.m_annotation_item.boundingRect().width()
-        y = self.m_annotation_item.boundingRect().height()
+        width = self.parentItem().boundingRect().width()
+        height = self.parentItem().boundingRect().height()
         if 0 <= index < 4:
             return [
-                QPointF(0, 0),
-                QPointF(0, 0),
-                QPointF(0, y),
-                QPointF(x, 0)
+                QPointF(0, -height / 2),
+                QPointF(-width / 2, 0),
+                QPointF(0, height / 2),
+                QPointF(width / 2, 0)
             ][index]
 
     def hoverEnterEvent(self, event):
@@ -152,14 +154,26 @@ class SizeGripItem(GripItem):
                 p.setX(value.x())
             elif self.direction == Qt.Vertical:
                 p.setY(value.y())
-            self.m_annotation_item.resize(self.m_index, p)
+            # Find change in positions
+            movement = p - self.pos()
+            # Set transform to oppose change in transformation due to parent
+            transform = QTransform()
+            transform.translate(-movement.x() / 2, -movement.y() / 2)
+            self.setTransform(transform, True)
+            self.parentItem().resize(self.m_index, movement)
             return p
         return super(SizeGripItem, self).itemChange(change, value)
 
-    def removeFromCanvas(self):
-        # used to remove grip item from scene
-        if self.scene():
-            self.scene().removeItem(self)
+    def mouseReleaseEvent(self, event):
+        super(SizeGripItem, self).mouseReleaseEvent(event)
+        # Reset transform and update position
+        self.resetTransform()
+        self.updatePosition()
+        # Make parent item move able
+        self.parentItem().setFlag(QGraphicsSvgItem.ItemIsMovable, True)
+        # If needed to reset transform of parent set it's position accordingly
+        # self.parentItem().setPos(self.parentItem().x() + self.parentItem().transform().dx(), self.parentItem().y() + self.parentItem().transform().dy())
+        # self.parentItem().resetTransform()
 
 
 class LineGripItem(GripItem):
@@ -185,22 +199,18 @@ class LineGripItem(GripItem):
         """
         yields a list of positions of grip items in a node item
         """
-        x = self.m_annotation_item.boundingRect().width()
-        y = self.m_annotation_item.boundingRect().height()
+        width = self.parentItem().boundingRect().width()
+        height = self.parentItem().boundingRect().height()
         if 0 <= index < 4:
             return [
-                QPointF(x / 2, 0),
-                QPointF(0, y / 2),
-                QPointF(x / 2, y),
-                QPointF(x, y / 2)
+                QPointF(0, -height / 2),
+                QPointF(-width / 2, 0),
+                QPointF(0, height / 2),
+                QPointF(width / 2, 0)
             ][index]
 
     def updatePosition(self):
         pos = self.point(self.m_index)
-        x = self.m_annotation_item.boundingRect().x()
-        y = self.m_annotation_item.boundingRect().y()
-        pos.setX(pos.x() + x)
-        pos.setY(pos.y() + y)
         self.setEnabled(False)
         self.setPos(pos)
         self.setEnabled(True)
@@ -228,7 +238,7 @@ class LineGripItem(GripItem):
             self.tempLine.updateLine(endPoint=endPoint)
 
         item = self.scene().itemAt(mouseEvent.scenePos().x(), mouseEvent.scenePos().y(),
-                                   self.m_annotation_item.transform())
+                                   self.parentItem().transform())
 
         if self.previousHoveredItem and item != self.previousHoveredItem and \
                 item not in self.previousHoveredItem.lineGripItems:
@@ -323,29 +333,23 @@ class NodeItem(QGraphicsSvgItem):
         self.m_renderer.render(painter, self.boundingRect())
         if self.isSelected():
             self.showGripItem()
-        else:
-            self.hideGripItem()
 
-    def resize(self, index, new_pos):
+    def resize(self, index, movement):
         """Move grip item with changing rect of node item
         """
-        x = self.boundingRect().x()
-        y = self.boundingRect().y()
-        width = self.boundingRect().width()
-        height = self.boundingRect().height()
-        old_pos = self.sizeGripItems[index].pos()
         self.prepareGeometryChange()
+        if index in [0, 1]:
+            self.width -= movement.x()
+            self.height -= movement.y()
+        else:
+            self.width += movement.x()
+            self.height += movement.y()
 
-        if index == 0 or index == 1:
-            self.rect = QRectF(x + new_pos.x() - old_pos.x(), y + new_pos.y() - old_pos.y(),
-                               width - new_pos.x() + old_pos.x(),
-                               height - new_pos.y() + old_pos.y())
-
-        if index == 2 or index == 3:
-            self.rect = QRectF(x, y, width + new_pos.x() - old_pos.x(), height + new_pos.y() - old_pos.y())
-
+        self.rect = QRectF(-self.width / 2, -self.height / 2, self.width, self.height)
+        transform = QTransform()
+        transform.translate(movement.x() / 2, movement.y() / 2)
+        self.setTransform(transform, True)
         self.updateSizeGripItem([index])
-        self.updateLineGripItem()
 
     def addGripItem(self):
         """adds grip items
@@ -361,7 +365,6 @@ class NodeItem(QGraphicsSvgItem):
                     )
             ):
                 item = LineGripItem(self, i, location, parent=self)
-                # self.scene().addItem(item)
                 self.lineGripItems.append(item)
             # add grip for resize it
             for i, (direction) in enumerate(
@@ -372,8 +375,7 @@ class NodeItem(QGraphicsSvgItem):
                             Qt.Horizontal,
                     )
             ):
-                item = SizeGripItem(self, i, direction)
-                self.scene().addItem(item)
+                item = SizeGripItem(self, i, direction, parent=self)
                 self.sizeGripItems.append(item)
 
     def updateLineGripItem(self, index_no_updates=None):
@@ -396,6 +398,15 @@ class NodeItem(QGraphicsSvgItem):
     def itemChange(self, change, value):
         """Overloads and extends QGraphicsSvgItem to also update grip items
         """
+        if change == QGraphicsItem.ItemSelectedHasChanged:
+            if value is True:
+                self.showGripItem()
+            else:
+                self.hideGripItem()
+            return
+        if change == QGraphicsItem.ItemTransformHasChanged:
+            self.updateLineGripItem()
+            return
         if change == QGraphicsItem.ItemPositionHasChanged:
             self.updateLineGripItem()
             self.updateSizeGripItem()
@@ -449,7 +460,8 @@ class NodeItem(QGraphicsSvgItem):
             item.setPen(QPen(Qt.transparent))
             item.setBrush(Qt.transparent)
 
-#classes of pfd-symbols
+
+# classes of pfd-symbols
 class AirBlownCooler(NodeItem):
     def __init__(self):
         super(AirBlownCooler, self).__init__("AirBlownCooler", parent=None)
