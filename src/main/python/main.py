@@ -13,6 +13,7 @@ from utils.fileWindow import fileWindow
 from utils.data import ppiList, sheetDimensionList
 from utils import dialogs
 from utils.toolbar import toolbar
+from utils.app import app
 
 import shapes
 
@@ -204,8 +205,7 @@ class appWindow(QMainWindow):
                 #donot delete, to manage undo redo
         
         
-if __name__ == '__main__':
-    app = ApplicationContext()       # 1. Instantiate ApplicationContext
+if __name__ == '__main__':      # 1. Instantiate ApplicationContext
     main = appWindow()
     main.show()
     exit_code = app.app.exec_()      # 2. Invoke appctxt.app.exec_()

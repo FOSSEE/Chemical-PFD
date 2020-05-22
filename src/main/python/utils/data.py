@@ -1,5 +1,5 @@
 from json import load
-from .funcs import fileImporter
+from .app import fileImporter
 
 paperSizes = load(open(fileImporter("config/paperSizes.json")))
 
