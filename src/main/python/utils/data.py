@@ -1,3 +1,7 @@
+"""
+Imports data from json configs, so that they can be imported from this module.
+"""
+
 from json import load
 from .app import fileImporter
 

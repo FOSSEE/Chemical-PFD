@@ -62,7 +62,7 @@ class appWindow(QMainWindow):
         self.mdi.subWindowActivated.connect(self.tabSwitched)
     
     def updateMenuBar(self):
-        # self.undo.setAction(self.activeScene.painter.undoAction)
+        # used to update menu bar undo-redo buttons to current scene
         self.undo.triggered.connect(self.activeScene.painter.undoAction.trigger())
         self.redo.triggered.connect(self.activeScene.painter.redoAction.trigger())
                 

@@ -1,7 +1,12 @@
+"""
+Contains custom undo commands that can be pushed to undo stack
+"""
 from PyQt5.QtWidgets import QUndoCommand
 
 class addCommand(QUndoCommand):
-    
+    """
+    QUndoCommand for add item event
+    """
     def __init__(self, addItem, scene, parent = None):
         super(addCommand, self).__init__(parent)
         self.scene = scene
@@ -20,7 +25,9 @@ class addCommand(QUndoCommand):
         self.scene.update()
         
 class deleteCommand(QUndoCommand):
-    
+    """
+    QUndoCommand for delete item event
+    """
     def __init__(self, item, scene, parent = None):
         super(deleteCommand, self).__init__(parent)
         self.scene = scene
@@ -36,7 +43,9 @@ class deleteCommand(QUndoCommand):
         self.scene.removeItem(self.diagramItem)
         
 class moveCommand(QUndoCommand):
-    
+    """
+    QUndoCommand for move item event
+    """
     def __init__(self, item, lastPos, parent = None):
         super(moveCommand, self).__init__(parent)
         self.diagramItem = item
@@ -53,6 +62,7 @@ class moveCommand(QUndoCommand):
         self.setText(f"Move {self.diagramItem} {self.newPos}")
         
     def mergeWith(self, move):
+        #merges multiple move commands so that a move event is not added twice.
         item = move.diagramItem
         
         if self.diagramItem != item:
