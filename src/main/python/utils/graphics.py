@@ -45,9 +45,9 @@ class customView(QGraphicsView):
         if QDropEvent.mimeData().hasText():
             #QDropEvent.mimeData().text() defines intended drop item, the pos values define position
             obj = QDropEvent.mimeData().text().split('/')
-            graphic = getattr(shapes, obj[0])(*map(int, obj[1:]))
-            graphic.setPen(QPen(Qt.black, 2))
-            graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
+            graphic = getattr(shapes, obj[0])(*map(lambda x: int(x) if x.isdigit() else x, obj[1:]))
+            # graphic.setPen(QPen(Qt.black, 2))
+            # graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
             self.scene().addItemPlus(graphic)
             graphic.setPos(QDropEvent.pos().x()-150, QDropEvent.pos().y()-150)
             QDropEvent.acceptProposedAction()
