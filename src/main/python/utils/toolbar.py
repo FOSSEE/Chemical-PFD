@@ -112,6 +112,8 @@ class toolbarButton(QToolButton):
         self.setIconSize(QSize(64, 64)) #unecessary but left for future references
         self.dragStartPosition = None #intialize value for drag event
         self.itemObject = item['object'] #refer current item object, to handle drag mime
+        for i in item['args']:
+            self.itemObject += f"/{i}"
         self.setText(item["name"]) #button text
         self.setToolTip(item["name"]) #button tooltip
 

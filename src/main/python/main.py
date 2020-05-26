@@ -82,6 +82,7 @@ class appWindow(QMainWindow):
             graphic.setPen(QPen(Qt.black, 2))
             graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
             currentDiagram.addItemPlus(graphic) 
+            graphic.setPos(20, 20)
 
     def newProject(self):
         #call to create a new file inside mdi area
