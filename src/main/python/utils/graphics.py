@@ -49,7 +49,7 @@ class customView(QGraphicsView):
             # graphic.setPen(QPen(Qt.black, 2))
             # graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
             self.scene().addItemPlus(graphic)
-            graphic.setPos(QDropEvent.pos().x()-150, QDropEvent.pos().y()-150)
+            graphic.setPos(QDropEvent.pos().x(), QDropEvent.pos().y())
             QDropEvent.acceptProposedAction()
      
     def wheelEvent(self, QWheelEvent):

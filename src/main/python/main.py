@@ -78,7 +78,7 @@ class appWindow(QMainWindow):
     def toolButtonClicked(self, object):
         currentDiagram = self.mdi.currentSubWindow().tabber.currentWidget().painter
         if currentDiagram:
-            graphic = getattr(shapes, object['object'])(**map(lambda x: int(x) if x.isdigit() else x, object['args']))
+            graphic = getattr(shapes, object['object'])(*map(lambda x: int(x) if x.isdigit() else x, object['args']))
             # graphic.setPen(QPen(Qt.black, 2))
             # graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
             currentDiagram.addItemPlus(graphic) 

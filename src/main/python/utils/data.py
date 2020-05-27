@@ -9,7 +9,7 @@ paperSizes = load(open(fileImporter("config/paperSizes.json")))
 
 sheetDimensionList = list(paperSizes.keys())
 
-ppiList = paperSizes[sheetDimensionList[0]].keys()
+ppiList = list(paperSizes[sheetDimensionList[0]].keys())
 
 toolbarItems = load(open(fileImporter("config/items.json")))
 

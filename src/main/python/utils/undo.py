@@ -2,6 +2,16 @@
 Contains custom undo commands that can be pushed to undo stack
 """
 from PyQt5.QtWidgets import QUndoCommand
+from re import compile
+
+def repl(x):
+    return f"{x[0][0]} {x[0][1].lower()}"
+
+regex = compile(r"([a-z][A-Z])")
+
+def objectName(obj):
+    name = regex.sub(repl, obj.m_type if obj.__class__.__name__ == 'NodeItem' else obj.__class__.__name__)
+    return name[0].upper() + name[1:] + ' symbol'
 
 class addCommand(QUndoCommand):
     """
@@ -12,7 +22,7 @@ class addCommand(QUndoCommand):
         self.scene = scene
         self.diagramItem = addItem
         self.itemPos = addItem.pos()
-        self.setText(f"Add {self.diagramItem} {self.itemPos}")
+        self.setText(f"Add {objectName(self.diagramItem)}")
         
     def undo(self):
         self.scene.removeItem(self.diagramItem)
@@ -33,7 +43,7 @@ class deleteCommand(QUndoCommand):
         self.scene = scene
         item.setSelected(False)
         self.diagramItem = item
-        self.setText(f"Delete {self.diagramItem} {self.diagramItem.pos()}")
+        self.setText(f"Delete {objectName(self.diagramItem)} at {self.diagramItem.pos().x()}, {self.diagramItem.y()}")
         
     def undo(self):
         self.scene.addItem(self.diagramItem)
@@ -55,11 +65,11 @@ class moveCommand(QUndoCommand):
     def undo(self):
         self.diagramItem.setPos(self.lastPos)
         self.diagramItem.scene().update()
-        self.setText(f"Move {self.diagramItem} {self.newPos}")
+        self.setText(f"Move {objectName(self.diagramItem)} to {self.newPos.x()}, {self.newPos.y()}")
         
     def redo(self):
         self.diagramItem.setPos(self.newPos)
-        self.setText(f"Move {self.diagramItem} {self.newPos}")
+        self.setText(f"Move {objectName(self.diagramItem)} to {self.newPos.x()}, {self.newPos.y()}")
         
     def mergeWith(self, move):
         #merges multiple move commands so that a move event is not added twice.
@@ -69,5 +79,24 @@ class moveCommand(QUndoCommand):
             return False
         
         self.newPos = item.pos()
-        self.setText(f"Move {self.diagramItem} {self.newPos}")
+        self.setText(f"Move {objectName(self.diagramItem)} to {self.newPos.x()}, {self.newPos.y()}")
         return True
+    
+class resizeCommand(QUndoCommand):
+    """
+    """
+    def __init__(self, new, canvas, widget, parent = None):
+        super(resizeCommand, self).__init__(parent)
+        self.parent = canvas
+        self.old = self.parent.canvasSize, self.parent.ppi
+        self.new = new
+        self.widget = widget
+        self.setText(f'Change canvas dimensions to {new[0]} at {new[1]} ppi')
+    
+    def undo(self):
+        self.parent.canvasSize, self.parent.ppi = self.old
+        self.widget.resizeHandler()
+    
+    def redo(self):
+        self.parent.canvasSize, self.parent.ppi = self.new
+        self.widget.resizeHandler()
