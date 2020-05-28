@@ -1,4 +1,3 @@
-# from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
 from PyQt5.QtWidgets import QLineEdit, QGraphicsItem, QGraphicsEllipseItem, QGraphicsProxyWidget, QGraphicsPathItem, \
@@ -6,10 +5,9 @@ from PyQt5.QtWidgets import QLineEdit, QGraphicsItem, QGraphicsEllipseItem, QGra
 from PyQt5.QtGui import QPen, QColor, QFont, QCursor, QPainterPath, QPainter, QDrag, QBrush, QImage, QTransform
 from PyQt5.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QMimeData, QFile, QIODevice, QRect
 
-from line import Line
+from .line import Line
+from  utils.app import fileImporter
 
-
-# resourceManager = ApplicationContext()
 
 
 class GripItem(QGraphicsPathItem):
@@ -294,14 +292,15 @@ class NodeItem(QGraphicsSvgItem):
     """
         Extends PyQt5's QGraphicsSvgItem to create the basic structure of shapes with given unit operation type
     """
-    renderer = QSvgRenderer("For sample svg_2.svg")
+    # set a common renderer for all svg
+    renderer = QSvgRenderer(fileImporter(f'svg/ellipse.svg'))
 
     def __init__(self, unitOperationType, parent=None):
         QGraphicsSvgItem.__init__(self, parent)
-        self.id = unitOperationType
+        self.id = None
         self.m_renderer = NodeItem.renderer
-        # self.m_renderer = QSvgRenderer("svg/" + unitOperationType + ".svg")
-        # self.m_renderer = QSvgRenderer(resourceManager.get_resource(f'toolbar/{unitOperationType}.svg'))
+        # if each svg is seperate file
+        # self.m_renderer = QSvgRenderer(fileImporter(f'svg/ellipse.svg'))
         self.setSharedRenderer(self.m_renderer)
         # set initial size of item
         self.width = 100
