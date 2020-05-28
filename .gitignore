@@ -1,8 +1,6 @@
-
 *.pyc
 src/main/python/experimental/*
 *.pfd
 .vscode
 .vscode/*.json
->>>>>>> 151ffe398218f8d46b07f9ea12b4af897b4ed81b
 .idea/
