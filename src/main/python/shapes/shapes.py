@@ -9,9 +9,9 @@ from PyQt5.QtWidgets import (QGraphicsColorizeEffect, QGraphicsEllipseItem,
                              QGraphicsProxyWidget, QGraphicsSceneHoverEvent,
                              QLineEdit)
 
-from utils.app import fileImporter
-
 from .line import Line
+from  utils.app import fileImporter
+
 
 
 class GripItem(QGraphicsPathItem):
@@ -281,15 +281,15 @@ class NodeItem(QGraphicsSvgItem):
     """
         Extends PyQt5's QGraphicsSvgItem to create the basic structure of shapes with given unit operation type
     """
-    renderer = QSvgRenderer("For sample svg_2.svg")
+    # set a common renderer for all svg
+    renderer = QSvgRenderer(fileImporter(f'svg/ellipse.svg'))
 
     def __init__(self, unitOperationType, parent=None):
         QGraphicsSvgItem.__init__(self, parent)
-        self.m_type = unitOperationType
-        # self.m_renderer = QSvgRenderer("svg/" + unitOperationType + ".svg")
-        # self.m_renderer = QSvgRenderer(fileImporter(f'svg/{unitOperationType}.svg'))
-        self.m_renderer = QSvgRenderer(fileImporter(f'svg/ellipse.svg'))
-        # self.m_renderer = QSvgRenderer(resourceManager.get_resource(f'toolbar/{unitOperationType}.svg'))
+        self.id = None
+        self.m_renderer = NodeItem.renderer
+        # if each svg is seperate file
+        # self.m_renderer = QSvgRenderer(fileImporter(f'svg/ellipse.svg'))
         self.setSharedRenderer(self.m_renderer)
         # set initial size of item
         self.width = 100
