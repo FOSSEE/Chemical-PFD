@@ -20,6 +20,8 @@ class Grabber(QGraphicsPathItem):
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
         self.setAcceptHoverEvents(True)
+        self.pen = QPen(Qt.white, -1, Qt.SolidLine)
+        self.brush = QBrush(Qt.transparent)
 
     def itemChange(self, change, value):
         """ move position of grabber after resize"""
@@ -37,13 +39,11 @@ class Grabber(QGraphicsPathItem):
     def paint(self, painter, option, widget):
         """paints the path of grabber only if it is selected
         """
-        if self.isSelected():
-            # show line of grabber
+        if self.isSelected() and not self.m_annotation_item.isSelected() :
+            # show parent line of grabber
             self.m_annotation_item.setSelected(True)
-            painter.setBrush(QBrush(Qt.cyan))
-        color = Qt.black if self.isSelected() else Qt.white
-        width = 2 if self.isSelected() else -1
-        painter.setPen(QPen(color, width, Qt.SolidLine))
+        painter.setBrush(self.brush)
+        painter.setPen(self.pen)
         painter.drawPath(self.path())
 
         # To paint path of shape
@@ -90,6 +90,14 @@ class Grabber(QGraphicsPathItem):
         self.setCursor(QCursor(Qt.ArrowCursor))
         super(Grabber, self).hoverLeaveEvent(event)
 
+    def show(self):
+        self.pen = QPen(Qt.black, 2, Qt.SolidLine)
+        self.brush = QBrush(Qt.cyan)
+
+    def hide(self):
+        self.pen = QPen(Qt.white, -1, Qt.SolidLine)
+        self.brush = QBrush(Qt.transparent)
+
 
 class Line(QGraphicsPathItem):
     """
@@ -125,18 +133,284 @@ class Line(QGraphicsPathItem):
         offset = 30
         x0, y0 = self.startPoint.x(), self.startPoint.y()
         x1, y1 = self.endPoint.x(), self.endPoint.y()
+        # create line is in process
         self.points = [self.startPoint, QPointF((x0 + x1) / 2, y0), QPointF((x0 + x1) / 2, y1), self.endPoint]
-        if self.startGripItem and self.startGripItem.m_location in ["left", "right"]:
-            if self.endGripItem and self.endGripItem.m_location in ["top", "bottom"]:
-                if self.endGripItem.m_location == "top": offset = -offset
-                self.points = [self.startPoint, QPointF((x0 + x1) / 2, y0), QPointF((x0 + x1) / 2, y1 + offset),
-                               QPointF(self.endPoint.x(), y1 + offset), self.endPoint]
+        # final path of line
+        if self.startGripItem and self.endGripItem:
+            # determine ns (point next to start)
+            item = self.startGripItem
+            self.startPoint = item.parentItem().mapToScene(item.pos())
+            if item.m_location == "top":
+                ns = QPointF(self.startPoint.x(), self.startPoint.y() - offset)
+            elif item.m_location == "left":
+                ns = QPointF(self.startPoint.x() - offset, self.startPoint.y())
+            elif item.m_location == "bottom":
+                ns = QPointF(self.startPoint.x(), self.startPoint.y() + offset)
+            else:
+                ns = QPointF(self.startPoint.x() + offset, self.startPoint.y())
+            # pe (point previous to end)
+            item = self.endGripItem
+            self.endPoint = item.parentItem().mapToScene(item.pos())
+            if item.m_location == "top":
+                pe = QPointF(self.endPoint.x(), self.endPoint.y() - offset)
+            elif item.m_location == "left":
+                pe = QPointF(self.endPoint.x() - offset, self.endPoint.y())
+            elif item.m_location == "bottom":
+                pe = QPointF(self.endPoint.x(), self.endPoint.y() + offset)
+            else:
+                pe = QPointF(self.endPoint.x() + offset, self.endPoint.y())
 
-        if self.startGripItem and self.startGripItem.m_location in ["top", "bottom"]:
-            self.points = [self.startPoint, QPointF(x0, (y0 + y1) / 2), QPointF(x1, (y0 + y1) / 2), self.endPoint]
-            if self.endGripItem and self.endGripItem.m_location in ["left", "right"]:
-                self.points = [self.startPoint, QPointF(x0, (y0 + y1) / 2), QPointF(x1 - offset, (y0 + y1) / 2),
-                               QPointF(x1 - offset, self.endPoint.y()), self.endPoint]
+            start = self.startPoint
+            end = self.endPoint
+            sheight = self.startGripItem.m_annotation_item.boundingRect().height() / 2
+            swidth = self.startGripItem.m_annotation_item.boundingRect().width() / 2
+            eheight = self.endGripItem.m_annotation_item.boundingRect().height() / 2
+            ewidth = self.endGripItem.m_annotation_item.boundingRect().width() / 2
+
+            if self.startGripItem.m_location in ["right"]:
+                if self.endGripItem.m_location in ["top"]:
+                    if start.x() + offset < end.x() - ewidth:
+                        if start.y() + offset < end.y():
+                            self.points = [start, QPointF(end.x(), start.y()), end]
+                        else:
+                            self.points = [start, ns, QPointF(ns.x(), pe.y()), pe, end]
+                    elif start.x() - 2 * swidth > end.x():
+                        if start.y() + sheight + offset < end.y():
+                            self.points = [start, ns, QPointF(ns.x(), pe.y()), pe, end]
+                        elif start.y() - sheight - offset < end.y():
+                            self.points = [start, ns, QPointF(ns.x(), ns.y() - sheight - offset),
+                                           QPointF(pe.x(), ns.y() - sheight - offset), end]
+                        else:
+                            self.points = [start, ns, QPointF(ns.x(), pe.y()), pe, end]
+                    else:
+                        self.points = [start, ns, QPointF(ns.x(), pe.y()), pe, end]
+                        if start.y() > end.y():
+                            x = max(end.x() + ewidth + offset, ns.x())
+                            self.points = [start, QPointF(x, start.y()), QPointF(x, pe.y()), pe, end]
+
+                elif self.endGripItem.m_location in ["bottom"]:
+                    if start.x() + offset < end.x() - ewidth:
+                        if start.y() + offset < end.y():
+                            self.points = [start, ns, QPointF(ns.x(), pe.y()), pe, end]
+                        else:
+                            self.points = [start, QPointF(end.x(), start.y()), end]
+
+                    elif start.x() - 2 * swidth > end.x():
+                        if start.y() + sheight + offset < end.y():
+                            self.points = [start, ns, QPointF(ns.x(), pe.y()), pe, end]
+                        elif start.y() - sheight - offset < end.y():
+                            y = max(pe.y(), start.y() + sheight + offset)
+                            self.points = [start, ns, QPointF(ns.x(), y),
+                                           QPointF(pe.x(), y), end]
+                        else:
+                            self.points = [start, ns, QPointF(ns.x(), pe.y()), pe, end]
+                    else:
+                        self.points = [start, ns, QPointF(ns.x(), pe.y()), pe, end]
+                        if start.y() < end.y():
+                            x = max(end.x() + ewidth + offset, ns.x())
+                            self.points = [start, QPointF(x, start.y()), QPointF(x, pe.y()), pe, end]
+
+                elif self.endGripItem.m_location in ["right"]:
+                    x = max(start.x() + offset, pe.x())
+                    self.points = [start, QPointF(x, start.y()), QPointF(x, end.y()), end]
+                    if start.x() + offset < end.x() - ewidth:
+                        if start.y() + offset > end.y() - eheight and end.y() >= start.y():
+                            self.points = [start, ns, QPointF(ns.x(), pe.y() - eheight),
+                                           QPointF(pe.x(), pe.y() - eheight), pe, end]
+                        elif start.y() - offset < end.y() + eheight and end.y() <= start.y():
+                            self.points = [start, ns, QPointF(ns.x(), pe.y() + eheight),
+                                           QPointF(pe.x(), pe.y() + eheight), pe, end]
+                    elif start.y() - sheight - offset < end.y() < start.y() + sheight + offset:
+                        if end.y() < start.y():
+                            self.points = [start, ns, QPointF(ns.x(), ns.y() - sheight),
+                                           QPointF(pe.x(), ns.y() - sheight), pe, end]
+                        else:
+                            self.points = [start, ns, QPointF(ns.x(), ns.y() + sheight),
+                                           QPointF(pe.x(), ns.y() + sheight), pe, end]
+
+                elif self.endGripItem.m_location in ["left"]:
+                    self.points = [start, QPointF((start.x() + end.x()) / 2, start.y()),
+                                   QPointF((start.x() + end.x()) / 2, end.y()), end]
+                    if end.x() < start.x() + offset:
+                        if end.y() + eheight <= start.y() - sheight - offset:
+                            self.points = [start, ns, QPointF(ns.x(), ns.y() - sheight),
+                                           QPointF(pe.x(), ns.y() - sheight), pe, end]
+                        elif end.y() - eheight >= start.y() + sheight + offset:
+                            self.points = [start, ns, QPointF(ns.x(), ns.y() + sheight),
+                                           QPointF(pe.x(), ns.y() + sheight), pe, end]
+                        elif end.y() <= start.y():
+                            y = min(end.y() - eheight, start.y() - sheight)
+                            self.points = [start, ns, QPointF(ns.x(), y),
+                                           QPointF(pe.x(), y), pe, end]
+                        else:
+                            y = max(end.y() + eheight, start.y() + sheight)
+                            self.points = [start, ns, QPointF(ns.x(), y),
+                                           QPointF(pe.x(), y), pe, end]
+
+
+            elif self.startGripItem.m_location in ["left"]:
+                if self.endGripItem.m_location in ["top"]:
+                    if start.x() + offset < end.x() - ewidth:
+                        if end.y() > start.y() + sheight + offset:
+                            self.points = [start, ns, QPointF(ns.x(), ns.y() + sheight),
+                                           QPointF(pe.x(), ns.y() + sheight), end]
+                        else:
+                            y = min(start.y() - sheight, pe.y())
+                            self.points = [start, ns, QPointF(ns.x(), y),
+                                           QPointF(pe.x(), y), end]
+                    elif end.x() + ewidth >= start.x() - offset:
+                        x = min(ns.x(), end.x() - ewidth)
+                        self.points = [start, QPointF(x, ns.y()),
+                                       QPointF(x, pe.y()), pe, end]
+                    else:
+                        if end.y() >= start.y() + offset:
+                            self.points = [start, QPointF(end.x(), start.y()), end]
+                        else:
+                            x = (start.x() + end.x()) / 2
+                            self.points = [start, QPointF(x, start.y()),
+                                           QPointF(x, pe.y()), pe, end]
+
+                elif self.endGripItem.m_location in ["bottom"]:
+                    if start.x() + offset < end.x() - ewidth:
+                        if end.y() < start.y() - sheight - offset:
+                            self.points = [start, ns, QPointF(ns.x(), ns.y() - sheight),
+                                           QPointF(pe.x(), ns.y() - sheight), end]
+                        else:
+                            y = max(start.y() + sheight, pe.y())
+                            self.points = [start, ns, QPointF(ns.x(), y),
+                                           QPointF(pe.x(), y), end]
+                    elif end.x() + ewidth >= start.x() - offset:
+                        x = min(ns.x(), end.x() - ewidth)
+                        self.points = [start, QPointF(x, ns.y()),
+                                       QPointF(x, pe.y()), pe, end]
+                    else:
+                        if end.y() <= start.y() - offset:
+                            self.points = [start, QPointF(end.x(), start.y()), end]
+                        else:
+                            x = (start.x() + end.x()) / 2
+                            self.points = [start, QPointF(x, start.y()),
+                                           QPointF(x, pe.y()), pe, end]
+
+                elif self.endGripItem.m_location in ["right"]:
+                    self.points = [start, QPointF((start.x() + end.x()) / 2, start.y()),
+                                   QPointF((start.x() + end.x()) / 2, end.y()), end]
+                    if end.x() > start.x() + offset:
+                        if end.y() + eheight <= start.y() - sheight - offset:
+                            self.points = [start, ns, QPointF(ns.x(), ns.y() - sheight),
+                                           QPointF(pe.x(), ns.y() - sheight), pe, end]
+                        elif end.y() - eheight >= start.y() + sheight + offset:
+                            self.points = [start, ns, QPointF(ns.x(), ns.y() + sheight),
+                                           QPointF(pe.x(), ns.y() + sheight), pe, end]
+                        elif end.y() <= start.y():
+                            y = min(end.y() - eheight, start.y() - sheight)
+                            self.points = [start, ns, QPointF(ns.x(), y),
+                                           QPointF(pe.x(), y), pe, end]
+                        else:
+                            y = max(end.y() + eheight, start.y() + sheight)
+                            self.points = [start, ns, QPointF(ns.x(), y),
+                                           QPointF(pe.x(), y), pe, end]
+
+                elif self.endGripItem.m_location in ["left"]:
+                    self.points = [start, QPointF(pe.x(), start.y()), pe, end]
+                    if start.x() + offset < end.x():
+                        self.points = [start, ns, QPointF(ns.x(), end.y()), end]
+                        if start.y() + sheight + offset > end.y() > start.y() - sheight - offset:
+                            self.points = [start, ns, QPointF(ns.x(), ns.y() - sheight),
+                                           QPointF(pe.x(), ns.y() - sheight), pe, end]
+                    elif end.y() - eheight - offset < start.y() < end.y() + eheight + offset:
+                        if end.y() > start.y():
+                            self.points = [start, ns, QPointF(ns.x(), pe.y() - eheight),
+                                           QPointF(pe.x(), pe.y() - eheight), pe, end]
+                        else:
+                            self.points = [start, ns, QPointF(ns.x(), pe.y() + eheight),
+                                           QPointF(pe.x(), pe.y() + eheight), pe, end]
+
+
+            elif self.startGripItem.m_location in ["top"]:
+                if self.endGripItem.m_location in ["top"]:
+                    self.points = [self.startPoint, QPointF(start.x(), pe.y()),
+                                   pe, self.endPoint]
+                    if start.y() < end.y():
+                        self.points = [self.startPoint, ns, QPointF(pe.x(), ns.y()), self.endPoint]
+                    if start.x() + swidth > end.x() > start.x() - swidth or end.x() + ewidth > start.x() > end.x() - ewidth:
+                        x = max(start.x() + swidth, end.x() + ewidth)
+                        x += offset
+                        if start.x() > end.x():
+                            x = min(start.x() - swidth, end.x() - ewidth)
+                            x -= offset
+                        self.points = [start, ns, QPointF(x, ns.y()),
+                                       QPointF(x, pe.y()), pe, end]
+
+                elif self.endGripItem.m_location in ["bottom"]:
+                    self.points = [self.startPoint, ns, QPointF((x0 + x1) / 2, ns.y()), QPointF((x0 + x1) / 2, pe.y()),
+                                   pe, self.endPoint]
+                    if start.y() - offset > end.y():
+                        self.points = [start, QPointF(start.x(), (y0 + y1) / 2), QPointF(end.x(), (y0 + y1) / 2),
+                                       self.endPoint]
+                    elif start.x() + swidth > end.x() > start.x() - swidth or end.x() + ewidth > start.x() > end.x() - ewidth:
+                        x = max(start.x() + swidth, end.x() + ewidth)
+                        x += offset
+                        if start.x() > end.x():
+                            x = min(start.x() - swidth, end.x() - ewidth)
+                            x -= offset
+                        self.points = [start, ns, QPointF(x, ns.y()),
+                                       QPointF(x, pe.y()), pe, end]
+
+                elif self.endGripItem.m_location in ["right"]:
+                    y = min(ns.y(), end.y() + eheight + offset)
+                    self.points = [start, QPointF(ns.x(), y), QPointF(pe.x(), y), pe, end]
+                    if start.x() - swidth - offset < end.x() < start.x() + swidth + offset and end.y() > start.y() + offset:
+                        self.points = [start, ns, QPointF(ns.x() + swidth + offset, ns.y()),
+                                       QPointF(ns.x() + swidth + offset, pe.y()), end]
+                    elif end.y() - eheight < start.y() - offset < end.y() + eheight:
+                        self.points = [start, ns, QPointF(start.x(), end.y() - eheight),
+                                       QPointF(pe.x(), end.y() - eheight), pe, end]
+
+                elif self.endGripItem.m_location in ["left"]:
+                    y = min(ns.y(), end.y() + eheight + offset)
+                    self.points = [start, QPointF(ns.x(), y), QPointF(pe.x(), y), pe, end]
+                    if start.x() - swidth - offset < end.x() < start.x() + swidth + offset and end.y() > start.y() + offset:
+                        self.points = [start, ns, QPointF(ns.x() - swidth - offset, ns.y()),
+                                       QPointF(ns.x() - swidth - offset, pe.y()), end]
+                    elif end.y() - eheight < start.y() - offset < end.y() + eheight:
+                        self.points = [start, ns, QPointF(start.x(), end.y() - eheight),
+                                       QPointF(pe.x(), end.y() - eheight), pe, end]
+
+            elif self.startGripItem.m_location in ["bottom"]:
+                if self.endGripItem.m_location in ["top"]:
+                    self.points = [self.startPoint, ns, QPointF((x0 + x1) / 2, ns.y()), QPointF((x0 + x1) / 2, pe.y()),
+                                   pe, self.endPoint]
+                    if start.y() < end.y():
+                        self.points = [self.startPoint, ns, QPointF(pe.x(), ns.y()), self.endPoint]
+                    if start.x() + swidth > end.x() > start.x() - swidth or end.x() + ewidth > start.x() > end.x() - ewidth:
+                        x = max(start.x() + swidth, end.x() + ewidth)
+                        x += offset
+                        self.points = [start, ns, QPointF(x, ns.y()),
+                                       QPointF(x, pe.y()), pe, end]
+
+                elif self.endGripItem.m_location in ["bottom"]:
+                    self.points = [self.startPoint, ns, QPointF((x0 + x1) / 2, ns.y()), QPointF((x0 + x1) / 2, pe.y()),
+                                   pe, self.endPoint]
+                    if start.x() + swidth > end.x() > start.x() - swidth or end.x() + ewidth > start.x() > end.x() - ewidth:
+                        x = max(start.x() + swidth, end.x() + ewidth)
+                        x += offset
+                        self.points = [start, ns, QPointF(x, ns.y()),
+                                       QPointF(x, pe.y()), pe, end]
+
+                elif self.endGripItem.m_location in ["right"]:
+                    y = max(ns.y(), end.y() + eheight + offset)
+                    self.points = [start, QPointF(ns.x(), y), QPointF(pe.x(), y), pe, end]
+                    if start.x() - swidth - offset < end.x() < start.x() + swidth + offset:
+                        self.points = [start, ns, QPointF(ns.x() + swidth + offset, ns.y()),
+                                       QPointF(ns.x() + swidth + offset, pe.y()), end]
+
+                elif self.endGripItem.m_location in ["left"]:
+                    y = max(ns.y(), end.y() + eheight + offset)
+                    self.points = [start, QPointF(ns.x(), y), QPointF(pe.x(), y), pe, end]
+                    if start.x() - swidth - offset < end.x() < start.x() + swidth + offset:
+                        self.points = [start, ns, QPointF(ns.x() - swidth - offset, ns.y()),
+                                       QPointF(ns.x() - swidth - offset, pe.y()), end]
+
         # draw line
         path = QPainterPath(self.startPoint)
         for i in range(1, len(self.points)):
@@ -197,12 +471,12 @@ class Line(QGraphicsPathItem):
         # To paint path of shape
         # painter.setPen(QPen(Qt.blue, 1, Qt.SolidLine))
         # painter.drawPath(self.shape())
-        if self.isSelected():
-            self.showGripItem()
-            self._selected = True
-        elif self._selected:
-            self.hideGripItem()
-            self._selected = False
+        # if self.isSelected():
+        #     self.showGripItem()
+        #     self._selected = True
+        # elif self._selected:
+        #     self.hideGripItem()
+        #     self._selected = False
 
     def movePoints(self, index, movement):
         """move points of line
@@ -222,7 +496,7 @@ class Line(QGraphicsPathItem):
         else:
             direction = [Qt.Vertical, Qt.Horizontal]
         for i in range(1, len(self.points) - 2):
-            item = Grabber(self, i, direction[i - 1])
+            item = Grabber(self, i, direction[(i - 1)%2])
             item.setParentItem(self)
             item.setPos(self.pos())
             self.scene().addItem(item)
@@ -243,6 +517,12 @@ class Line(QGraphicsPathItem):
             grabber.setEnabled(True)
 
     def itemChange(self, change, value):
+        if change == QGraphicsItem.ItemSelectedHasChanged:
+            if value == 1:
+                self.showGripItem()
+            else:
+                self.hideGripItem()
+            return
         if change == QGraphicsItem.ItemSceneHasChanged and self.scene():
             # self.addGrabber()
             # self.updateGrabber()
@@ -280,18 +560,20 @@ class Line(QGraphicsPathItem):
             self.scene().removeItem(self)
 
     def showGripItem(self):
-        """hides grip items which contains line
+        """shows grip items which contains line
         """
         if self.startGripItem: self.startGripItem.show()
         if self.endGripItem: self.endGripItem.show()
-        # for grabber in self.m_grabber:
-        #     grabber.setSelected(True)
+        for grabber in self.m_grabbers:
+            grabber.show()
 
     def hideGripItem(self):
         """hides grip items which contains line
         """
         if self.startGripItem: self.startGripItem.hide()
         if self.endGripItem: self.endGripItem.hide()
+        for grabber in self.m_grabbers:
+            grabber.hide()
 
     def setStartGripItem(self, item):
         self.startGripItem = item

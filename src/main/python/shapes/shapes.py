@@ -66,7 +66,7 @@ class SizeGripItem(GripItem):
             self.width = annotation_item.boundingRect().width()
 
         path = QPainterPath()
-        path.addRect(QRectF(-self.width/2, -self.height/2, self.width, self.height))
+        path.addRect(QRectF(-self.width / 2, -self.height / 2, self.width, self.height))
         super(SizeGripItem, self).__init__(annotation_item, path=path, parent=parent)
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
@@ -97,7 +97,7 @@ class SizeGripItem(GripItem):
         else:
             self.width = self.parentItem().boundingRect().width()
         path = QPainterPath()
-        path.addRect(QRectF(-self.width/2, -self.height/2, self.width, self.height))
+        path.addRect(QRectF(-self.width / 2, -self.height / 2, self.width, self.height))
         self.setPath(path)
 
     def updatePosition(self):
@@ -225,7 +225,6 @@ class LineGripItem(GripItem):
         # initialize a line and add on scene
         startPoint = endPoint = self.parentItem().mapToScene(self.pos())
         self.tempLine = Line(startPoint, endPoint)
-        self.tempLine.setStartGripItem(self)
         self.scene().addItem(self.tempLine)
         super().mousePressEvent(mouseEvent)
 
@@ -258,6 +257,7 @@ class LineGripItem(GripItem):
                                        self.transform())
 
             if type(item) == LineGripItem and item != self:
+                self.tempLine.setStartGripItem(self)
                 self.tempLine.setEndGripItem(item)
                 endPoint = item.parentItem().mapToScene(item.pos())
                 self.tempLine.updateLine(endPoint=endPoint)
@@ -294,11 +294,13 @@ class NodeItem(QGraphicsSvgItem):
     """
         Extends PyQt5's QGraphicsSvgItem to create the basic structure of shapes with given unit operation type
     """
+    renderer = QSvgRenderer("For sample svg_2.svg")
 
     def __init__(self, unitOperationType, parent=None):
         QGraphicsSvgItem.__init__(self, parent)
-        self.m_type = unitOperationType
-        self.m_renderer = QSvgRenderer("svg/" + unitOperationType + ".svg")
+        self.id = unitOperationType
+        self.m_renderer = NodeItem.renderer
+        # self.m_renderer = QSvgRenderer("svg/" + unitOperationType + ".svg")
         # self.m_renderer = QSvgRenderer(resourceManager.get_resource(f'toolbar/{unitOperationType}.svg'))
         self.setSharedRenderer(self.m_renderer)
         # set initial size of item
@@ -330,7 +332,10 @@ class NodeItem(QGraphicsSvgItem):
         """
         if not self.m_renderer:
             QGraphicsSvgItem.paint(self, painter, option, widget)
-        self.m_renderer.render(painter, self.boundingRect())
+        elif self.id:
+            self.m_renderer.render(painter,self.id, self.boundingRect())
+        else:
+            self.m_renderer.render(painter, self.boundingRect())
         if self.isSelected():
             self.showGripItem()
 
