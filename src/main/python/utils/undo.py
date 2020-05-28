@@ -11,6 +11,10 @@ regex = compile(r"([a-z][A-Z])")
 
 def objectName(obj):
     name = regex.sub(repl, obj.m_type if obj.__class__.__name__ == 'NodeItem' else obj.__class__.__name__)
+    # if obj.__class__.__name__ != 'line':
+    #     name = 'Draw ' + name[0].upper() + name[1:]
+    # else:
+    #     name = 'Add ' + 
     return name[0].upper() + name[1:] + ' symbol'
 
 class addCommand(QUndoCommand):
