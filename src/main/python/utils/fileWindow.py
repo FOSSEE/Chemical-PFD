@@ -10,6 +10,7 @@ from . import dialogs
 from .graphics import customView
 from .canvas import canvas
 from .tabs import customTabWidget
+from .undo import resizeCommand
 
 
 class fileWindow(QMdiSubWindow):
@@ -125,10 +126,7 @@ class fileWindow(QMdiSubWindow):
         currentTab = self.tabber.currentWidget()
         result = dialogs.paperDims(self, currentTab._canvasSize, currentTab._ppi, currentTab.objectName()).exec_()
         if result is not None:
-            currentTab.canvasSize, currentTab.ppi = result
-            return self.resizeHandler()
-        else:
-            return None
+            currentTab.painter.undoStack.push(resizeCommand(result, currentTab, self))
         
     def sideViewToggle(self):
         #Function checks if current side view tab is set, and toggles view as required

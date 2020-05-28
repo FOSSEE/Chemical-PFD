@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QDialog, QPushButton, QFormLayout, QComboBox, QLabel, QMessageBox, QDialogButtonBox
+from PyQt5.QtWidgets import QDialog, QPushButton, QFormLayout, QComboBox, QLabel, QMessageBox, QDialogButtonBox, QHBoxLayout
 from .data import sheetDimensionList, ppiList
 
 class paperDims(QDialog):
@@ -104,7 +104,7 @@ def saveEvent(parent = None):
 def showUndoDialog(undoView, parent):
     dialogBox = QDialog(parent)
     dialogBox.resize(400, 400)
-    layout = QFormLayout(dialogBox)
+    layout = QHBoxLayout(dialogBox)
     layout.addWidget(undoView)
     dialogBox.setWindowTitle("Undo Stack")
     dialogBox.show()

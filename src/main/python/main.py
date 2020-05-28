@@ -13,6 +13,7 @@ from utils.fileWindow import fileWindow
 from utils.data import ppiList, sheetDimensionList
 from utils import dialogs
 from utils.toolbar import toolbar
+from utils.app import app
 
 import shapes
 
@@ -34,8 +35,10 @@ class appWindow(QMainWindow):
         self.menuFile.addAction("Save", self.saveProject)
         
         self.menuEdit = titleMenu.addMenu('Edit')
-        self.undo = self.menuEdit.addAction("Undo")
-        self.redo = self.menuEdit.addAction("Redo")
+        self.undo = self.menuEdit.addAction("Undo", lambda x=self: x.activeScene.painter.undoAction.trigger())
+        self.redo = self.menuEdit.addAction("Redo", lambda x=self: x.activeScene.painter.redoAction.trigger())
+        
+        self.menuEdit.addAction("Show Undo Stack", lambda x=self: x.activeScene.painter.createUndoView(self) )
         
         self.menuGenerate = titleMenu.addMenu('Generate') #Generate menu
         self.menuGenerate.addAction("Image", self.saveImage)
@@ -54,14 +57,14 @@ class appWindow(QMainWindow):
         self.mdi.setDocumentMode(False)
         
         #declare main window layout
-        # self.mainWidget.setLayout(mainLayout)
         self.setCentralWidget(self.mdi)
         self.resize(1280, 720) #set collapse dim
         self.mdi.subWindowActivated.connect(self.tabSwitched)
     
     def updateMenuBar(self):
-        self.undo.setAction(self.activeScene.painter.undoAction)    
-        self.redo.setAction(self.activeScene.painter.redoAction) 
+        # used to update menu bar undo-redo buttons to current scene
+        self.undo.triggered.connect(self.activeScene.painter.undoAction.trigger())
+        self.redo.triggered.connect(self.activeScene.painter.redoAction.trigger())
                 
     def createToolbar(self):
         #place holder for toolbar with fixed width, layout may change
@@ -75,10 +78,11 @@ class appWindow(QMainWindow):
     def toolButtonClicked(self, object):
         currentDiagram = self.mdi.currentSubWindow().tabber.currentWidget().painter
         if currentDiagram:
-            graphic = getattr(shapes, object['object'])(*object['args'])
-            graphic.setPen(QPen(Qt.black, 2))
-            graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
+            graphic = getattr(shapes, object['object'])(*map(lambda x: int(x) if x.isdigit() else x, object['args']))
+            # graphic.setPen(QPen(Qt.black, 2))
+            # graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
             currentDiagram.addItemPlus(graphic) 
+            graphic.setPos(20, 20)
 
     def newProject(self):
         #call to create a new file inside mdi area
@@ -93,7 +97,6 @@ class appWindow(QMainWindow):
         if self.count > 1: #switch to tab view if needed
             self.mdi.setViewMode(QMdiArea.TabbedView)
         project.show()
-        project.tabber.currentWidget().painter.createUndoView(self)
                 
     def openProject(self):
         #show the open file dialog to open a saved file, then unpickle it.
@@ -203,8 +206,7 @@ class appWindow(QMainWindow):
                 #donot delete, to manage undo redo
         
         
-if __name__ == '__main__':
-    app = ApplicationContext()       # 1. Instantiate ApplicationContext
+if __name__ == '__main__':      # 1. Instantiate ApplicationContext
     main = appWindow()
     main.show()
     exit_code = app.app.exec_()      # 2. Invoke appctxt.app.exec_()

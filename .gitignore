@@ -3,4 +3,4 @@ src/main/python/experimental/*
 *.pfd
 .vscode
 .vscode/*.json
-.idea/
+src/main/resources/base/toolbar/*.png
