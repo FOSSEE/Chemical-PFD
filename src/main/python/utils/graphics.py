@@ -20,6 +20,7 @@ class customView(QGraphicsView):
         self.setDragMode(True) #sets pannable using mouse
         self.setAcceptDrops(True) #sets ability to accept drops
         if scene:
+            #create necessary undo redo actions to accept keyboard shortcuts
             self.addAction(scene.undoAction)
             self.addAction(scene.redoAction)
             self.addAction(scene.deleteAction)
@@ -43,10 +44,12 @@ class customView(QGraphicsView):
         #defines item drop, fetches text, creates corresponding QGraphicItem and adds it to scene
         if QDropEvent.mimeData().hasText():
             #QDropEvent.mimeData().text() defines intended drop item, the pos values define position
-            graphic = getattr(shapes, QDropEvent.mimeData().text())(QDropEvent.pos().x()-150, QDropEvent.pos().y()-150, 300, 300)
-            graphic.setPen(QPen(Qt.black, 2))
-            graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
-            self.scene().addItemPlus(graphic) 
+            obj = QDropEvent.mimeData().text().split('/')
+            graphic = getattr(shapes, obj[0])(*map(lambda x: int(x) if x.isdigit() else x, obj[1:]))
+            # graphic.setPen(QPen(Qt.black, 2))
+            # graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
+            self.scene().addItemPlus(graphic)
+            graphic.setPos(QDropEvent.pos().x(), QDropEvent.pos().y())
             QDropEvent.acceptProposedAction()
      
     def wheelEvent(self, QWheelEvent):
@@ -78,17 +81,16 @@ class customView(QGraphicsView):
         
 class customScene(QGraphicsScene):
     """
-    re-implement QGraphicsScene for future functionality 
-    hint: QUndoFramework
+    Extends QGraphicsScene with undo-redo functionality
     """
     def __init__(self, *args, parent=None):
         super(customScene, self).__init__(*args,  parent=parent)
         
-        self.undoStack = QUndoStack(self)
-        self.createActions()
-        
+        self.undoStack = QUndoStack(self) #Used to store undo-redo moves
+        self.createActions() #creates necessary actions that need to be called for undo-redo
 
     def createActions(self):
+        # helper function to create delete, undo and redo shortcuts
         self.deleteAction = QAction("Delete Item", self)
         self.deleteAction.setShortcut(Qt.Key_Delete)
         self.deleteAction.triggered.connect(self.deleteItem)
@@ -99,38 +101,40 @@ class customScene(QGraphicsScene):
         self.redoAction.setShortcut(QKeySequence.Redo)
     
     def createUndoView(self, parent):
+        # creates an undo stack view for current QGraphicsScene
         undoView = QUndoView(self.undoStack, parent)
-        # undoView.resize(400, 400)
-        # undoView.show()
-        # undoView.setAttribute(Qt.WA_QuitOnClose, False)
         showUndoDialog(undoView, parent)
 
     def deleteItem(self):
+        # (slot) used to delete all selected items, and add undo action for each of them
         if self.selectedItems():
             for item in self.selectedItems():
                 self.undoStack.push(deleteCommand(item, self))
             
     def itemMoved(self, movedItem, lastPos):
+        #item move event, checks if item is moved
         self.undoStack.push(moveCommand(movedItem, lastPos))
     
     def addItemPlus(self, item):
-        # returnVal =  self.addItem(item)
+        # extended add item method, so that a corresponding undo action is also pushed
         self.undoStack.push(addCommand(item, self))
-        # return returnVal
-    
+        
     def mousePressEvent(self, event):
-        bdsp = event.buttonDownScenePos(Qt.LeftButton)
-        point = QPointF(bdsp.x(), bdsp.y())
-        itemList = self.items(point)
-        self.movingItem = itemList[0] if itemList else None
+        # overloaded mouse press event to check if an item was moved
+        bdsp = event.buttonDownScenePos(Qt.LeftButton) #get click pos
+        point = QPointF(bdsp.x(), bdsp.y()) #create a Qpoint from click pos
+        itemList = self.items(point) #get items at said point
+        self.movingItem = itemList[0] if itemList else None #set first item in list as moving item
         if self.movingItem and event.button() == Qt.LeftButton:
-            self.oldPos = self.movingItem.pos()
-        self.clearSelection()
+            self.oldPos = self.movingItem.pos() #if left click is held, then store old pos
+        self.clearSelection() #clears selected items
         return super(customScene, self).mousePressEvent(event)
     
     def mouseReleaseEvent(self, event):
+        # overloaded mouse release event to check if an item was moved
         if self.movingItem and event.button() == Qt.LeftButton:
             if self.oldPos != self.movingItem.pos():
+                #if item pos had changed, when mouse was realeased, emit itemMoved signal
                 self.itemMoved(self.movingItem, self.oldPos)
-            self.movingItem = None
+            self.movingItem = None #clear movingitem reference
         return super(customScene, self).mouseReleaseEvent(event)

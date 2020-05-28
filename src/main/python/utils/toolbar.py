@@ -2,14 +2,14 @@ from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtCore import QSize, Qt, pyqtSignal, QMimeData
 from PyQt5.QtGui import QIcon, QDrag
 from PyQt5.QtWidgets import (QBoxLayout, QDockWidget, QGridLayout, QLineEdit,
-                             QScrollArea, QToolButton, QWidget, QApplication)
+                             QScrollArea, QToolButton, QWidget, QApplication, QStyle)
 from re import search, IGNORECASE
 
 from .data import toolbarItems
-from .funcs import grouper
+from .app import fileImporter
 from .layout import flowLayout
 
-resourceManager = ApplicationContext() #Used to load images, mainly toolbar icons
+# resourceManager = ApplicationContext() #Used to load images, mainly toolbar icons
 
 class toolbar(QDockWidget):
     """
@@ -38,13 +38,15 @@ class toolbar(QDockWidget):
         
         #create a scrollable area to house all buttons
         self.diagArea = QScrollArea(self)
-        self.layout.addWidget(self.diagArea)
+        self.diagArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.diagArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.diagArea.setWidgetResizable(True)
+        self.layout.addWidget(self.diagArea, stretch=1)
         self.diagAreaWidget = QWidget(self.diagArea) #inner widget for scroll area
         #custom layout for inner widget
         self.diagAreaLayout = flowLayout(self.diagAreaWidget)
         
-        # self.diagArea.setWidget() #set inner widget to scroll area
-        self.setWidget(self.widget) #set main widget to dockwidget
+        self.setWidget(self.widget) #set main widget to dockwidget        
     
     def clearLayout(self):
         # used to clear all items from toolbar, by parenting it to the toolbar instead
@@ -59,6 +61,7 @@ class toolbar(QDockWidget):
         self.clearLayout() #clears layout
         for item in list:
             self.diagAreaLayout.addWidget(self.toolbarButtonDict[item])
+        self.resize()
             
     def searchQuery(self):
         # shorten toolbaritems list with search items
@@ -74,12 +77,14 @@ class toolbar(QDockWidget):
         # called when main window resizes, overloading resizeEvent caused issues.
         parent = self.parentWidget() #used to get parent dimensions
         self.layout.setDirection(QBoxLayout.TopToBottom) # here so that a horizontal toolbar can be implemented later
-        self.setFixedWidth(.12*parent.width()) #12% of parent width
-        self.setFixedHeight(self.height()) #span available height
-        width = .12*parent.width()  #12% of parent width
-        self.diagAreaWidget.setFixedWidth(width) #set inner widget width
+        # self.setFixedHeight(self.height()) #span available height
+        width = self.width() - QApplication.style().pixelMetric(QStyle.PM_ScrollBarExtent)
         # the following line, sets the required height for the current width, so that blank space doesnt occur
-        self.diagAreaWidget.setFixedHeight(self.diagAreaLayout.heightForWidth(width))
+        self.diagAreaWidget.setMinimumHeight(self.diagAreaLayout.heightForWidth(width))
+        self.setMinimumWidth(.17*parent.width()) #12% of parent width
+        # self.setMinimumWidth(self.diagAreaLayout.minimumSize().width()) #12% of parent width
+        self.diagAreaWidget.setLayout(self.diagAreaLayout)
+        self.diagArea.setWidget(self.diagAreaWidget)
 
     def toolbarItems(self, items):
         #helper functions to create required buttons
@@ -103,10 +108,12 @@ class toolbarButton(QToolButton):
     def __init__(self, parent = None, item = None):
         super(toolbarButton, self).__init__(parent)
         #uses fbs resource manager to get icons
-        self.setIcon(QIcon(resourceManager.get_resource(f'toolbar/{item["icon"]}')))
-        self.setIconSize(QSize(40, 40)) #unecessary but left for future references
+        self.setIcon(QIcon(fileImporter(f'toolbar/{item["icon"]}')))
+        self.setIconSize(QSize(64, 64)) #unecessary but left for future references
         self.dragStartPosition = None #intialize value for drag event
         self.itemObject = item['object'] #refer current item object, to handle drag mime
+        for i in item['args']:
+            self.itemObject += f"/{i}"
         self.setText(item["name"]) #button text
         self.setToolTip(item["name"]) #button tooltip
 
@@ -135,4 +142,4 @@ class toolbarButton(QToolButton):
     
     def minimumSizeHint(self):
         #defines button size
-        return QSize(30, 30)
+        return QSize(40, 40)
