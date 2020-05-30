@@ -212,7 +212,7 @@ class LineGripItem(GripItem):
         # initialize a line and add on scene
         startPoint = endPoint = self.parentItem().mapToScene(self.pos())
         self.tempLine = Line(startPoint, endPoint)
-        self.scene().addItem(self.tempLine)
+        self.scene().addItemPlus(self.tempLine)
         super().mousePressEvent(mouseEvent)
 
     def mouseMoveEvent(self, mouseEvent):
@@ -286,6 +286,7 @@ class NodeItem(QGraphicsSvgItem):
 
     def __init__(self, unitOperationType, parent=None):
         QGraphicsSvgItem.__init__(self, parent)
+        self.m_type = unitOperationType
         self.id = None
         self.m_renderer = NodeItem.renderer
         # if each svg is seperate file
@@ -605,9 +606,9 @@ class InducedDraftCooling(NodeItem):
         super(InducedDraftCooling, self).__init__("InducedDraftCooling", parent=None)
 
 
-class jacketedMixingVessel(NodeItem):
+class JacketedMixingVessel(NodeItem):
     def __init__(self):
-        super(jacketedMixingVessel, self).__init__("jacketedMixingVessel", parent=None)
+        super(JacketedMixingVessel, self).__init__("JacketedMixingVessel", parent=None)
 
 
 class LiquidRingCompressor(NodeItem):
