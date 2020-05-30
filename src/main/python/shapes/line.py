@@ -2,6 +2,7 @@ from PyQt5.QtGui import QPen, QPainterPath, QBrush, QPainterPathStroker, QPainte
 from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPathItem
 from PyQt5.QtCore import Qt, QPointF, QRectF
 
+
 class Grabber(QGraphicsPathItem):
     """
     Extends QGraphicsPathItem to create grabber for line for moving a particular segment
@@ -373,7 +374,7 @@ class Line(QGraphicsPathItem):
                         self.points = [start, ns, QPointF(ns.x() - swidth - offset, ns.y()),
                                        QPointF(ns.x() - swidth - offset, pe.y()), end]
                     elif end.y() - eheight < start.y() - offset < end.y() + eheight:
-                        self.points = [start, ns, QPointF(start.x(), end.y() - eheight),
+                        self.points = [start, QPointF(start.x(), end.y() - eheight),
                                        QPointF(pe.x(), end.y() - eheight), pe, end]
 
             elif self.startGripItem.m_location in ["bottom"]:
