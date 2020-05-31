@@ -126,6 +126,46 @@ class Line(QGraphicsPathItem):
         # initiates path
         self.createPath()
 
+    def advance(self, phase):
+        # items = self.collidingItems(Qt.IntersectsItemShape)
+        items = self.scene().items(self.shape(),Qt.IntersectsItemShape,Qt.DescendingOrder)
+        self.commonPaths = []
+        for item in items:
+            if type(item) in [type(self)]:
+                if item == self:
+                    break
+                # origin = self.mapFromItem(item, 0, 0)
+                shape = item.shape()
+                shape = self.mapFromItem(item, item.shape())
+                commonPath = self.shape().intersected(shape)
+                self.commonPaths.append(commonPath)
+    
+    def paint(self, painter, option, widget):
+        color = Qt.red if self.isSelected() else Qt.black
+        painter.setPen(QPen(color, 2, self.penStyle))
+        path = self.path()
+        painter.drawPath(path)
+        for p in self.commonPaths:
+            print("length = ",p.length(),"element = ",p.elementCount())
+            for i in range(p.elementCount()):
+                print(p.elementAt(i).x,p.elementAt(i).y)
+            # if p.elementAt(0).x == p.elementAt(1).x:
+            #     pass
+            painter.save()
+            painter.setPen(Qt.darkYellow)
+            painter.setBrush(Qt.darkYellow)
+            painter.drawPath(p)
+            painter.restore()
+        # painter.setPen(QPen(QBrush(Qt.black),-1))
+        # painter.setBrush(QBrush(Qt.red))
+        # print(painter.pen().width())
+        # painter.drawPath(path)
+
+        # To paint path of shape
+        # painter.setPen(QPen(Qt.blue, 1, Qt.SolidLine))
+        # painter.drawPath(self.shape())
+
+
     def createPath(self):
         """
         creates initial path and stores it's points
@@ -412,7 +452,7 @@ class Line(QGraphicsPathItem):
                         self.points = [start, ns, QPointF(ns.x() - swidth - offset, ns.y()),
                                        QPointF(ns.x() - swidth - offset, pe.y()), end]
 
-        # draw line
+        # path of line
         path = QPainterPath(self.startPoint)
         for i in range(1, len(self.points)):
             path.lineTo(self.points[i])
@@ -463,21 +503,6 @@ class Line(QGraphicsPathItem):
         qp.setWidth(8)
         path = qp.createStroke(self.path())
         return path
-
-    def paint(self, painter, option, widget):
-        color = Qt.red if self.isSelected() else Qt.black
-        painter.setPen(QPen(color, 2, self.penStyle))
-        painter.drawPath(self.path())
-
-        # To paint path of shape
-        # painter.setPen(QPen(Qt.blue, 1, Qt.SolidLine))
-        # painter.drawPath(self.shape())
-        # if self.isSelected():
-        #     self.showGripItem()
-        #     self._selected = True
-        # elif self._selected:
-        #     self.hideGripItem()
-        #     self._selected = False
 
     def movePoints(self, index, movement):
         """move points of line
@@ -543,6 +568,7 @@ class Line(QGraphicsPathItem):
             self.endPoint = endPoint
             self.createPath()
             self.updateGrabber()
+            self.scene().update()
             return
 
         if self.startGripItem and self.endGripItem:
