@@ -125,6 +125,7 @@ class Line(QGraphicsPathItem):
         self.setAcceptHoverEvents(True)
         # initiates path
         self.createPath()
+        self.commonPaths=[]
 
     def advance(self, phase):
         # items = self.collidingItems(Qt.IntersectsItemShape)
