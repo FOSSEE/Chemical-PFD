@@ -213,12 +213,11 @@ class Line(QGraphicsPathItem):
                         bool = y2>y1
                         if bool:
                             path.lineTo(point - QPointF(0, 8))
-                        else:
-                            path.lineTo(point + QPointF(0, 8))
-                        path.arcTo(QRectF(x-8, y-8, 16, 16), 90, -180)
-                        if bool:
+                            path.arcTo(QRectF(x-8, y-8, 16, 16), 90, -180)
                             path.moveTo(point + QPointF(0, 8))
                         else:
+                            path.lineTo(point + QPointF(0, 8))
+                            path.arcTo(QRectF(x-8, y-8, 16, 16), -90, 180)
                             path.moveTo(point - QPointF(0, 8))
                 elif y == y1 == y2:
                     #horizontal
@@ -226,12 +225,11 @@ class Line(QGraphicsPathItem):
                         bool = x2>x1
                         if bool:
                             path.lineTo(point - QPointF(8, 0))
-                        else:
-                            path.lineTo(point - QPointF(8, 0))
-                        path.arcTo(QRectF(x-8, y-8, 16, 16), 180, 180)
-                        if bool:
+                            path.arcTo(QRectF(x-8, y-8, 16, 16), 180, 180)
                             path.moveTo(point + QPointF(8, 0))
                         else:
+                            path.lineTo(point - QPointF(8, 0))
+                            path.arcTo(QRectF(x-8, y-8, 16, 16), 0, -180)
                             path.lineTo(point - QPointF(8, 0))
             path.lineTo(self.points[i+1])
                 
