@@ -10,9 +10,7 @@ from PyQt5.QtWidgets import (QGraphicsColorizeEffect, QGraphicsEllipseItem,
                              QLineEdit)
 
 from .line import Line
-from  utils.app import fileImporter
-
-
+from utils.app import fileImporter
 
 class GripItem(QGraphicsPathItem):
     """
