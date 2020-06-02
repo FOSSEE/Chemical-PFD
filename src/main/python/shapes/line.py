@@ -518,6 +518,10 @@ class Line(QGraphicsPathItem):
         updates points of line when grabber is moved
         :return:
         """
+        if self.startGripItem:
+            self.points[0]= self.startPoint
+        if self.endGripItem:
+            self.points[len(self.points) - 1] = self.endPoint
         if self.startGripItem.m_location in ["left", "right"]:
             point = self.points[1]
             self.points[1] = QPointF(point.x(), self.startPoint.y())
@@ -527,7 +531,6 @@ class Line(QGraphicsPathItem):
             else:
                 point = self.points[len(self.points) - 2]
                 self.points[len(self.points) - 2] = QPointF(self.endPoint.x(), point.y())
-
         else:
             point = self.points[1]
             self.points[1] = QPointF(self.startPoint.x(), point.y())
@@ -537,6 +540,7 @@ class Line(QGraphicsPathItem):
             else:
                 point = self.points[len(self.points) - 2]
                 self.points[len(self.points) - 2] = QPointF(self.endPoint.x(), point.y())
+
 
     def shape(self):
         """generates outline for path
