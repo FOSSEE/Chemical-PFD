@@ -71,7 +71,6 @@ class Grabber(QGraphicsPathItem):
         return self.shape().boundingRect()
 
     def mousePressEvent(self, event):
-        print('grabber clicked', self)
         super(Grabber, self).mousePressEvent(event)
 
     def hoverEnterEvent(self, event):
@@ -139,7 +138,6 @@ class LineLabel(QGraphicsTextItem):
         # print(self.pos())
 
     def itemChange(self, change, value):
-        print("label change",change,value)
         # if change == QGraphicsItem.ItemPositionChange:
         #     print("label change", change, value)
         return super(LineLabel, self).itemChange(change,value)
@@ -188,7 +186,9 @@ class Line(QGraphicsPathItem):
                 for polygon in polygons:
                     center = polygon.boundingRect().center()
                     self.commonPaths.append(center)
+                
                 # self.commonPaths[commonPath] = item
+        print(self.commonPaths)
         self.update()
     
     def paint(self, painter, option, widget):
@@ -198,11 +198,29 @@ class Line(QGraphicsPathItem):
         # painter.drawPath(path)
         path = QPainterPath(self.startPoint)
         # iterating over all points of line
-        for i in range(1, len(self.points)):
+        for i in range(len(self.points) - 1):
+            # for point in self.commonPaths:
+            #     # point is center of common path
+            #     pass
             for point in self.commonPaths:
-                # point is center of common path
-                pass
-            path.lineTo(self.points[i])
+                x1, y1 = self.points[i].x(), self.points[i].y()
+                x2, y2 = self.points[i+1].x(), self.points[i+1].y()
+                x, y = point.x(), point.y()
+                # if not x1 * (y - y2) + x * (y2 - y1) + x2 * (y1 - y) :
+                if x == x1 == x2:
+                    #vertical
+                    if min(y1, y2) <= y < max(y1, y2):
+                        path.lineTo(point - QPointF(0, 8))
+                        path.arcTo(QRectF(x-8, y-8, 16, 16), 90, -180)
+                        path.moveTo(point + QPointF(0, 8))
+                elif y == y1 == y2:
+                    #horizontal
+                    if min(x1, x2) <= x < max(x1, x2):
+                        path.lineTo(point - QPointF(8, 0))
+                        path.arcTo(QRectF(x-8, y-8, 16, 16), 180, 180)
+                        path.moveTo(point + QPointF(8, 0))
+            path.lineTo(self.points[i+1])
+                
         painter.drawPath(path)
 
 
