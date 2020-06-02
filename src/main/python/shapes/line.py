@@ -1,5 +1,6 @@
+import math
 from PyQt5.QtGui import QPen, QPainterPath, QBrush, QPainterPathStroker, QPainter, QCursor
-from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPathItem
+from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPathItem, QGraphicsTextItem
 from PyQt5.QtCore import Qt, QPointF, QRectF
 
 
@@ -99,6 +100,50 @@ class Grabber(QGraphicsPathItem):
         self.pen = QPen(Qt.white, -1, Qt.SolidLine)
         self.brush = QBrush(Qt.transparent)
 
+class LineLabel(QGraphicsTextItem):
+    def __init__(self, parent=None):
+        super(LineLabel, self).__init__(parent=parent)
+        self.setTextInteractionFlags(Qt.TextEditorInteraction)
+        self.setFlags(QGraphicsItem.ItemIsMovable |
+                      QGraphicsItem.ItemIsSelectable |
+                      QGraphicsItem.ItemIsFocusable)
+        self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
+        self.setPlainText("abc")
+
+    def paint(self, painter, option, widget):
+        super(LineLabel, self).paint(painter,option,widget)
+        painter.drawEllipse(self.boundingRect())
+
+    def updateLabel(self):
+        points = self.parentItem().points
+        # min_A = QPointF()
+        # min_B =QPointF()
+        # min_dis =math.inf
+        # for i in range(1, len(points)):
+        #     A = points[i - 1]
+        #     B = points[i]
+        #     C = self.pos()
+        #     BAx = B.x() - A.x()
+        #     BAy = B.y() - A.y()
+        #     CAx = C.x() - A.x()
+        #     CAy = C.y() - A.y()
+        #     length = math.sqrt(BAx * BAx + BAy * BAy)
+        #     if length >0:
+        #         dis = (BAx*CAy - CAx*BAy)/length
+        #         if abs(dis) < abs(min_dis):
+        #             min_dis=dis
+        #             min_A=A
+        #             min_B=B
+        #
+        # self.setPos(self.parentItem().mapFromScene(QPointF(min_A)))
+        # print(self.pos())
+
+    def itemChange(self, change, value):
+        print("label change",change,value)
+        # if change == QGraphicsItem.ItemPositionChange:
+        #     print("label change", change, value)
+        return super(LineLabel, self).itemChange(change,value)
+
 
 class Line(QGraphicsPathItem):
     """
@@ -126,45 +171,41 @@ class Line(QGraphicsPathItem):
         # initiates path
         self.createPath()
         self.commonPaths=[]
+        self.label = LineLabel(self)
 
     def advance(self, phase):
         # items = self.collidingItems(Qt.IntersectsItemShape)
-        items = self.scene().items(self.shape(),Qt.IntersectsItemShape,Qt.DescendingOrder)
+        items = self.scene().items(self.shape(),Qt.IntersectsItemShape,Qt.AscendingOrder)
         self.commonPaths = []
         for item in items:
             if type(item) in [type(self)]:
                 if item == self:
                     break
-                # origin = self.mapFromItem(item, 0, 0)
                 shape = item.shape()
                 shape = self.mapFromItem(item, item.shape())
                 commonPath = self.shape().intersected(shape)
-                self.commonPaths.append(commonPath)
+                polygons = commonPath.toSubpathPolygons()
+                for polygon in polygons:
+                    center = polygon.boundingRect().center()
+                    self.commonPaths.append(center)
+                # self.commonPaths[commonPath] = item
+        self.update()
     
     def paint(self, painter, option, widget):
         color = Qt.red if self.isSelected() else Qt.black
         painter.setPen(QPen(color, 2, self.penStyle))
-        path = self.path()
-        painter.drawPath(path)
-        for p in self.commonPaths:
-            print("length = ",p.length(),"element = ",p.elementCount())
-            for i in range(p.elementCount()):
-                print(p.elementAt(i).x,p.elementAt(i).y)
-            # if p.elementAt(0).x == p.elementAt(1).x:
-            #     pass
-            painter.save()
-            painter.setPen(Qt.darkYellow)
-            painter.setBrush(Qt.darkYellow)
-            painter.drawPath(p)
-            painter.restore()
-        # painter.setPen(QPen(QBrush(Qt.black),-1))
-        # painter.setBrush(QBrush(Qt.red))
-        # print(painter.pen().width())
+        # path = self.path()
         # painter.drawPath(path)
+        path = QPainterPath(self.startPoint)
+        # iterating over all points of line
+        for i in range(1, len(self.points)):
+            for point in self.commonPaths:
+                # point is center of common path
+                pass
+            path.lineTo(self.points[i])
+        painter.drawPath(path)
 
-        # To paint path of shape
-        # painter.setPen(QPen(Qt.blue, 1, Qt.SolidLine))
-        # painter.drawPath(self.shape())
+
 
 
     def createPath(self):
