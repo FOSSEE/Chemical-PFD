@@ -210,8 +210,7 @@ class Line(QGraphicsPathItem):
                 if x == x1 == x2:
                     #vertical
                     if min(y1, y2) <= y < max(y1, y2):
-                        bool = y2>y1
-                        if bool:
+                        if y2>y1:
                             path.lineTo(point - QPointF(0, 8))
                             path.arcTo(QRectF(x-8, y-8, 16, 16), 90, -180)
                             path.moveTo(point + QPointF(0, 8))
@@ -222,14 +221,13 @@ class Line(QGraphicsPathItem):
                 elif y == y1 == y2:
                     #horizontal
                     if min(x1, x2) <= x < max(x1, x2):
-                        bool = x2>x1
-                        if bool:
+                        if x2>x1:
                             path.lineTo(point - QPointF(8, 0))
                             path.arcTo(QRectF(x-8, y-8, 16, 16), 180, 180)
                             path.moveTo(point + QPointF(8, 0))
                         else:
                             path.lineTo(point - QPointF(8, 0))
-                            path.arcTo(QRectF(x-8, y-8, 16, 16), 0, -180)
+                            path.arcTo(QRectF(x-8, y-8, 16, 16), 0, 180)
                             path.lineTo(point - QPointF(8, 0))
             path.lineTo(self.points[i+1])
                 
