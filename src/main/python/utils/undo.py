@@ -36,6 +36,7 @@ class addCommand(QUndoCommand):
         self.scene.addItem(self.diagramItem)
         self.diagramItem.setPos(self.itemPos)
         self.scene.clearSelection()
+        # print(self.diagramItem)
         self.scene.update()
         
 class deleteCommand(QUndoCommand):
