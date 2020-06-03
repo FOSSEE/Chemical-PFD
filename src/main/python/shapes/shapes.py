@@ -1,13 +1,17 @@
-# from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import (QEvent, QFile, QIODevice, QMimeData, QPointF, QRect,
+                          QRectF, QSizeF, Qt)
+from PyQt5.QtGui import (QBrush, QColor, QCursor, QDrag, QFont, QImage,
+                         QPainter, QPainterPath, QPen, QTransform)
 from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
-from PyQt5.QtWidgets import QLineEdit, QGraphicsItem, QGraphicsEllipseItem, QGraphicsProxyWidget, QGraphicsPathItem, \
-    QGraphicsSceneHoverEvent, QGraphicsColorizeEffect
-from PyQt5.QtGui import QPen, QColor, QFont, QCursor, QPainterPath, QPainter, QDrag, QBrush, QImage, QTransform
-from PyQt5.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QMimeData, QFile, QIODevice, QRect
+from PyQt5.QtWidgets import (QGraphicsColorizeEffect, QGraphicsEllipseItem,
+                             QGraphicsItem, QGraphicsPathItem,
+                             QGraphicsProxyWidget, QGraphicsSceneHoverEvent,
+                             QLineEdit)
+
+from utils.app import fileImporter
 
 from .line import Line
-from utils.app import fileImporter
 
 
 class GripItem(QGraphicsPathItem):
@@ -27,21 +31,6 @@ class GripItem(QGraphicsPathItem):
         self.setAcceptHoverEvents(True)
         self.setCursor(QCursor(Qt.PointingHandCursor))
 
-    # def hoverEnterEvent(self, event):
-    #     """
-    #     defines shape highlighting on Mouse Over
-    #     """
-    #     self.setPen(QPen(QColor("black"), 2))
-    #     self.setBrush(QColor("red"))
-    #     super(GripItem, self).hoverEnterEvent(event)
-    #
-    # def hoverLeaveEvent(self, event):
-    #     """
-    #     defines shape highlighting on Mouse Leave
-    #     """
-    #     self.setPen(QPen(Qt.transparent))
-    #     self.setBrush(Qt.transparent)
-    #     super(GripItem, self).hoverLeaveEvent(event)
 
     def mouseReleaseEvent(self, event):
         """
