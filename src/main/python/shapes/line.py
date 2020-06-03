@@ -226,9 +226,9 @@ class Line(QGraphicsPathItem):
                             path.arcTo(QRectF(x-8, y-8, 16, 16), 180, 180)
                             path.moveTo(point + QPointF(8, 0))
                         else:
-                            path.lineTo(point - QPointF(8, 0))
-                            path.arcTo(QRectF(x-8, y-8, 16, 16), 0, 180)
                             path.lineTo(point + QPointF(8, 0))
+                            path.arcTo(QRectF(x-8, y-8, 16, 16), 0, -180)
+                            path.lineTo(point - QPointF(8, 0))
             path.lineTo(self.points[i+1])
                 
         painter.drawPath(path)
