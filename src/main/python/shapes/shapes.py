@@ -14,10 +14,6 @@ from utils.app import fileImporter
 from .line import Line
 from  utils.app import fileImporter
 
-<<<<<<< HEAD
-
-=======
->>>>>>> upstream/master
 
 class GripItem(QGraphicsPathItem):
     """
