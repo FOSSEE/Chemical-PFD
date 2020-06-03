@@ -287,16 +287,10 @@ class NodeItem(QGraphicsSvgItem):
         QGraphicsSvgItem.__init__(self, parent)
         self.m_type = unitOperationType
         self.id = None
-<<<<<<< HEAD
-        self.m_renderer = NodeItem.renderer
-        # if each svg is seperate file
-        # self.m_renderer = QSvgRenderer(fileImporter(f'svg/ellipse.svg'))
-=======
         # self.m_renderer = QSvgRenderer("svg/" + unitOperationType + ".svg")
         # self.m_renderer = QSvgRenderer(fileImporter(f'svg/{unitOperationType}.svg'))
         self.m_renderer = QSvgRenderer(fileImporter(f'svg/ellipse.svg'))
         # self.m_renderer = QSvgRenderer(resourceManager.get_resource(f'toolbar/{unitOperationType}.svg'))
->>>>>>> changes
         self.setSharedRenderer(self.m_renderer)
         # set initial size of item
         self.width = 100
