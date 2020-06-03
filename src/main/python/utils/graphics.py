@@ -86,9 +86,15 @@ class customScene(QGraphicsScene):
     def __init__(self, *args, parent=None):
         super(customScene, self).__init__(*args,  parent=parent)
         
+        self.setItemIndexMethod(QGraphicsScene.NoIndex)
+        
         self.undoStack = QUndoStack(self) #Used to store undo-redo moves
         self.createActions() #creates necessary actions that need to be called for undo-redo
 
+    def update(self, *args):
+        self.advance()
+        return super(customScene, self).update(*args)
+    
     def createActions(self):
         # helper function to create delete, undo and redo shortcuts
         self.deleteAction = QAction("Delete Item", self)
@@ -114,6 +120,7 @@ class customScene(QGraphicsScene):
     def itemMoved(self, movedItem, lastPos):
         #item move event, checks if item is moved
         self.undoStack.push(moveCommand(movedItem, lastPos))
+        self.advance()
     
     def addItemPlus(self, item):
         # extended add item method, so that a corresponding undo action is also pushed
