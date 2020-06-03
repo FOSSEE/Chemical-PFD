@@ -199,12 +199,9 @@ class Line(QGraphicsPathItem):
         path = QPainterPath(self.startPoint)
         # iterating over all points of line
         for i in range(len(self.points) - 1):
-            # for point in self.commonPaths:
-            #     # point is center of common path
-            #     pass
-            for point in self.commonPaths:
-                x1, y1 = self.points[i].x(), self.points[i].y()
-                x2, y2 = self.points[i+1].x(), self.points[i+1].y()
+            x1, y1 = self.points[i].x(), self.points[i].y()
+            x2, y2 = self.points[i+1].x(), self.points[i+1].y()
+            for point in self.commonPaths.sort(key = lambda x: x.x() + x.y(), reverse=x2<x1 or y2<y1):
                 x, y = point.x(), point.y()
                 # if not x1 * (y - y2) + x * (y2 - y1) + x2 * (y1 - y) :
                 if x == x1 == x2:
