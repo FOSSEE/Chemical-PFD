@@ -1,21 +1,17 @@
-# from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import (QEvent, QFile, QIODevice, QMimeData, QPointF, QRect,
+                          QRectF, QSizeF, Qt)
+from PyQt5.QtGui import (QBrush, QColor, QCursor, QDrag, QFont, QImage,
+                         QPainter, QPainterPath, QPen, QTransform)
 from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
-from PyQt5.QtWidgets import QLineEdit, QGraphicsItem, QGraphicsEllipseItem, QGraphicsProxyWidget, QGraphicsPathItem, \
-    QGraphicsSceneHoverEvent, QGraphicsColorizeEffect
-from PyQt5.QtGui import QPen, QColor, QFont, QCursor, QPainterPath, QPainter, QDrag, QBrush, QImage, QTransform
-from PyQt5.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QMimeData, QFile, QIODevice, QRect
-
-<<<<<<< HEAD
-from line import Line
-
-
-=======
-from .line import Line
+from PyQt5.QtWidgets import (QGraphicsColorizeEffect, QGraphicsEllipseItem,
+                             QGraphicsItem, QGraphicsPathItem,
+                             QGraphicsProxyWidget, QGraphicsSceneHoverEvent,
+                             QLineEdit)
 
 from utils.app import fileImporter
->>>>>>> merge
-# resourceManager = ApplicationContext()
+
+from .line import Line
 
 
 class GripItem(QGraphicsPathItem):
@@ -35,21 +31,6 @@ class GripItem(QGraphicsPathItem):
         self.setAcceptHoverEvents(True)
         self.setCursor(QCursor(Qt.PointingHandCursor))
 
-    # def hoverEnterEvent(self, event):
-    #     """
-    #     defines shape highlighting on Mouse Over
-    #     """
-    #     self.setPen(QPen(QColor("black"), 2))
-    #     self.setBrush(QColor("red"))
-    #     super(GripItem, self).hoverEnterEvent(event)
-    #
-    # def hoverLeaveEvent(self, event):
-    #     """
-    #     defines shape highlighting on Mouse Leave
-    #     """
-    #     self.setPen(QPen(Qt.transparent))
-    #     self.setBrush(Qt.transparent)
-    #     super(GripItem, self).hoverLeaveEvent(event)
 
     def mouseReleaseEvent(self, event):
         """
@@ -232,11 +213,7 @@ class LineGripItem(GripItem):
         startPoint = endPoint = self.parentItem().mapToScene(self.pos())
         self.tempLine = Line(startPoint, endPoint)
         self.tempLine.setStartGripItem(self)
-<<<<<<< HEAD
-        self.scene().addItem(self.tempLine)
-=======
         self.scene().addItemPlus(self.tempLine)
->>>>>>> merge
         super().mousePressEvent(mouseEvent)
 
     def mouseMoveEvent(self, mouseEvent):
@@ -308,22 +285,14 @@ class NodeItem(QGraphicsSvgItem):
     def __init__(self, unitOperationType, parent=None):
         QGraphicsSvgItem.__init__(self, parent)
         self.m_type = unitOperationType
-<<<<<<< HEAD
-        self.m_renderer = QSvgRenderer("svg/" + unitOperationType + ".svg")
-=======
         # self.m_renderer = QSvgRenderer("svg/" + unitOperationType + ".svg")
         # self.m_renderer = QSvgRenderer(fileImporter(f'svg/{unitOperationType}.svg'))
         self.m_renderer = QSvgRenderer(fileImporter(f'svg/ellipse.svg'))
->>>>>>> merge
         # self.m_renderer = QSvgRenderer(resourceManager.get_resource(f'toolbar/{unitOperationType}.svg'))
         self.setSharedRenderer(self.m_renderer)
         # set initial size of item
         self.width = 100
-<<<<<<< HEAD
-        self.height = 150
-=======
         self.height = 100
->>>>>>> merge
         self.rect = QRectF(-self.width / 2, -self.height / 2, self.width, self.height)
         # set graphical settings for this item
         self.setFlags(QGraphicsSvgItem.ItemIsMovable |
@@ -334,13 +303,7 @@ class NodeItem(QGraphicsSvgItem):
         # grip items connected to this item
         self.lineGripItems = []
         self.sizeGripItems = []
-
-<<<<<<< HEAD
-=======
-    def advance(self, int):
-        print (int)
-    
->>>>>>> merge
+        
     def boundingRect(self):
         """Overrides QGraphicsSvgItem's boundingRect() virtual public function and
         returns a valid bounding
