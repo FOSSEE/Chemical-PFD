@@ -1,8 +1,9 @@
 import pickle
+import json
 import sys
 
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
-from PyQt5.QtCore import QObject, Qt, pyqtSignal
+from PyQt5.QtCore import QObject, Qt, pyqtSignal, QSize, QPoint
 from PyQt5.QtGui import QBrush, QColor, QImage, QPainter, QPalette, QPen
 from PyQt5.QtWidgets import (QComboBox, QFileDialog, QFormLayout, QVBoxLayout,
                              QHBoxLayout, QLabel, QMainWindow, QMenu,
@@ -13,7 +14,7 @@ from utils.fileWindow import fileWindow
 from utils.data import ppiList, sheetDimensionList
 from utils import dialogs
 from utils.toolbar import toolbar
-from utils.app import app
+from utils.app import app, settings
 
 import shapes
 
@@ -58,7 +59,8 @@ class appWindow(QMainWindow):
         
         #declare main window layout
         self.setCentralWidget(self.mdi)
-        self.resize(1280, 720) #set collapse dim
+        # self.resize(1280, 720) #set collapse dim
+        self.readSettings()
         self.mdi.subWindowActivated.connect(self.tabSwitched)
     
     def updateMenuBar(self):
@@ -91,7 +93,7 @@ class appWindow(QMainWindow):
         self.mdi.addSubWindow(project)
         if not project.tabList: # important when unpickling a file instead
             project.newDiagram() #create a new tab in the new file
-        project.resizeHandler()
+        # project.resizeHandler()
         project.fileCloseEvent.connect(self.fileClosed) #closed file signal to switch to sub window view
         project.tabChangeEvent.connect(self.updateMenuBar)
         if self.count > 1: #switch to tab view if needed
@@ -103,12 +105,15 @@ class appWindow(QMainWindow):
         name = QFileDialog.getOpenFileNames(self, 'Open File(s)', '', 'Process Flow Diagram (*pfd)')
         if name:
             for files in name[0]:
-                with open(files,'rb') as file:
-                    project = pickle.load(file)
+                with open(files,'r') as file:
+                    projectData = json.load(file)
+                    project = fileWindow(self.mdi)
                     self.mdi.addSubWindow(project)
-                    project.show()
+                    project.__setstate__(projectData)
                     project.resizeHandler()
-                    project.fileCloseEvent.connect(self.fileClosed)                    
+                    project.fileCloseEvent.connect(self.fileClosed)
+                    project.tabChangeEvent.connect(self.updateMenuBar)
+                    project.show()
         if self.count > 1:
             # self.tabSpace.setVisible(True)
             self.mdi.setViewMode(QMdiArea.TabbedView)
@@ -133,7 +138,7 @@ class appWindow(QMainWindow):
     
     def tabSwitched(self, window):
         #handle window switched edge case
-        if window:
+        if window and window.tabCount:
             window.resizeHandler()
                 
     def resizeEvent(self, event):
@@ -148,13 +153,30 @@ class appWindow(QMainWindow):
         if len(self.activeFiles) and not dialogs.saveEvent(self):
             event.ignore()            
         else:
-            event.accept()            
+            event.accept()
+        self.writeSettings()       
     
     def fileClosed(self, index):
         #checks if the file tab menu needs to be removed
         if self.count <= 2 :
             self.mdi.setViewMode(QMdiArea.SubWindowView)
-            
+    
+    def writeSettings(self):
+        settings.beginGroup("MainWindow")
+        settings.setValue("maximized", self.isMaximized())
+        if not self.isMaximized():
+            settings.setValue("size", self.size())
+            settings.setValue("pos", self.pos())
+        settings.endGroup()
+    
+    def readSettings(self):
+        settings.beginGroup("MainWindow")
+        self.resize(settings.value("size", QSize(1280, 720)))
+        self.move(settings.value("pos", QPoint(320, 124)))
+        if settings.value("maximized", False, type=bool):
+            self.showMaximized()
+        settings.endGroup()
+      
     @property   
     def activeFiles(self):
         return [i for i in self.mdi.subWindowList() if i.tabCount]
@@ -166,7 +188,7 @@ class appWindow(QMainWindow):
     @property
     def activeScene(self):
         return self.mdi.currentSubWindow().tabber.currentWidget()
-    
+
     #Key input handler
     def keyPressEvent(self, event):
         #overload key press event for custom keyboard shortcuts
