@@ -287,7 +287,7 @@ class NodeItem(QGraphicsSvgItem):
     def __init__(self, unitOperationType, parent=None):
         QGraphicsSvgItem.__init__(self, parent)
         self.m_type = unitOperationType
-        self.id =None
+        self.id = None
         # self.m_renderer = QSvgRenderer("svg/" + unitOperationType + ".svg")
         # self.m_renderer = QSvgRenderer(fileImporter(f'svg/{unitOperationType}.svg'))
         self.m_renderer = QSvgRenderer(fileImporter(f'svg/ellipse.svg'))
