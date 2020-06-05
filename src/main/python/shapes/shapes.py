@@ -9,11 +9,10 @@ from PyQt5.QtWidgets import (QGraphicsColorizeEffect, QGraphicsEllipseItem,
                              QGraphicsProxyWidget, QGraphicsSceneHoverEvent,
                              QLineEdit)
 
-from utils.app import fileImporter
-
 from .line import Line
 from  utils.app import fileImporter
 
+from utils.app import fileImporter
 
 class GripItem(QGraphicsPathItem):
     """
@@ -213,7 +212,6 @@ class LineGripItem(GripItem):
         # initialize a line and add on scene
         startPoint = endPoint = self.parentItem().mapToScene(self.pos())
         self.tempLine = Line(startPoint, endPoint)
-        self.tempLine.setStartGripItem(self)
         self.scene().addItemPlus(self.tempLine)
         super().mousePressEvent(mouseEvent)
 
@@ -289,7 +287,7 @@ class NodeItem(QGraphicsSvgItem):
     def __init__(self, unitOperationType, parent=None):
         QGraphicsSvgItem.__init__(self, parent)
         self.m_type = unitOperationType
-        self.id =None
+        self.id = None
         # self.m_renderer = QSvgRenderer("svg/" + unitOperationType + ".svg")
         # self.m_renderer = QSvgRenderer(fileImporter(f'svg/{unitOperationType}.svg'))
         self.m_renderer = QSvgRenderer(fileImporter(f'svg/ellipse.svg'))
