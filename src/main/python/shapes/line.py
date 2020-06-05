@@ -1,6 +1,6 @@
 import math
 from PyQt5.QtGui import QPen, QPainterPath, QBrush, QPainterPathStroker, QPainter, QCursor
-from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPathItem, QGraphicsTextItem
+from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPathItem, QGraphicsTextItem, QMenu, QGraphicsLineItem
 from PyQt5.QtCore import Qt, QPointF, QRectF
 
 
@@ -100,47 +100,135 @@ class Grabber(QGraphicsPathItem):
         self.brush = QBrush(Qt.transparent)
 
 class LineLabel(QGraphicsTextItem):
-    def __init__(self, parent=None):
-        super(LineLabel, self).__init__(parent=parent)
+    def __init__(self, pos, parent=None):
+        super(LineLabel, self).__init__()
+        self.setPlainText("abc")
+        self.index = None
+        self.gap = None
         self.setTextInteractionFlags(Qt.TextEditorInteraction)
         self.setFlags(QGraphicsItem.ItemIsMovable |
                       QGraphicsItem.ItemIsSelectable |
                       QGraphicsItem.ItemIsFocusable)
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
-        self.setPlainText("abc")
+        self.line = QGraphicsLineItem()
+        self.setPos(pos-self.boundingRect().center())
+        self.setParentItem(parent)
+        self.line.setParentItem(self)
+        self.resetPos()
+        # self.line.setFlag(QGraphicsItem.ItemStacksBehindParent)
 
     def paint(self, painter, option, widget):
-        super(LineLabel, self).paint(painter,option,widget)
+        # painter.save()
+        # painter.setBrush(QBrush(Qt.white))
         painter.drawEllipse(self.boundingRect())
+        # painter.restore()
+        super(LineLabel, self).paint(painter, option, widget)
 
     def updateLabel(self):
+        offset = self.gap
         points = self.parentItem().points
-        # min_A = QPointF()
-        # min_B =QPointF()
-        # min_dis =math.inf
-        # for i in range(1, len(points)):
-        #     A = points[i - 1]
-        #     B = points[i]
-        #     C = self.pos()
-        #     BAx = B.x() - A.x()
-        #     BAy = B.y() - A.y()
-        #     CAx = C.x() - A.x()
-        #     CAy = C.y() - A.y()
-        #     length = math.sqrt(BAx * BAx + BAy * BAy)
-        #     if length >0:
-        #         dis = (BAx*CAy - CAx*BAy)/length
-        #         if abs(dis) < abs(min_dis):
-        #             min_dis=dis
-        #             min_A=A
-        #             min_B=B
-        #
-        # self.setPos(self.parentItem().mapFromScene(QPointF(min_A)))
-        # print(self.pos())
+        firstPoint = points[self.index]
+        endPoint = points[self.index + 1]
+        center = self.mapToParent(self.boundingRect().center())
+        newPos = center
+        if firstPoint.x() == endPoint.x():
+            newPos.setX(firstPoint.x() + self.gap)
+            if min(firstPoint.y(), endPoint.y()) > newPos.y():
+                newPos.setY(min(firstPoint.y(), endPoint.y()))
+            elif newPos.y() > max(firstPoint.y(), endPoint.y()):
+                newPos.setY(max(firstPoint.y(), endPoint.y()))
+
+        elif firstPoint.y() == endPoint.y():
+            newPos.setY(firstPoint.y() + self.gap)
+            if min(firstPoint.x(), endPoint.x()) > newPos.x():
+                newPos.setX(min(firstPoint.x(), endPoint.x()))
+            elif newPos.x() > max(firstPoint.x(), endPoint.x()):
+                newPos.setX(max(firstPoint.x(), endPoint.x()))
+        newPos -= QPointF(self.boundingRect().width() / 2, self.boundingRect().height() / 2)
+        self.setPos(newPos)
+
+    def resetPos(self):
+        points = self.parentItem().points
+        min_A = QPointF()
+        min_B = QPointF()
+        min_dis = math.inf
+        for i in range(len(points) - 1):
+            A = points[i]
+            B = points[i + 1]
+            C = QPointF(self.pos()+self.boundingRect().center())
+            BAx = B.x() - A.x()
+            BAy = B.y() - A.y()
+            CAx = C.x() - A.x()
+            CAy = C.y() - A.y()
+            length = math.sqrt(BAx * BAx + BAy * BAy)
+            if BAx == 0:
+                if not min(A.y(), B.y()) <= C.y() <= max(A.y(), B.y()):
+                    continue
+            if BAy == 0:
+                if not min(A.x(), B.x()) <= C.x() <= max(A.x(), B.x()):
+                    continue
+            if length > 0:
+                dis = (BAx * CAy - CAx * BAy) / length
+                if abs(dis) < abs(min_dis):
+                    min_dis = dis
+                    min_A = A
+                    min_B = B
+                    self.index = i
+        point = self.mapFromScene(min_A)
+        if min_A.x() == min_B.x():
+            self.setPos(self.parentItem().mapFromScene(QPointF(min_A.x() + 10, self.y())))
+            self.gap = 10+self.boundingRect().width()/2
+        else:
+            self.setPos(self.parentItem().mapFromScene(QPointF(self.x(), min_A.y() - 30)))
+            self.gap = -30+self.boundingRect().height()/2
 
     def itemChange(self, change, value):
-        # if change == QGraphicsItem.ItemPositionChange:
-        #     print("label change", change, value)
-        return super(LineLabel, self).itemChange(change,value)
+        if change == QGraphicsItem.ItemPositionChange and self.scene():
+            newPos = QPointF(value)
+            newPos += QPointF(self.boundingRect().width() / 2, self.boundingRect().height() / 2)
+            points = self.parentItem().points
+            firstPoint = points[self.index]
+            endPoint = points[self.index + 1]
+            if firstPoint.x() == endPoint.x():
+                if min(firstPoint.y(), endPoint.y()) > newPos.y():
+                    newPos.setY(min(firstPoint.y(), endPoint.y()))
+                elif newPos.y() > max(firstPoint.y(), endPoint.y()):
+                    newPos.setY(max(firstPoint.y(), endPoint.y()))
+            elif firstPoint.y() == endPoint.y():
+                if min(firstPoint.x(), endPoint.x()) > newPos.x():
+                    newPos.setX(min(firstPoint.x(), endPoint.x()))
+                elif newPos.x() > max(firstPoint.x(), endPoint.x()):
+                    newPos.setX(max(firstPoint.x(), endPoint.x()))
+            newPos -= QPointF(self.boundingRect().width() / 2, self.boundingRect().height() / 2)
+            return newPos
+        if change == QGraphicsItem.ItemPositionHasChanged and self.scene():
+            self.updateGap()
+            self.updateLine()
+            return
+        return super(LineLabel, self).itemChange(change, value)
+
+    def updateGap(self):
+        points = self.parentItem().points
+        firstPoint = points[self.index]
+        endPoint = points[self.index + 1]
+        firstPoint = self.mapFromParent(firstPoint)
+        endPoint = self.mapFromParent(endPoint)
+        center = self.boundingRect().center()
+        if firstPoint.x() == endPoint.x():
+            self.gap = center.x() - firstPoint.x()
+        else:
+            self.gap = center.y() - firstPoint.y()
+
+    def updateLine(self):
+        points = self.parentItem().points
+        firstPoint = points[self.index]
+        endPoint = points[self.index + 1]
+        point = self.mapFromParent(firstPoint)
+        center = self.boundingRect().center()
+        if firstPoint.x() == endPoint.x():
+            self.line.setLine(center.x(), center.y(), point.x(), center.y())
+        else:
+            self.line.setLine(center.x(), center.y(), center.x(), point.y())
 
 
 class Line(QGraphicsPathItem):
@@ -169,14 +257,15 @@ class Line(QGraphicsPathItem):
         # initiates path
         self.createPath()
         self.commonPaths=[]
-        self.label = LineLabel(self)
+        self.label = None
 
     def advance(self, phase):
-        # items = self.collidingItems(Qt.IntersectsItemShape)
+        # items colliding with line
         items = self.scene().items(self.shape(),Qt.IntersectsItemShape,Qt.AscendingOrder)
         self.commonPaths = []
+        # if item is line and stacked above self
         for item in items:
-            if type(item) in [type(self)]:
+            if type(item) in [type(self)]:                                                
                 if item == self:
                     break
                 shape = item.shape()
@@ -186,9 +275,6 @@ class Line(QGraphicsPathItem):
                 for polygon in polygons:
                     center = polygon.boundingRect().center()
                     self.commonPaths.append(center)
-                
-                # self.commonPaths[commonPath] = item
-        print(self.commonPaths)
         self.update()
     
     def paint(self, painter, option, widget):
@@ -537,6 +623,8 @@ class Line(QGraphicsPathItem):
             path.lineTo(self.points[i])
         path.lineTo(self.endPoint)
         self.setPath(path)
+        if self.label:
+            self.label.updateLabel()
 
     def updatePoints(self):
         """
@@ -682,3 +770,14 @@ class Line(QGraphicsPathItem):
     def setPenStyle(self, style):
         """change current pen style for line"""
         self.penStyle = style
+
+    def contextMenuEvent(self, event):
+        """Pop up menu
+        :return:
+        """
+        contextMenu = QMenu()
+        addLableAction = contextMenu.addAction("add Label")
+        # addLableAction.triggered.connect(self.addLabel)
+        action = contextMenu.exec_(event.screenPos())
+        if action == addLableAction:
+            self.label = LineLabel(event.scenePos(), self)
