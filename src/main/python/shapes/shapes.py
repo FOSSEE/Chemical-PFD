@@ -7,12 +7,22 @@ from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
 from PyQt5.QtWidgets import (QGraphicsColorizeEffect, QGraphicsEllipseItem,
                              QGraphicsItem, QGraphicsPathItem,
                              QGraphicsProxyWidget, QGraphicsSceneHoverEvent,
-                             QLineEdit)
+                             QLineEdit, QMenu, QGraphicsTextItem)
 
 from .line import Line
 from  utils.app import fileImporter
 
 from utils.app import fileImporter
+
+class ItemLabel(QGraphicsTextItem):
+    def __init__(self, pos, parent=None):
+        super().__init__(parent=parent)
+        self.setPlainText("abc")
+        self.setTextInteractionFlags(Qt.TextEditorInteraction)
+        self.setFlags(QGraphicsItem.ItemIsMovable |
+                      QGraphicsItem.ItemIsSelectable |
+                      QGraphicsItem.ItemIsFocusable)
+        self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
 
 class GripItem(QGraphicsPathItem):
     """
@@ -306,6 +316,7 @@ class NodeItem(QGraphicsSvgItem):
         # grip items connected to this item
         self.lineGripItems = []
         self.sizeGripItems = []
+        self.label =None
         
     def boundingRect(self):
         """Overrides QGraphicsSvgItem's boundingRect() virtual public function and
@@ -455,6 +466,16 @@ class NodeItem(QGraphicsSvgItem):
             item.setPen(QPen(Qt.transparent))
             item.setBrush(Qt.transparent)
 
+    def contextMenuEvent(self, event):
+        """Pop up menu
+        :return:
+        """
+        contextMenu = QMenu()
+        addLableAction = contextMenu.addAction("add Label")
+        # addLableAction.triggered.connect(self.addLabel)
+        action = contextMenu.exec_(event.screenPos())
+        if action == addLableAction:
+            self.label = ItemLabel(event.scenePos(), self)
 
 # classes of pfd-symbols
 class AirBlownCooler(NodeItem):
