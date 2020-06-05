@@ -15,7 +15,7 @@ class canvas(QWidget):
     for context menu and dialogs.
     """
         
-    def __init__(self, parent=None, size= 'A4', ppi= '72'):
+    def __init__(self, parent=None, size= 'A4', ppi= '72' , parentMdiArea = None, parentFileWindow = None):
         super(canvas, self).__init__(parent)
         
         #Store values for the canvas dimensions for ease of access, these are here just to be
@@ -38,11 +38,11 @@ class canvas(QWidget):
         self.setLayout(self.layout)
         
         #set initial paper size for the scene
-        self.painter.setSceneRect(0, 0, *paperSizes[self.canvasSize][self.ppi])
-        
-        #set pointers to necessary parents for ease of reference
-        self.parentMdiArea = self.parent().parentWidget().parentWidget().parentWidget().parentWidget()
-        self.parentFileWindow = self.parent().parentWidget().parentWidget()
+        self.painter.setSceneRect(0, 0, *paperSizes[self._canvasSize][self._ppi])
+        # self.parentMdiArea = self.parent().parentWidget().parentWidget().parentWidget().parentWidget()
+        # self.parentFileWindow = self.parent().parentWidget().parentWidget()
+        self.parentMdiArea = parentMdiArea
+        self.parentFileWindow = parentFileWindow
 
     def resizeView(self, w, h):
         #helper function to resize canvas
@@ -95,6 +95,7 @@ class canvas(QWidget):
     def dimensions(self):
         #returns the dimension of the current scene
         return self.painter.sceneRect().width(), self.painter.sceneRect().height()
+    
     @property
     def items(self):
         # generator to filter out certain items
@@ -132,7 +133,6 @@ class canvas(QWidget):
         }
     
     def __setstate__(self, dict):
-        self.__init__()
         self._ppi = dict['ppi']
         self._canvasSize = dict['canvasSize']
         self.setObjectName(dict['ObjectName'])
