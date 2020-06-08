@@ -1,6 +1,6 @@
-import pickle
+import json
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QPointF
 from PyQt5.QtGui import QBrush, QPalette
 from PyQt5.QtWidgets import (QFileDialog, QApplication, QHBoxLayout, QMenu,
                              QTabWidget, QWidget, QSpacerItem, QStyle)
@@ -8,6 +8,8 @@ from PyQt5.QtWidgets import (QFileDialog, QApplication, QHBoxLayout, QMenu,
 from . import dialogs
 from .graphics import customView, customScene
 from .data import paperSizes, ppiList, sheetDimensionList
+
+import shapes
 
 class canvas(QWidget):
     """
@@ -27,7 +29,7 @@ class canvas(QWidget):
         # when we will draw items on this, this might be changed if QGraphicScene is subclassed.
         
         #set layout and background color
-        self.painter = customScene()        
+        self.painter = customScene()    
         self.painter.setBackgroundBrush(QBrush(Qt.white)) #set white background
         
         self.view = customView(self.painter, self) #create a viewport for the canvas board
@@ -39,8 +41,6 @@ class canvas(QWidget):
         
         #set initial paper size for the scene
         self.painter.setSceneRect(0, 0, *paperSizes[self._canvasSize][self._ppi])
-        # self.parentMdiArea = self.parent().parentWidget().parentWidget().parentWidget().parentWidget()
-        # self.parentFileWindow = self.parent().parentWidget().parentWidget()
         self.parentMdiArea = parentMdiArea
         self.parentFileWindow = parentFileWindow
 
@@ -129,16 +129,33 @@ class canvas(QWidget):
             "ppi": self._ppi,
             "canvasSize": self._canvasSize,
             "ObjectName": self.objectName(),
-            "items": [i.__getState__() for i in self.painter.items()]
+            "symbols": [i.__getstate__() for i in self.painter.items() if isinstance(i, shapes.NodeItem)],
+            "lines": [i.__getstate__() for i in self.painter.items() if isinstance(i, shapes.Line)],
+            # "lineLabels": [i.__getstate__() for i in self.painter.items() if isinstance(i, shapes.LineLabel)],
+            # "itemLabels": [i.__getstate__() for i in self.painter.items() if isinstance(i, shapes.itemLabel)]
         }
     
     def __setstate__(self, dict):
         self._ppi = dict['ppi']
         self._canvasSize = dict['canvasSize']
         self.setObjectName(dict['ObjectName'])
-        for item in dict['items']:
-            graphic = getattr(graphics, dict['_classname_'])
-            graphic.__setstate__(item)
+        
+        for item in dict['symbols']:
+            graphic = getattr(shapes, item['_classname_'])()
+            graphic.__setstate__(dict = item)
             self.painter.addItem(graphic)
+            graphic.setPos(*item['pos'])
+        
+        for item in dict['lines']:
+            line = shapes.Line(QPointF(*item['startPoint']), QPointF(*item['endPoint']))
+            line.__setstate__(dict = item)
+            self.painter.addItem(line)
+        
+        self.painter.advance()
+        
+        # for item in dict['lineLabels']:
+        #     pass
+        # for item in dict['itemLabels']:
+        #     pass
 
  
