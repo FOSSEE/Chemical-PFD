@@ -302,3 +302,14 @@ class Line(QGraphicsPathItem):
     def setPenStyle(self, style):
         """change current pen style for line"""
         self.penStyle = style
+
+    def __getstate__(self):
+        return {
+            "_classname_": self.__class__.__name__,
+            "startPoint": (self.startPoint.x(), self.startPoint.y()),
+            "endPoint": (self.endPoint.x(), self.endPoint.y()),
+            "points": [(point.x(), point.y()) for point in self.points]
+        }
+    
+    def __setstate__(self, dict):
+        self.points = [QPointF(x, y) for x, y in dict["points"]]

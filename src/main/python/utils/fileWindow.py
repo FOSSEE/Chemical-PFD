@@ -1,4 +1,3 @@
-import pickle
 import json
 
 from PyQt5.QtCore import Qt, pyqtSignal, QPoint

@@ -1,4 +1,3 @@
-import pickle
 import json
 import sys
 
@@ -60,8 +59,8 @@ class appWindow(QMainWindow):
         #declare main window layout
         self.setCentralWidget(self.mdi)
         # self.resize(1280, 720) #set collapse dim
-        self.readSettings()
         self.mdi.subWindowActivated.connect(self.tabSwitched)
+        self.readSettings()
     
     def updateMenuBar(self):
         # used to update menu bar undo-redo buttons to current scene
@@ -154,7 +153,7 @@ class appWindow(QMainWindow):
             event.ignore()            
         else:
             event.accept()
-        self.writeSettings()       
+        self.writeSettings()  
     
     def fileClosed(self, index):
         #checks if the file tab menu needs to be removed
