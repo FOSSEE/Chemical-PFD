@@ -419,7 +419,7 @@ class NodeItem(QGraphicsSvgItem):
         updates size grip items
         """
         index_no_updates = index_no_updates or []
-        for i, item in zip(range(len(self.sizeGripItems)), self.sizeGripItems):
+        for i, item in enumerate(self.sizeGripItems):
             if i not in index_no_updates:
                 item.updatePosition()
 
