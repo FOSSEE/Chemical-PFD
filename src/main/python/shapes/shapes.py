@@ -2,15 +2,15 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import (QEvent, QFile, QIODevice, QMimeData, QPointF, QRect,
                           QRectF, QSizeF, Qt)
 from PyQt5.QtGui import (QBrush, QColor, QCursor, QDrag, QFont, QImage,
-                         QPainter, QPainterPath, QPen, QTransform)
+                         QPainter, QPainterPath, QPen, QTransform, QTextCursor)
 from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
 from PyQt5.QtWidgets import (QGraphicsColorizeEffect, QGraphicsEllipseItem,
                              QGraphicsItem, QGraphicsPathItem,
                              QGraphicsProxyWidget, QGraphicsSceneHoverEvent,
                              QLineEdit, QMenu, QGraphicsTextItem)
 
-from .line import Line
-from  utils.app import fileImporter
+from .line import Line, findIndex
+from utils.app import fileImporter
 
 from utils.app import fileImporter
 
@@ -18,11 +18,22 @@ class ItemLabel(QGraphicsTextItem):
     def __init__(self, pos, parent=None):
         super().__init__(parent=parent)
         self.setPlainText("abc")
-        self.setTextInteractionFlags(Qt.TextEditorInteraction)
         self.setFlags(QGraphicsItem.ItemIsMovable |
                       QGraphicsItem.ItemIsSelectable |
                       QGraphicsItem.ItemIsFocusable)
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
+        self.setTextInteractionFlags(Qt.NoTextInteraction)
+        self.setPos(self.parentItem().boundingRect().bottomLeft())
+
+    def mouseDoubleClickEvent(self, event):
+        self.setTextInteractionFlags(Qt.TextEditorInteraction)
+        self.setFocus()
+        super(ItemLabel, self).mouseDoubleClickEvent(event)
+
+    def focusOutEvent(self, event):
+        super(ItemLabel, self).focusOutEvent(event)
+        self.setTextInteractionFlags(Qt.NoTextInteraction)
+
 
 class GripItem(QGraphicsPathItem):
     """
@@ -184,7 +195,7 @@ class LineGripItem(GripItem):
         super(LineGripItem, self).__init__(annotation_item, path=self.path, parent=parent)
         self.m_index = index
         self.m_location = location
-        self.connectedLines = []
+        self.line = None
         # stores current line which is in process
         self.tempLine = None
         # keep previous hovered item when line drawing in process
@@ -211,8 +222,8 @@ class LineGripItem(GripItem):
         self.setEnabled(False)
         self.setPos(pos)
         self.setEnabled(True)
-        for line in self.connectedLines:
-            line.updateLine()
+        if self.line:
+            self.line.updateLine()
 
     def mousePressEvent(self, mouseEvent):
         """Handle all mouse press for this item
@@ -220,9 +231,13 @@ class LineGripItem(GripItem):
         if mouseEvent.button() != Qt.LeftButton:
             return
         # initialize a line and add on scene
-        startPoint = endPoint = self.parentItem().mapToScene(self.pos())
-        self.tempLine = Line(startPoint, endPoint)
-        self.scene().addItemPlus(self.tempLine)
+        if self.line and not self.line.scene():
+            self.line = None
+
+        if not self.line:
+            startPoint = endPoint = self.parentItem().mapToScene(self.pos())
+            self.tempLine = Line(startPoint, endPoint)
+            self.scene().addItem(self.tempLine)
         super().mousePressEvent(mouseEvent)
 
     def mouseMoveEvent(self, mouseEvent):
@@ -250,28 +265,35 @@ class LineGripItem(GripItem):
         super().mouseReleaseEvent(mouseEvent)
         # set final position of line
         if self.tempLine:
-            item = self.scene().itemAt(mouseEvent.scenePos().x(), mouseEvent.scenePos().y(),
-                                       self.transform())
+            items = self.scene().items(QPointF(mouseEvent.scenePos().x(), mouseEvent.scenePos().y()))
+            for item in items:
+                if type(item) == LineGripItem and item != self:
+                    if item.line and not item.line.scene():
+                        item.line = None
+                    if item.line:
+                        break
+                    self.tempLine.setStartGripItem(self)
+                    self.tempLine.setEndGripItem(item)
+                    endPoint = item.parentItem().mapToScene(item.pos())
+                    self.tempLine.updateLine(endPoint=endPoint)
+                    self.line = self.tempLine
+                    item.line = self.tempLine
+                    break
+                elif type(item) == Line and item != self.tempLine:
+                    self.tempLine.setStartGripItem(self)
+                    endPoint = mouseEvent.scenePos()
+                    self.tempLine.refLine = item
+                    self.tempLine.refIndex = findIndex(item, endPoint)
+                    self.tempLine.updateLine(endPoint=endPoint)
+                    item.midLines.append(self.tempLine)
+                    self.line = self.tempLine
+                    break
+            self.scene().removeItem(self.tempLine)
+            if self.line:
+                self.scene().addItemPlus(self.line)
 
-            if type(item) == LineGripItem and item != self:
-                self.tempLine.setStartGripItem(self)
-                self.tempLine.setEndGripItem(item)
-                endPoint = item.parentItem().mapToScene(item.pos())
-                self.tempLine.updateLine(endPoint=endPoint)
-                self.connectedLines.append(self.tempLine)
-                item.connectedLines.append(self.tempLine)
-
-
-
-            elif self.tempLine and self.scene():
-                self.scene().removeItem(self.tempLine)
         self.tempLine = None
         self.previousHoveredItem = None
-
-    def removeConnectedLines(self):
-        """removes all connected line to grip"""
-        for line in self.connectedLines:
-            line.removeFromCanvas()
 
     def show(self):
         """ shows line grip item
@@ -316,8 +338,8 @@ class NodeItem(QGraphicsSvgItem):
         # grip items connected to this item
         self.lineGripItems = []
         self.sizeGripItems = []
-        self.label =None
-        
+        self.label = None
+
     def boundingRect(self):
         """Overrides QGraphicsSvgItem's boundingRect() virtual public function and
         returns a valid bounding
