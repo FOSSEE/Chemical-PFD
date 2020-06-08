@@ -1,4 +1,4 @@
-import pickle
+import json
 
 from PyQt5.QtCore import Qt, pyqtSignal, QPoint
 from PyQt5.QtGui import QIcon
@@ -24,8 +24,8 @@ class fileWindow(QMdiSubWindow):
     def __init__(self, parent = None, title = 'New Project', size = 'A4', ppi = '72'):
         super(fileWindow, self).__init__(parent)
         self._sideViewTab = None
-        self.index = None        
-                
+        self.index = None
+        
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         #Uses a custom QTabWidget that houses a custom new Tab Button, used to house the seperate 
         # diagrams inside a file
@@ -210,19 +210,20 @@ class fileWindow(QMdiSubWindow):
             self.tabber.widget(currentIndex).deleteLater()
             self.tabber.removeTab(currentIndex)
         
-    def newDiagram(self):
+    def newDiagram(self, objectName = "New"):
         # helper function to add a new tab on pressing new tab button, using the add tab method on QTabWidget
-        diagram = canvas(self.tabber)
-        diagram.setObjectName("New")
-        index = self.tabber.addTab(diagram, "New")
+        diagram = canvas(self.tabber, parentMdiArea = self.mdiArea(), parentFileWindow = self)
+        diagram.setObjectName(objectName)
+        index = self.tabber.addTab(diagram, objectName)
         self.tabber.setCurrentIndex(index)
+        return diagram
         
     def saveProject(self, name = None):
         # called by dialog.saveEvent, saves the current file
         name = QFileDialog.getSaveFileName(self, 'Save File', f'New Diagram', 'Process Flow Diagram (*.pfd)') if not name else name
         if name[0]:
-            with open(name[0],'wb') as file: 
-                pickle.dump(self, file)
+            with open(name[0],'w') as file: 
+                json.dump(self.__getstate__(), file, indent=4)
             return True
         else:
             return False
@@ -242,14 +243,12 @@ class fileWindow(QMdiSubWindow):
         return {
             "_classname_": self.__class__.__name__,
             "ObjectName": self.objectName(),
-            "ppi": self._ppi,
-            "canvasSize": self._canvasSize,
             "tabs": [i.__getstate__() for i in self.tabList]
         }
     
     def __setstate__(self, dict):
-        self.__init__(title = dict['ObjectName'])
+        self.setObjectName = dict['ObjectName']
+        self.setWindowTitle = dict['ObjectName']
         for i in dict['tabs']:
-            diagram = canvas(self.tabber, size = dict['canvasSize'], ppi = dict['ppi'], fileWindow = self)
+            diagram = self.newDiagram(i['ObjectName'])
             diagram.__setstate__(i)
-            self.tabber.addTab(diagram, i['ObjectName'])
