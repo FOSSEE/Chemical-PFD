@@ -1,5 +1,3 @@
-import json
-
 from PyQt5.QtCore import Qt, QPointF
 from PyQt5.QtGui import QBrush, QPalette
 from PyQt5.QtWidgets import (QFileDialog, QApplication, QHBoxLayout, QMenu,
@@ -8,6 +6,7 @@ from PyQt5.QtWidgets import (QFileDialog, QApplication, QHBoxLayout, QMenu,
 from . import dialogs
 from .graphics import customView, customScene
 from .data import paperSizes, ppiList, sheetDimensionList
+from .app import dumps, loads, JSON_Typer
 
 import shapes
 
@@ -129,8 +128,8 @@ class canvas(QWidget):
             "ppi": self._ppi,
             "canvasSize": self._canvasSize,
             "ObjectName": self.objectName(),
-            "symbols": [i.__getstate__() for i in self.painter.items() if isinstance(i, shapes.NodeItem)],
-            "lines": [i.__getstate__() for i in self.painter.items() if isinstance(i, shapes.Line)],
+            "symbols": [dumps(i, indent=4, cls=JSON_Typer) for i in self.painter.items() if isinstance(i, shapes.NodeItem)],
+            "lines": [dumps(i, indent=4, cls=JSON_Typer) for i in self.painter.items() if isinstance(i, shapes.Line)],
             # "lineLabels": [i.__getstate__() for i in self.painter.items() if isinstance(i, shapes.LineLabel)],
             # "itemLabels": [i.__getstate__() for i in self.painter.items() if isinstance(i, shapes.itemLabel)]
         }

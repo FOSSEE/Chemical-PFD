@@ -1,5 +1,3 @@
-import json
-
 from PyQt5.QtCore import Qt, pyqtSignal, QPoint
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QFileDialog, QHBoxLayout,
@@ -11,6 +9,7 @@ from .graphics import customView
 from .canvas import canvas
 from .tabs import customTabWidget
 from .undo import resizeCommand
+from .app import dumps, loads, JSON_Typer
 
 
 class fileWindow(QMdiSubWindow):
@@ -223,7 +222,7 @@ class fileWindow(QMdiSubWindow):
         name = QFileDialog.getSaveFileName(self, 'Save File', f'New Diagram', 'Process Flow Diagram (*.pfd)') if not name else name
         if name[0]:
             with open(name[0],'w') as file: 
-                json.dump(self.__getstate__(), file, indent=4)
+                dumps(self, file, indent=4, cls=JSON_Typer)
             return True
         else:
             return False

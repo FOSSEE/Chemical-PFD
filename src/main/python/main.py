@@ -1,4 +1,3 @@
-import json
 import sys
 
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
@@ -13,7 +12,7 @@ from utils.fileWindow import fileWindow
 from utils.data import ppiList, sheetDimensionList
 from utils import dialogs
 from utils.toolbar import toolbar
-from utils.app import app, settings
+from utils.app import app, settings, loads
 
 import shapes
 
@@ -105,7 +104,7 @@ class appWindow(QMainWindow):
         if name:
             for files in name[0]:
                 with open(files,'r') as file:
-                    projectData = json.load(file)
+                    projectData = loads(file)
                     project = fileWindow(self.mdi)
                     self.mdi.addSubWindow(project)
                     project.__setstate__(projectData)

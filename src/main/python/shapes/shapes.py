@@ -499,6 +499,24 @@ class NodeItem(QGraphicsSvgItem):
         if action == addLableAction:
             self.label = ItemLabel(event.scenePos(), self)
 
+    def __getstate__(self):
+        return {
+            "_classname_": self.__class__.__name__,
+            "width": self.width,
+            "height": self.height,
+            "pos": (self.pos.x(), self.pos.y())
+        }
+    
+    def __setstate__(self, dict):
+        self.prepareGeometryChange()
+        self.width = dict['width']
+        self.height = dict['height']
+        self.rect = QRectF(-self.width / 2, -self.height / 2, self.width, self.height)
+        transform = QTransform()
+        transform.translate(self.width / 2, self.height / 2)
+        self.setTransform(transform, True)
+        self.updateSizeGripItem()
+        
 # classes of pfd-symbols
 class AirBlownCooler(NodeItem):
     def __init__(self):
