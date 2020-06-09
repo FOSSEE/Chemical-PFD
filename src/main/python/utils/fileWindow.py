@@ -248,8 +248,8 @@ class fileWindow(QMdiSubWindow):
         }
     
     def __setstate__(self, dict):
-        self.setObjectName = dict['ObjectName']
-        self.setWindowTitle = dict['ObjectName']
+        self.setObjectName(dict['ObjectName'])
+        self.setWindowTitle(dict['ObjectName'])
         for i in dict['tabs']:
             diagram = self.newDiagram(i['ObjectName'])
             diagram.__setstate__(i)
