@@ -3,7 +3,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QFileDialog, QHBoxLayout,
                              QMdiSubWindow, QMenu, QPushButton, QSizePolicy,
                              QSplitter, QWidget, QStyle)
-
+from os import path
 from . import dialogs
 from .graphics import customView
 from .canvas import canvas
@@ -221,6 +221,8 @@ class fileWindow(QMdiSubWindow):
         # called by dialog.saveEvent, saves the current file
         name = QFileDialog.getSaveFileName(self, 'Save File', f'New Diagram', 'Process Flow Diagram (*.pfd)') if not name else name
         if name[0]:
+            self.setObjectName(path.basename(name[0]).split(".")[0])
+            self.setWindowTitle(self.objectName())
             with open(name[0],'w') as file: 
                 dump(self, file, indent=4, cls=JSON_Typer)
             return True
