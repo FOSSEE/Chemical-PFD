@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (QFileDialog, QApplication, QHBoxLayout, QMenu,
 from . import dialogs
 from .graphics import customView, customScene
 from .data import paperSizes, ppiList, sheetDimensionList
-from .app import dumps, loads, JSON_Typer, shapeGrips, lines
+from .app import shapeGrips, lines
 
 import shapes
 
@@ -129,9 +129,7 @@ class canvas(QWidget):
             "canvasSize": self._canvasSize,
             "ObjectName": self.objectName(),
             "symbols": [i for i in self.painter.items() if isinstance(i, shapes.NodeItem)],
-            "lines": sorted([i for i in self.painter.items() if isinstance(i, shapes.Line)], key = lambda x: 1 if x.refLine else 0),
-            # "lineLabels": [i.__getstate__() for i in self.painter.items() if isinstance(i, shapes.LineLabel)],
-            # "itemLabels": [i.__getstate__() for i in self.painter.items() if isinstance(i, shapes.itemLabel)]
+            "lines": sorted([i for i in self.painter.items() if isinstance(i, shapes.Line)], key = lambda x: 1 if x.refLine else 0)
         }
     
     def __setstate__(self, dict):
@@ -148,6 +146,10 @@ class canvas(QWidget):
             graphic.updateSizeGripItem()
             for gripitem in item['lineGripItems']:
                 shapeGrips[gripitem[0]] = (graphic, gripitem[1])
+            if item['label']:
+                graphicLabel = shapes.ItemLabel(pos = QPointF(*item['label']['pos']), parent = graphic)
+                graphicLabel.__setstate__(item['label'])
+                self.painter.addItem(graphicLabel)
         
         for item in dict['lines']:
             line = shapes.Line(QPointF(*item['startPoint']), QPointF(*item['endPoint']))
@@ -166,16 +168,18 @@ class canvas(QWidget):
                 line.refLine = lines[item['refLine']]
                 lines[item['refLine']].midLines.append(line)
                 line.refIndex = item['refIndex']
+            for label in item['label']:
+                labelItem = shapes.LineLabel(QPointF(*label['pos']), line)
+                line.label.append(labelItem)
+                labelItem.__setstate__(label)
+                self.painter.addItem(labelItem)
             line.updateLine()
             line.addGrabber()
-        
+            
         shapeGrips.clear()
         lines.clear()
         self.painter.advance()
         
-        # for item in dict['lineLabels']:
-        #     pass
-        # for item in dict['itemLabels']:
-        #     pass
+        
 
  

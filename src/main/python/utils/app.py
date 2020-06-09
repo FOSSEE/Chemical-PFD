@@ -8,6 +8,7 @@ from json import JSONEncoder, dumps, loads, dump, load
 
 app = ApplicationContext()
 settings = QSettings(QSettings.IniFormat, QSettings.UserScope ,"FOSSEE", "Chemical-PFD")
+version = app.build_settings['version']
 
 def fileImporter(file):
     # Helper function to fetch files from src/main/resources

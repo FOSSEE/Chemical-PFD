@@ -9,7 +9,7 @@ from .graphics import customView
 from .canvas import canvas
 from .tabs import customTabWidget
 from .undo import resizeCommand
-from .app import dump, loads, JSON_Typer
+from .app import dump, loads, JSON_Typer, version
 
 
 class fileWindow(QMdiSubWindow):
@@ -243,6 +243,7 @@ class fileWindow(QMdiSubWindow):
     def __getstate__(self) -> dict:
         return {
             "_classname_": self.__class__.__name__,
+            "version": version,
             "ObjectName": self.objectName(),
             "tabs": [i.__getstate__() for i in self.tabList]
         }
