@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (QFileDialog, QApplication, QHBoxLayout, QMenu,
 from . import dialogs
 from .graphics import customView, customScene
 from .data import paperSizes, ppiList, sheetDimensionList
-from .app import dumps, loads, JSON_Typer
+from .app import dumps, loads, JSON_Typer, shapeGrips, lines
 
 import shapes
 
@@ -129,7 +129,7 @@ class canvas(QWidget):
             "canvasSize": self._canvasSize,
             "ObjectName": self.objectName(),
             "symbols": [i for i in self.painter.items() if isinstance(i, shapes.NodeItem)],
-            "lines": [i for i in self.painter.items() if isinstance(i, shapes.Line)],
+            "lines": sorted([i for i in self.painter.items() if isinstance(i, shapes.Line)], key = lambda x: 1 if x.refLine else 0),
             # "lineLabels": [i.__getstate__() for i in self.painter.items() if isinstance(i, shapes.LineLabel)],
             # "itemLabels": [i.__getstate__() for i in self.painter.items() if isinstance(i, shapes.itemLabel)]
         }
@@ -144,12 +144,29 @@ class canvas(QWidget):
             graphic.__setstate__(dict = item)
             self.painter.addItem(graphic)
             graphic.setPos(*item['pos'])
+            for gripitem in item['lineGripItems']:
+                shapeGrips[gripitem[0]] = (graphic, gripitem[1])
         
         for item in dict['lines']:
             line = shapes.Line(QPointF(*item['startPoint']), QPointF(*item['endPoint']))
+            lines[item['id']] = line
             line.__setstate__(dict = item)
+            graphic, index = shapeGrips[item['startGripItem']]
+            line.setStartGripItem = graphic.lineGripItems[index]
+            graphic.lineGripItems[index].line = line
+            print("hello2")
+            if item['endGripItem']:
+                graphic, index = shapeGrips[item['endGripItem']]
+                line.setEndGripItem = graphic.lineGripItems[index]
+                graphic.lineGripItems[index].line = line
+            else:
+                line.refLine = lines[item['refLine']]
+                line.refIndex = item['refIndex']
             self.painter.addItem(line)
+            # line.addGrabber()
         
+        shapeGrips.clear()
+        lines.clear()
         self.painter.advance()
         
         # for item in dict['lineLabels']:
