@@ -77,8 +77,8 @@ class Grabber(QGraphicsPathItem):
     def shape(self):
         """Overrides shape method and set shape to segment on which grabber is located"""
         index = self.m_index
-        startPoint = QPointF(self.m_annotation_item.path().elementAt(index))
-        endPoint = QPointF(self.m_annotation_item.path().elementAt(index + 1))
+        startPoint = QPointF(self.parentItem().points[index])
+        endPoint = QPointF(self.parentItem().points[index+1])
         startPoint = self.mapFromParent(startPoint)
         endPoint = self.mapFromParent(endPoint)
         path = QPainterPath(startPoint)
