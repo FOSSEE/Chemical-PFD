@@ -144,6 +144,8 @@ class canvas(QWidget):
             graphic.__setstate__(dict = item)
             self.painter.addItem(graphic)
             graphic.setPos(*item['pos'])
+            graphic.updateLineGripItem()
+            graphic.updateSizeGripItem()
             for gripitem in item['lineGripItems']:
                 shapeGrips[gripitem[0]] = (graphic, gripitem[1])
         
@@ -151,18 +153,21 @@ class canvas(QWidget):
             line = shapes.Line(QPointF(*item['startPoint']), QPointF(*item['endPoint']))
             lines[item['id']] = line
             line.__setstate__(dict = item)
+            self.painter.addItem(line)
             graphic, index = shapeGrips[item['startGripItem']]
-            line.setStartGripItem = graphic.lineGripItems[index]
+            line.startGripItem = graphic.lineGripItems[index]
             graphic.lineGripItems[index].line = line
-            if item['endGripItem']:
+            if item['endGripItem']:                
                 graphic, index = shapeGrips[item['endGripItem']]
-                line.setEndGripItem = graphic.lineGripItems[index]
+                print(graphic.lineGripItems[index])
+                line.endGripItem = graphic.lineGripItems[index]
                 graphic.lineGripItems[index].line = line
             else:
                 line.refLine = lines[item['refLine']]
+                lines[item['refLine']].midLines.append(line)
                 line.refIndex = item['refIndex']
-            self.painter.addItem(line)
-            # line.addGrabber()
+            line.updateLine()
+            line.addGrabber()
         
         shapeGrips.clear()
         lines.clear()
