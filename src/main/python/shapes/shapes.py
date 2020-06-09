@@ -32,7 +32,16 @@ class ItemLabel(QGraphicsTextItem):
     def focusOutEvent(self, event):
         super(ItemLabel, self).focusOutEvent(event)
         self.setTextInteractionFlags(Qt.NoTextInteraction)
+    
+    def __getstate__(self):
+        return {
+            "text": self.toPlainText(),
+            "pos": (self.pos().x(), self.pos().y())
+        }
 
+    def __setstate__(self, dict):
+        self.setPlainText(dict['text'])
+        self.setPos(*dict['pos'])
 
 class GripItem(QGraphicsPathItem):
     """
@@ -498,7 +507,8 @@ class NodeItem(QGraphicsSvgItem):
             "width": self.width,
             "height": self.height,
             "pos": (self.pos().x(), self.pos().y()),
-            "lineGripItems": [(hex(id(i)), i.m_index) for i in self.lineGripItems]
+            "lineGripItems": [(hex(id(i)), i.m_index) for i in self.lineGripItems],
+            "label": self.label
         }
     
     def __setstate__(self, dict):
