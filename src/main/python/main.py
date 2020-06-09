@@ -12,7 +12,7 @@ from utils.fileWindow import fileWindow
 from utils.data import ppiList, sheetDimensionList
 from utils import dialogs
 from utils.toolbar import toolbar
-from utils.app import app, settings, loads
+from utils.app import app, settings, load
 
 import shapes
 
@@ -104,7 +104,7 @@ class appWindow(QMainWindow):
         if name:
             for files in name[0]:
                 with open(files,'r') as file:
-                    projectData = loads(file)
+                    projectData = load(file)
                     project = fileWindow(self.mdi)
                     self.mdi.addSubWindow(project)
                     project.__setstate__(projectData)

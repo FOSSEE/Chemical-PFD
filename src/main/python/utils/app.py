@@ -4,7 +4,7 @@ Declare fbs application so that it can be imported in other modules.
 
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtCore import QSettings
-from json import JSONEncoder, dumps, loads
+from json import JSONEncoder, dumps, loads, dump, load
 
 app = ApplicationContext()
 settings = QSettings(QSettings.IniFormat, QSettings.UserScope ,"FOSSEE", "Chemical-PFD")
@@ -41,6 +41,10 @@ class JSON_Encoder:
             return obj
 
 class JSON_Typer(JSONEncoder):
+    
+    def default(self, o):
+        return o.__getstate__()
+    
     def _encode(self, obj):
         return JSON_Encoder._encode(obj)
 

@@ -128,8 +128,8 @@ class canvas(QWidget):
             "ppi": self._ppi,
             "canvasSize": self._canvasSize,
             "ObjectName": self.objectName(),
-            "symbols": [dumps(i, indent=4, cls=JSON_Typer) for i in self.painter.items() if isinstance(i, shapes.NodeItem)],
-            "lines": [dumps(i, indent=4, cls=JSON_Typer) for i in self.painter.items() if isinstance(i, shapes.Line)],
+            "symbols": [i for i in self.painter.items() if isinstance(i, shapes.NodeItem)],
+            "lines": [i for i in self.painter.items() if isinstance(i, shapes.Line)],
             # "lineLabels": [i.__getstate__() for i in self.painter.items() if isinstance(i, shapes.LineLabel)],
             # "itemLabels": [i.__getstate__() for i in self.painter.items() if isinstance(i, shapes.itemLabel)]
         }
