@@ -739,6 +739,9 @@ class Line(QGraphicsPathItem):
                 self.points[len(self.points) - 2] = QPointF(point.x(), self.endPoint.y())
             else:
                 self.points[len(self.points) - 2] = QPointF(self.endPoint.x(), point.y())
+        
+        if self.refLine:
+            self.endPoint = self.points[len(self.points) - 1]
 
     def shape(self):
         """generates outline for path
