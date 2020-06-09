@@ -161,7 +161,6 @@ class canvas(QWidget):
             graphic.lineGripItems[index].line = line
             if item['endGripItem']:                
                 graphic, index = shapeGrips[item['endGripItem']]
-                print(graphic.lineGripItems[index])
                 line.endGripItem = graphic.lineGripItems[index]
                 graphic.lineGripItems[index].line = line
             else:
