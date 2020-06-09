@@ -52,9 +52,11 @@ class deleteCommand(QUndoCommand):
     def undo(self):
         self.scene.addItem(self.diagramItem)
         self.scene.update()
+        self.scene.advance()
         
     def redo(self):
         self.scene.removeItem(self.diagramItem)
+        self.scene.advance()
         
 class moveCommand(QUndoCommand):
     """

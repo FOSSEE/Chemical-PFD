@@ -114,6 +114,7 @@ class customScene(QGraphicsScene):
     def itemMoved(self, movedItem, lastPos):
         #item move event, checks if item is moved
         self.undoStack.push(moveCommand(movedItem, lastPos))
+        self.advance()
     
     def addItemPlus(self, item):
         # extended add item method, so that a corresponding undo action is also pushed

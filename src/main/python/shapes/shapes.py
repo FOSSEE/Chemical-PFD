@@ -316,9 +316,9 @@ class NodeItem(QGraphicsSvgItem):
     # set a common renderer for all svg
     renderer = QSvgRenderer(fileImporter(f'svg/ellipse.svg'))
 
-    def __init__(self, unitOperationType, parent=None):
+    def __init__(self, unitOperationType=None, parent=None):
         QGraphicsSvgItem.__init__(self, parent)
-        self.m_type = unitOperationType
+        self.m_type = str(unitOperationType)
         self.id = None
         # self.m_renderer = QSvgRenderer("svg/" + unitOperationType + ".svg")
         # self.m_renderer = QSvgRenderer(fileImporter(f'svg/{unitOperationType}.svg'))
@@ -499,6 +499,24 @@ class NodeItem(QGraphicsSvgItem):
         if action == addLableAction:
             self.label = ItemLabel(event.scenePos(), self)
 
+    def __getstate__(self):
+        return {
+            "_classname_": self.__class__.__name__,
+            "width": self.width,
+            "height": self.height,
+            "pos": (self.pos().x(), self.pos().y())
+        }
+    
+    def __setstate__(self, dict):
+        self.prepareGeometryChange()
+        self.width = dict['width']
+        self.height = dict['height']
+        self.rect = QRectF(-self.width / 2, -self.height / 2, self.width, self.height)
+        transform = QTransform()
+        transform.translate(self.width / 2, self.height / 2)
+        self.setTransform(transform, True)
+        self.updateSizeGripItem()
+        
 # classes of pfd-symbols
 class AirBlownCooler(NodeItem):
     def __init__(self):
