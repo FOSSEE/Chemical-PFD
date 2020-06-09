@@ -50,3 +50,6 @@ class JSON_Typer(JSONEncoder):
 
     def encode(self, obj):
         return super(JSON_Typer, self).encode(self._encode(obj))
+    
+shapeGrips = {}
+lines = {}

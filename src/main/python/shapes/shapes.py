@@ -12,7 +12,6 @@ from PyQt5.QtWidgets import (QGraphicsColorizeEffect, QGraphicsEllipseItem,
 from .line import Line, findIndex
 from utils.app import fileImporter
 
-from utils.app import fileImporter
 
 class ItemLabel(QGraphicsTextItem):
     def __init__(self, pos, parent=None):
@@ -498,7 +497,8 @@ class NodeItem(QGraphicsSvgItem):
             "_classname_": self.__class__.__name__,
             "width": self.width,
             "height": self.height,
-            "pos": (self.pos().x(), self.pos().y())
+            "pos": (self.pos().x(), self.pos().y()),
+            "lineGripItems": [(hex(id(i)), i.m_index) for i in self.lineGripItems]
         }
     
     def __setstate__(self, dict):
@@ -506,9 +506,6 @@ class NodeItem(QGraphicsSvgItem):
         self.width = dict['width']
         self.height = dict['height']
         self.rect = QRectF(-self.width / 2, -self.height / 2, self.width, self.height)
-        transform = QTransform()
-        transform.translate(self.width / 2, self.height / 2)
-        self.setTransform(transform, True)
         self.updateSizeGripItem()
         
 # classes of pfd-symbols
