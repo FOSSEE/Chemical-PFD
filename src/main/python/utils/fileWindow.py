@@ -61,20 +61,6 @@ class fileWindow(QMdiSubWindow):
         self.sideView.setInteractive(False)
         self.sideViewCloseButton = QPushButton('×', self.sideView)
         self.sideViewCloseButton.setFlat(True)
-        self.sideViewCloseButton.setStyleSheet("""QPushButton{
-            background: rgba(214, 54, 40, 50%);
-            border: 1px groove white;
-            border-radius: 2px;
-            font-size: 18px;
-            font-weight: Bold;
-            padding: 1px 2px 3px 3px;
-            color: rgba(255, 255, 255, 50%);
-            }
-            QPushButton:Hover{
-                background: rgba(214, 54, 40, 90%);
-                color: rgba(255, 255, 255, 90%);            
-            }
-        """)
         self.sideViewCloseButton.setFixedSize(20, 20)
         self.moveSideViewCloseButton()
         self.sideViewCloseButton.clicked.connect(lambda: setattr(self, 'sideViewTab', None))

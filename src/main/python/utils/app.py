@@ -3,7 +3,9 @@ Declare fbs application so that it can be imported in other modules.
 """
 
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
-from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import QSettings, pyqtProperty
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QWidget
 from json import JSONEncoder, dumps, loads, dump, load
 from os.path import join
 
@@ -14,6 +16,9 @@ version = app.build_settings['version']
 def fileImporter(*file):
     # Helper function to fetch files from src/main/resources
     return app.get_resource(join(*file))
+
+with open(fileImporter("app.qss"), "r") as stylesheet:
+    app.app.setStyleSheet(stylesheet.read())
 
 class JSON_Encoder:
     
@@ -52,6 +57,9 @@ class JSON_Typer(JSONEncoder):
 
     def encode(self, obj):
         return super(JSON_Typer, self).encode(self._encode(obj))
-    
+
+
+importer = pyqtProperty(str, fileImporter)
+
 shapeGrips = {}
 lines = {}
