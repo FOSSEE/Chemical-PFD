@@ -319,6 +319,11 @@ class Line(QGraphicsPathItem):
         self.label = []
         self.arrowFlag = True
 
+    def boundingRect(self):
+        rect = self.shape().boundingRect()
+        rect.adjust(-10,-10,10,10)
+        return rect
+    
     def advance(self, phase):
         if not phase:
             return
