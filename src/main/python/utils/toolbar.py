@@ -120,7 +120,7 @@ class toolbarButton(QToolButton):
     def __init__(self, parent = None, item = None):
         super(toolbarButton, self).__init__(parent)
         #uses fbs resource manager to get icons
-        self.setIcon(QIcon(fileImporter(f'toolbar/{item["icon"]}')))
+        self.setIcon(QIcon(fileImporter('toolbar', item['icon'])))
         self.setIconSize(QSize(64, 64)) #unecessary but left for future references
         self.dragStartPosition = None #intialize value for drag event
         self.itemObject = item['object'] #refer current item object, to handle drag mime

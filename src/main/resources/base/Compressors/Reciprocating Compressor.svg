@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="Reciprocating Compressor.svg"
+   width="29.586315mm"
+   height="14.722171mm"
+   viewBox="0 0 29.586315 14.722171"
+   version="1.1"
+   id="svg2363">
+  <sodipodi:namedview
+     inkscape:current-layer="svg2363"
+     inkscape:window-maximized="1"
+     inkscape:window-y="-11"
+     inkscape:window-x="-11"
+     inkscape:cy="41.59944"
+     inkscape:cx="37.179616"
+     inkscape:zoom="4.7773942"
+     showgrid="false"
+     id="namedview17"
+     inkscape:window-height="986"
+     inkscape:window-width="1920"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
+  <defs
+     id="defs2357">
+    <linearGradient
+       gradientTransform="translate(-526.19954,-108.91903)"
+       gradientUnits="userSpaceOnUse"
+       y2="119.36598"
+       x2="555.65332"
+       y1="119.36598"
+       x1="550.97614"
+       id="linearGradient4993"
+       xlink:href="#linearGradient4991" />
+    <linearGradient
+       osb:paint="solid"
+       id="linearGradient4991">
+      <stop
+         id="stop4989"
+         offset="0"
+         style="stop-color:#000000;stop-opacity:1;" />
+    </linearGradient>
+  </defs>
+  <metadata
+     id="metadata2360">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="g862">
+    <path
+       id="path4975"
+       d="m 0.132291,7.03037 v 7.55951 h 21.54465 V 6.93587 h -7.55951 V 0.1323 h -7.08708 v 6.61458 h -6.89806 z"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       id="path4985"
+       d="m 21.769811,10.48035 h 2.93995"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <rect
+       y="8.2419739"
+       x="24.776596"
+       height="4.4099469"
+       width="4.6772165"
+       id="rect4987"
+       style="fill:#ffffff;stroke:url(#linearGradient4993);stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none" />
+    <text
+       id="text4997"
+       y="11.732819"
+       x="25.592484"
+       style="font-style:normal;font-weight:normal;font-size:3.52778px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         style="font-size:3.52778px;stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none"
+         y="11.732819"
+         x="25.592484"
+         id="tspan4995">M</tspan></text>
+  </g>
+</svg>

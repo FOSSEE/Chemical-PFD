@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   id="svg2583"
+   version="1.1"
+   viewBox="0 0 17.305714 29.969846"
+   height="29.969847mm"
+   width="17.305714mm">
+  <defs
+     id="defs2577">
+    <linearGradient
+       xlink:href="#linearGradient5861"
+       id="linearGradient5865"
+       x1="1699.6428"
+       y1="1254.1479"
+       x2="1726.0714"
+       y2="1254.1479"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.26458333,0,0,0.26458333,-359.79039,-273.72822)" />
+    <linearGradient
+       id="linearGradient5861"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop5863" />
+    </linearGradient>
+  </defs>
+  <metadata
+     id="metadata2580">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-84.852406,-54.564329)"
+     id="layer1">
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 84.993076,67.358829 16.914444,0.09448 c 0.28856,3.191443 0.0481,6.430099 -0.70871,9.543917 -0.42843,1.762803 -1.04634,3.530892 -2.220626,4.913675 -0.890182,1.04824 -2.085962,1.838262 -3.406354,2.222704 -1.320392,0.384442 -2.760839,0.358299 -4.058653,-0.09657 -1.201743,-0.4212 -2.262652,-1.196857 -3.111677,-2.145937 -0.849025,-0.94908 -1.49338,-2.068055 -1.990998,-3.24022 -0.588466,-1.386161 -0.978039,-2.854608 -1.181179,-4.346744 -0.312717,-2.297019 -0.236247,-4.627089 -0.236247,-6.945297 z"
+       id="path5845" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 93.592037,61.651708 v 9.222037 1.795388 3.312258"
+       id="path5853" />
+    <rect
+       style="fill:#ffffff;stroke:url(#linearGradient5865);stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect5859"
+       width="6.9925594"
+       height="6.8035712"
+       x="89.906731"
+       y="54.696621" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:3.175px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       x="90.833389"
+       y="60.268333"
+       id="text5867"><tspan
+         style="font-size:5.95312px;line-height:1.25;stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none"
+         id="tspan5869"
+         x="90.833389"
+         y="60.268333">M</tspan></text>
+  </g>
+</svg>

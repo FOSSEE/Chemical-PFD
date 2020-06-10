@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   id="svg1787"
+   version="1.1"
+   viewBox="0 0 24.810347 8.6835726"
+   height="8.6835728mm"
+   width="24.810347mm">
+  <defs
+     id="defs1781">
+    <linearGradient
+       xlink:href="#linearGradient5705"
+       id="linearGradient5709"
+       x1="1690.2378"
+       y1="1199.0868"
+       x2="1722.8152"
+       y2="1199.0868"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.26458333,0,0,0.26458333,-365.65909,-227.61964)" />
+    <linearGradient
+       id="linearGradient5705"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop5707" />
+    </linearGradient>
+    <marker
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="marker5787"
+       style="overflow:visible">
+      <path
+         id="path5789"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+  </defs>
+  <metadata
+     id="metadata1784">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-81.417353,-85.296953)"
+     id="layer1">
+    <g
+       style="stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none"
+       id="g2555">
+      <rect
+         y="85.429245"
+         x="81.549644"
+         height="8.4189901"
+         width="8.619442"
+         id="rect5703"
+         style="fill:#ffffff;stroke:url(#linearGradient5709);stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none" />
+      <path
+         id="path5711"
+         d="m 90.265083,87.506497 15.800627,-1.403165 0.0291,6.96454 -15.864791,-1.218239"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" />
+    </g>
+  </g>
+</svg>
