@@ -60,11 +60,6 @@ class appWindow(QMainWindow):
         # self.resize(1280, 720) #set collapse dim
         self.mdi.subWindowActivated.connect(self.tabSwitched)
         self.readSettings()
-    
-    def updateMenuBar(self):
-        # used to update menu bar undo-redo buttons to current scene
-        self.undo.triggered.connect(self.activeScene.painter.undoAction.trigger())
-        self.redo.triggered.connect(self.activeScene.painter.redoAction.trigger())
                 
     def createToolbar(self):
         #place holder for toolbar with fixed width, layout may change
@@ -76,13 +71,14 @@ class appWindow(QMainWindow):
         self.toolbar.populateToolbar()
         
     def toolButtonClicked(self, object):
-        currentDiagram = self.mdi.currentSubWindow().tabber.currentWidget().painter
-        if currentDiagram:
-            graphic = getattr(shapes, object['object'])(*map(lambda x: int(x) if x.isdigit() else x, object['args']))
-            # graphic.setPen(QPen(Qt.black, 2))
-            # graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
-            currentDiagram.addItemPlus(graphic) 
-            graphic.setPos(20, 20)
+        if self.mdi.currentSubWindow():
+            currentDiagram = self.mdi.currentSubWindow().tabber.currentWidget().painter
+            if currentDiagram:
+                graphic = getattr(shapes, object['object'])(*map(lambda x: int(x) if x.isdigit() else x, object['args']))
+                # graphic.setPen(QPen(Qt.black, 2))
+                # graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
+                currentDiagram.addItemPlus(graphic) 
+                graphic.setPos(20, 20)
 
     def newProject(self):
         #call to create a new file inside mdi area
@@ -93,7 +89,6 @@ class appWindow(QMainWindow):
             project.newDiagram() #create a new tab in the new file
         # project.resizeHandler()
         project.fileCloseEvent.connect(self.fileClosed) #closed file signal to switch to sub window view
-        project.tabChangeEvent.connect(self.updateMenuBar)
         if self.count > 1: #switch to tab view if needed
             self.mdi.setViewMode(QMdiArea.TabbedView)
         project.show()
@@ -110,7 +105,6 @@ class appWindow(QMainWindow):
                     project.__setstate__(projectData)
                     project.resizeHandler()
                     project.fileCloseEvent.connect(self.fileClosed)
-                    project.tabChangeEvent.connect(self.updateMenuBar)
                     project.show()
         if self.count > 1:
             # self.tabSpace.setVisible(True)
@@ -218,12 +212,7 @@ class appWindow(QMainWindow):
             else:
                 return
             event.accept()
-            
-        elif event.key() == Qt.Key_Delete or event.key() == Qt.Key_Backspace:
-            for item in reversed(self.mdi.activeSubWindow().tabber.currentWidget().painter.selectedItems()):
-                # self.mdi.currentSubWindow().tabber.currentWidget().deleteItem(item)
-                pass
-                #donot delete, to manage undo redo
+
         
         
 if __name__ == '__main__':      # 1. Instantiate ApplicationContext
