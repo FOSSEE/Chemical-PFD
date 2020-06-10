@@ -326,16 +326,13 @@ class NodeItem(QGraphicsSvgItem):
         Extends PyQt5's QGraphicsSvgItem to create the basic structure of shapes with given unit operation type
     """
     # set a common renderer for all svg
-    renderer = QSvgRenderer(fileImporter(f'svg/ellipse.svg'))
+    # renderer = QSvgRenderer(fileImporter(f'svg/ellipse.svg'))
 
     def __init__(self, unitOperationType=None, parent=None):
         QGraphicsSvgItem.__init__(self, parent)
         self.m_type = str(unitOperationType)
         self.id = None
-        # self.m_renderer = QSvgRenderer("svg/" + unitOperationType + ".svg")
-        # self.m_renderer = QSvgRenderer(fileImporter(f'svg/{unitOperationType}.svg'))
-        self.m_renderer = QSvgRenderer(fileImporter(f'svg/ellipse.svg'))
-        # self.m_renderer = QSvgRenderer(resourceManager.get_resource(f'toolbar/{unitOperationType}.svg'))
+        self.m_renderer = QSvgRenderer(fileImporter(f'{unitOperationType}.svg'))
         self.setSharedRenderer(self.m_renderer)
         # set initial size of item
         self.width = 100
