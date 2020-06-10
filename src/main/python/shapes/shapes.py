@@ -203,6 +203,15 @@ class LineGripItem(GripItem):
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         self.setPen(QPen(QColor("black"), -1))
 
+    def itemChange(self, change, value):
+        """
+        Moves position of grip item on resize
+        """
+        if change == QGraphicsItem.ItemSceneHasChanged and not self.scene():
+           if self.line and self.line.scene():
+               self.line.scene().removeItem(self.line)
+        return super(LineGripItem, self).itemChange(change, value)
+
     def point(self, index):
         """
         yields a list of positions of grip items in a node item
@@ -439,22 +448,12 @@ class NodeItem(QGraphicsSvgItem):
             self.updateLineGripItem()
             self.updateSizeGripItem()
             return
-        if change == QGraphicsItem.ItemSceneHasChanged:
+        if change == QGraphicsItem.ItemSceneHasChanged and self.scene():
             self.addGripItem()
             self.updateLineGripItem()
             self.updateSizeGripItem()
             return
         return super(NodeItem, self).itemChange(change, value)
-
-    def removeFromCanvas(self):
-        """This function is used to remove item from canvas
-        :return:
-        """
-        for item in self.lineGripItems:
-            item.removeConnectedLines()
-        for item in self.sizeGripItems:
-            item.removeFromCanvas()
-        self.scene().removeItem(self)
 
     def hoverEnterEvent(self, event):
         """defines shape highlighting on Mouse Over

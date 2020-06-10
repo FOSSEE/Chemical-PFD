@@ -805,6 +805,11 @@ class Line(QGraphicsPathItem):
             else:
                 self.hideGripItem()
             return
+        if change == QGraphicsItem.ItemSceneHasChanged and not self.scene():
+            for line in self.midLines:
+                if line.scene():
+                    line.scene().removeItem(line)
+            
 
         return super(Line, self).itemChange(change, value)
 
