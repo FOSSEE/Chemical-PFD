@@ -43,6 +43,71 @@
             "class": "Pumps",
             "object": "ReciprocatingPump",
             "args": []
+        },
+        "Blowing Egg": {
+            "name": "Blowing Egg",
+            "icon": ".\\Pumps\\Blowing Egg.png",
+            "class": "Pumps",
+            "object": "BlowingEgg",
+            "args": []
+        },
+        "Ejector(Vapor Service)": {
+            "name": "Ejector(Vapor Service)",
+            "icon": ".\\Pumps\\Ejector(Vapor Service).png",
+            "class": "Pumps",
+            "object": "Ejector(VaporService)",
+            "args": []
+        },
+        "Hand Pump with Drum": {
+            "name": "Hand Pump with Drum",
+            "icon": ".\\Pumps\\Hand Pump with Drum.png",
+            "class": "Pumps",
+            "object": "HandPumpWithDrum",
+            "args": []
+        }
+    },
+    "Compressors": {
+        "Centrifugal Compressor": {
+            "name": "Centrifugal Compressor",
+            "icon": ".\\Compressors\\Centrifugal Compressor.png",
+            "class": "Compressors",
+            "object": "CentrifugalCompressor",
+            "args": []
+        },
+        "Ejector Compressor": {
+            "name": "Ejector Compressor",
+            "icon": ".\\Compressors\\Ejector Compressor.png",
+            "class": "Compressors",
+            "object": "EjectorCompressor",
+            "args": []
+        },
+        "Fan": {
+            "name": "Fan",
+            "icon": ".\\Compressors\\Fan.png",
+            "class": "Compressors",
+            "object": "Fan",
+            "args": []
+        },
+        "Positive Displacement Compressor": {
+            "name": "Positive Displacement Compressor",
+            "icon": ".\\Compressors\\Positive Displacement Compressor.png",
+            "class": "Compressors",
+            "object": "PositiveDisplacementCompressor",
+            "args": []
+        },
+        "Reciprocating Compressor": {
+            "name": "Reciprocating Compressor",
+            "icon": ".\\Compressors\\Reciprocating Compressor.png",
+            "class": "Compressors",
+            "object": "ReciprocatingCompressor",
+            "args": []
+        },
+        "Turbine": {
+            "name": "Turbine",
+            "icon": ".\\Compressors\\Turbine.png",
+            "class": "Compressors",
+            "object": "Turbine",
+            "args": []
         }
     }
 }
