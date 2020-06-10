@@ -82,14 +82,17 @@ class toolbar(QDockWidget):
         self.layout.setDirection(QBoxLayout.TopToBottom) # here so that a horizontal toolbar can be implemented later
         # self.setFixedHeight(self.height()) #span available height
         width = self.width() - QApplication.style().pixelMetric(QStyle.PM_ScrollBarExtent)
-        for _, label in self.toolbarLabelDict.items():
-            label.setFixedWidth(self.width())
+        
         # the following line, sets the required height for the current width, so that blank space doesnt occur
         self.diagAreaWidget.setMinimumHeight(self.diagAreaLayout.heightForWidth(width))
         self.setMinimumWidth(.17*parent.width()) #12% of parent width
         # self.setMinimumWidth(self.diagAreaLayout.minimumSize().width()) #12% of parent width
         self.diagAreaWidget.setLayout(self.diagAreaLayout)
         self.diagArea.setWidget(self.diagAreaWidget)
+        
+        for _, label in self.toolbarLabelDict.items():
+            label.setFixedSize(width, 20)
+        
 
     def toolbarItems(self, itemClasses):
         #helper functions to create required buttons
@@ -161,7 +164,7 @@ class sectionLabel(QLabel):
         self.setStyleSheet("""
             QLabel{
                 background-color: #E6E6E3;
-                border: 1px solid black;
+                border: 2px solid gray;
                 border-left: 0px;
                 background-clip: padding;
             }

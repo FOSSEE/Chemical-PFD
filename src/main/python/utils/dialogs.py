@@ -1,12 +1,16 @@
-from PyQt5.QtWidgets import QDialog, QPushButton, QFormLayout, QComboBox, QLabel, QMessageBox, QDialogButtonBox, QHBoxLayout
-from .data import sheetDimensionList, ppiList
+from PyQt5.QtWidgets import (QCheckBox, QComboBox, QDialog, QDialogButtonBox,
+                             QFormLayout, QHBoxLayout, QLabel, QMessageBox,
+                             QPushButton)
+
+from .data import ppiList, sheetDimensionList
+
 
 class paperDims(QDialog):
     """
     Utility dialog box to adjust the current canvas's dimensions, might return just dimensions later
     so that sizes do not need to be imported in every other module. 
     """
-    def __init__(self, parent=None, size='A4', ppi='72', name='Canvas Size'):
+    def __init__(self, parent=None, size='A4', ppi='72', name='Canvas Size', landscape=False):
         super(paperDims, self).__init__(parent)
         
         #store initial values to show currently set value, also updated when changed. these are returned at EOL
@@ -36,6 +40,10 @@ class paperDims(QDialog):
         dialogBoxLayout.setWidget(1, QFormLayout.LabelRole, ppiLabel)
         dialogBoxLayout.setWidget(1, QFormLayout.FieldRole, ppiComboBox)
         
+        self.landscapeCheckBox = QCheckBox('&Landscape Mode')
+        self.landscapeCheckBox.setChecked(landscape)
+        dialogBoxLayout.setWidget(2, QFormLayout.SpanningRole, self.landscapeCheckBox)
+        
         # add ok and cancel buttons
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
         buttonBox.accepted.connect(self.accept)
@@ -50,7 +58,8 @@ class paperDims(QDialog):
         super(paperDims, self).exec_()
         self.deleteLater() #remove from memory
         #if ok was pressed return value else return None
-        return (self.returnCanvasSize, self.returnCanvasPPI) if self.result() else None
+        print(self.landscapeCheckBox.isChecked())
+        return (self.returnCanvasSize, self.returnCanvasPPI, self.landscapeCheckBox.isChecked()) if self.result() else None
 
 class sideViewSwitchDialog(QDialog):
     """
