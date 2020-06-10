@@ -425,7 +425,7 @@ class Line(QGraphicsPathItem):
                 arrowHead.append(line.p2())
                 arrowHead.append(arrow_p1)
                 arrowHead.append(arrow_p2)
-                path.addPolygon(arrowHead)
+                # path.addPolygon(arrowHead)
                 painter.save()
                 painter.setBrush(Qt.black)
                 painter.drawPolygon(arrowHead)
@@ -985,9 +985,5 @@ class Line(QGraphicsPathItem):
             "label": [i for i in self.label],
             "id": hex(id(self))
         }
-<<<<<<< HEAD
-=======
-
->>>>>>> bf0d0acaf8b488ae5a55536343401fc2a0b5f9de
     def __setstate__(self, dict):
         self.points = [QPointF(x, y) for x, y in dict["points"]]
