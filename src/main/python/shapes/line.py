@@ -441,6 +441,8 @@ class Line(QGraphicsPathItem):
             end = self.endPoint
             sitem = self.startGripItem.mapRectToScene(self.startGripItem.m_annotation_item.boundingRect())
             eitem= self.endGripItem.mapRectToScene(self.endGripItem.m_annotation_item.boundingRect())
+            if self.refLine:
+                eitem = self.endGripItem.mapRectToScene(QRectF(0,0,0,0))
 
             if self.startGripItem.m_location in ["right"]:
                 if self.endGripItem.m_location in ["top"]:
