@@ -73,7 +73,7 @@ class appWindow(QMainWindow):
         # self.addToolBar(Qt.LeftToolBarArea, self.toolbar)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.toolbar)
         self.toolbar.toolbuttonClicked.connect(self.toolButtonClicked)
-        self.toolbar.populateToolbar(self.toolbar.toolbarItemList)
+        self.toolbar.populateToolbar()
         
     def toolButtonClicked(self, object):
         currentDiagram = self.mdi.currentSubWindow().tabber.currentWidget().painter

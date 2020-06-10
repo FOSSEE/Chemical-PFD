@@ -95,15 +95,15 @@ class resizeCommand(QUndoCommand):
     def __init__(self, new, canvas, widget, parent = None):
         super(resizeCommand, self).__init__(parent)
         self.parent = canvas
-        self.old = self.parent.canvasSize, self.parent.ppi
+        self.old = self.parent.canvasSize, self.parent.ppi, self.parent.landscape
         self.new = new
         self.widget = widget
         self.setText(f'Change canvas dimensions to {new[0]} at {new[1]} ppi')
     
     def undo(self):
-        self.parent.canvasSize, self.parent.ppi = self.old
+        self.parent.canvasSize, self.parent.ppi, self.parent.landscape = self.old
         self.widget.resizeHandler()
     
     def redo(self):
-        self.parent.canvasSize, self.parent.ppi = self.new
+        self.parent.canvasSize, self.parent.ppi, self.parent.landscape = self.new
         self.widget.resizeHandler()

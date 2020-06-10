@@ -123,7 +123,7 @@ class fileWindow(QMdiSubWindow):
     def adjustCanvasDialog(self):
         #helper context menu function to the context menu dialog box
         currentTab = self.tabber.currentWidget()
-        result = dialogs.paperDims(self, currentTab._canvasSize, currentTab._ppi, currentTab.objectName()).exec_()
+        result = dialogs.paperDims(self, currentTab._canvasSize, currentTab._ppi, currentTab.objectName(), currentTab.landscape).exec_()
         if result is not None:
             currentTab.painter.undoStack.push(resizeCommand(result, currentTab, self))
         

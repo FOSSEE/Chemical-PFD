@@ -16,13 +16,14 @@ class canvas(QWidget):
     for context menu and dialogs.
     """
         
-    def __init__(self, parent=None, size= 'A4', ppi= '72' , parentMdiArea = None, parentFileWindow = None):
+    def __init__(self, parent=None, size= 'A4', ppi= '72' , parentMdiArea = None, parentFileWindow = None, landscape=False):
         super(canvas, self).__init__(parent)
         
         #Store values for the canvas dimensions for ease of access, these are here just to be
         # manipulated by the setters and getters
         self._ppi = ppi
         self._canvasSize = size
+        self._landscape = landscape
         # self.setFixedSize(parent.size())
         #Create area for the graphic items to be placed, this is just here right now for the future
         # when we will draw items on this, this might be changed if QGraphicScene is subclassed.
@@ -104,22 +105,33 @@ class canvas(QWidget):
     @property
     def canvasSize(self):
         return self._canvasSize
+    
     @property
     def ppi(self):
         return self._ppi
+    
+    @property
+    def landscape(self):
+        return self._landscape
     
     @canvasSize.setter
     def canvasSize(self, size):
         self._canvasSize = size
         if self.painter:
-            self.resizeView(*paperSizes[self.canvasSize][self.ppi])
+            self.resizeView(*(sorted(paperSizes[self.canvasSize][self.ppi], reverse = self.landscape)))
 
     @ppi.setter
     def ppi(self, ppi):
         self._ppi = ppi
         if self.painter:
-            self.resizeView(*paperSizes[self.canvasSize][self.ppi])
-        
+            self.resizeView(*(sorted(paperSizes[self.canvasSize][self.ppi], reverse = self.landscape)))
+    
+    @landscape.setter
+    def landscape(self, bool):
+        self._landscape = bool
+        if self.painter:
+            self.resizeView(*(sorted(paperSizes[self.canvasSize][self.ppi], reverse = self.landscape)))
+
     #following 2 methods are defined for correct pickling of the scene. may be changed to json or xml later so as
     # to not have a binary file.
     def __getstate__(self) -> dict:
@@ -129,12 +141,14 @@ class canvas(QWidget):
             "canvasSize": self._canvasSize,
             "ObjectName": self.objectName(),
             "symbols": [i for i in self.painter.items() if isinstance(i, shapes.NodeItem)],
-            "lines": sorted([i for i in self.painter.items() if isinstance(i, shapes.Line)], key = lambda x: 1 if x.refLine else 0)
+            "lines": sorted([i for i in self.painter.items() if isinstance(i, shapes.Line)], key = lambda x: 1 if x.refLine else 0),
+            "landscape": self.landscape
         }
     
     def __setstate__(self, dict):
         self._ppi = dict['ppi']
         self._canvasSize = dict['canvasSize']
+        self.landscape = dict['landscape']
         self.setObjectName(dict['ObjectName'])
         
         for item in dict['symbols']:
