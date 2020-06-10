@@ -83,7 +83,7 @@ class toolbar(QDockWidget):
         # self.setFixedHeight(self.height()) #span available height
         width = self.width() - QApplication.style().pixelMetric(QStyle.PM_ScrollBarExtent)
         for _, label in self.toolbarLabelDict.items():
-            label.setFixedWidth(width)
+            label.setFixedWidth(self.width())
         # the following line, sets the required height for the current width, so that blank space doesnt occur
         self.diagAreaWidget.setMinimumHeight(self.diagAreaLayout.heightForWidth(width))
         self.setMinimumWidth(.17*parent.width()) #12% of parent width
@@ -95,7 +95,7 @@ class toolbar(QDockWidget):
         #helper functions to create required buttons
         for itemClass in itemClasses:
             self.toolbarButtonDict[itemClass] = {}
-            label = QLabel(itemClass)
+            label = sectionLabel(itemClass)
             self.toolbarLabelDict[itemClass] = label
             for item in toolbarItems[itemClass].keys():
                 obj = toolbarItems[itemClass][item]
@@ -152,3 +152,17 @@ class toolbarButton(QToolButton):
     def minimumSizeHint(self):
         #defines button size
         return QSize(40, 40)
+    
+class sectionLabel(QLabel):
+    
+    def __init__(self, *args):
+        super(sectionLabel, self).__init__(*args)
+        self.setAlignment(Qt.AlignHCenter)
+        self.setStyleSheet("""
+            QLabel{
+                background-color: #E6E6E3;
+                border: 1px solid black;
+                border-left: 0px;
+                background-clip: padding;
+            }
+        """)
