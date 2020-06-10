@@ -809,6 +809,12 @@ class Line(QGraphicsPathItem):
             for line in self.midLines:
                 if line.scene():
                     line.scene().removeItem(line)
+            if self.startGripItem and self.startGripItem.line and not self.startGripItem.tempLine:
+                self.startGripItem.line = None
+                if self.endGripItem and self.endGripItem.line:
+                    self.endGripItem.line = None
+                if self.refLine:
+                    if self in self.refLine.midLines: self.refLine.midLines.remove(self)
             
 
         return super(Line, self).itemChange(change, value)

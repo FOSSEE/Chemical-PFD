@@ -240,9 +240,6 @@ class LineGripItem(GripItem):
         if mouseEvent.button() != Qt.LeftButton:
             return
         # initialize a line and add on scene
-        if self.line and not self.line.scene():
-            self.line = None
-
         if not self.line:
             startPoint = endPoint = self.parentItem().mapToScene(self.pos())
             self.tempLine = Line(startPoint, endPoint)
@@ -277,8 +274,6 @@ class LineGripItem(GripItem):
             items = self.scene().items(QPointF(mouseEvent.scenePos().x(), mouseEvent.scenePos().y()))
             for item in items:
                 if type(item) == LineGripItem and item != self:
-                    if item.line and not item.line.scene():
-                        item.line = None
                     if item.line:
                         break
                     self.tempLine.setStartGripItem(self)
