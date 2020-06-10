@@ -198,11 +198,11 @@ class LineGripItem(GripItem):
     circle = QPainterPath()
     circle.addEllipse(QRectF(-10, -10, 20, 20))
 
-    def __init__(self, annotation_item, index, location, parent=None):
+    def __init__(self, annotation_item, index, grip, parent=None):
         self.path = LineGripItem.circle
         super(LineGripItem, self).__init__(annotation_item, path=self.path, parent=parent)
         self.m_index = index
-        self.m_location = location
+        self.m_location = grip[2]
         self.line = None
         # stores current line which is in process
         self.tempLine = None
@@ -210,6 +210,7 @@ class LineGripItem(GripItem):
         self.previousHoveredItem = None
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         self.setPen(QPen(QColor("black"), -1))
+        self.percentPos = [grip[0],grip[1]]
 
     def itemChange(self, change, value):
         """
@@ -235,9 +236,16 @@ class LineGripItem(GripItem):
             ][index]
 
     def updatePosition(self):
-        pos = self.point(self.m_index)
+        width = self.parentItem().boundingRect().width()
+        height = self.parentItem().boundingRect().height()
+        # pos = self.point(self.m_index)
+        x = (self.percentPos[0]*width)/100
+        y = (self.percentPos[1]*height)/100
+        x -=width/2
+        y -= height/2
+        y = -y
         self.setEnabled(False)
-        self.setPos(pos)
+        self.setPos(QPointF(x,y))
         self.setEnabled(True)
         if self.line:
             self.line.updateLine()
@@ -263,14 +271,14 @@ class LineGripItem(GripItem):
             self.tempLine.updateLine(endPoint=endPoint)
 
         item = self.scene().itemAt(mouseEvent.scenePos().x(), mouseEvent.scenePos().y(),
-                                   self.parentItem().transform())
+                                   QTransform())
 
         if self.previousHoveredItem and item != self.previousHoveredItem and \
                 item not in self.previousHoveredItem.lineGripItems:
             self.previousHoveredItem.hideGripItem()
         super().mouseMoveEvent(mouseEvent)
 
-        if type(item) == NodeItem:
+        if isinstance(item,NodeItem):
             self.previousHoveredItem = item
             item.showGripItem()
 
@@ -335,8 +343,8 @@ class NodeItem(QGraphicsSvgItem):
         self.m_renderer = QSvgRenderer(fileImporter(f'{unitOperationType}.svg'))
         self.setSharedRenderer(self.m_renderer)
         # set initial size of item
-        self.width = 100
-        self.height = 100
+        self.width = self.m_renderer.defaultSize().width()
+        self.height = self.m_renderer.defaultSize().height()
         self.rect = QRectF(-self.width / 2, -self.height / 2, self.width, self.height)
         # set graphical settings for this item
         self.setFlags(QGraphicsSvgItem.ItemIsMovable |
@@ -393,15 +401,18 @@ class NodeItem(QGraphicsSvgItem):
         """
         if self.scene():
             # add grip items for connecting lines
-            for i, (location) in enumerate(
-                    (
-                            "top",
-                            "left",
-                            "bottom",
-                            "right"
-                    )
-            ):
-                item = LineGripItem(self, i, location, parent=self)
+            # for i, (location) in enumerate(
+            #         (
+            #                 "top",
+            #                 "left",
+            #                 "bottom",
+            #                 "right"
+            #         )
+            # ):
+            #     print(self.grips)
+            for i in range(len(self.grips)):
+                grip = self.grips[i]
+                item = LineGripItem(self, i, grip, parent=self)
                 self.lineGripItems.append(item)
             # add grip for resize it
             for i, (direction) in enumerate(
@@ -515,3 +526,48 @@ class NodeItem(QGraphicsSvgItem):
         self.rect = QRectF(-self.width / 2, -self.height / 2, self.width, self.height)
         self.updateSizeGripItem()
         
+class InflowLine(NodeItem):
+    def __init__(self):
+        super(InflowLine, self).__init__("svg/piping/Inflow Line")
+        self.grips = [
+            [100, 50 ,"right"]
+        ]
+
+class OutflowLine(NodeItem):
+    def __init__(self):
+        super(OutflowLine, self).__init__("svg/Piping/Outflow Line")
+        self.grips = [
+            [0, 50 ,"left"]
+        ]
+
+class DuplexPump(NodeItem):
+    def __init__(self):
+        super(DuplexPump, self).__init__("svg/Pumps/Duplex Pump")
+        self.grips = [
+            [100,68.8031698,"right"],
+            [0,88.1365808,"left"] 
+        ]
+
+class PlungerPump(NodeItem):
+    def __init__(self):
+        super(PlungerPump, self).__init__("svg/Pumps/Plunger Pump")
+        self.grips = [
+            [87.0328592,100,"top"],
+            [87.0328592,0,"bottom"]
+        ]
+
+class ProportioningPump(NodeItem):
+    def __init__(self):
+        super(ProportioningPump, self).__init__("svg/Pumps/Proportioning Pump")
+        self.grips = [
+            [100,83.0966226,"right"],
+            [0,83.0966226,"left"]
+        ]
+
+class ReciprocatingPump(NodeItem):
+    def __init__(self):
+        super(ReciprocatingPump, self).__init__("svg/Pumps/Reciprocating Pump")
+        self.grips = [
+            [100,78.3969475,"right"],
+            [0,78.3969475,"left"]
+        ]
