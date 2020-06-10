@@ -1,11 +1,12 @@
-from PyQt5.QtWidgets import QTabBar, QPushButton, QTabWidget
-from PyQt5.QtCore import pyqtSignal, QSize
+from PyQt5.QtWidgets import QTabBar, QPushButton, QTabWidget, QInputDialog
+from PyQt5.QtCore import pyqtSignal, QSize, Qt
 
 class tabBarPlus(QTabBar):
     """
     Just implemented to overload resize and layout change to emit a signal
     """
     layoutChanged = pyqtSignal()
+    nameChanged = pyqtSignal(int, str)
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.layoutChanged.emit()
@@ -14,7 +15,17 @@ class tabBarPlus(QTabBar):
         super().tabLayoutChange()
         self.layoutChanged.emit()
 
-
+    def mouseDoubleClickEvent(self, event):
+        if event.button() != Qt.LeftButton:
+            return super().mouseDoubleClickEvent()
+        index = self.currentIndex()
+        newName, bool = QInputDialog.getText(self, "Change Diagram Name", "Enter new name",
+                                       text = self.tabText(index))
+        if bool:
+            self.setTabText(index, newName)
+            self.nameChanged.emit(index, newName)
+            
+        
 class customTabWidget(QTabWidget):
     """
     QTabWidget with a new tab button, also catches layoutChange signal by
@@ -50,6 +61,7 @@ class customTabWidget(QTabWidget):
 
         self.tab.layoutChanged.connect(self.movePlusButton) #connect layout change
         # to dynamically move the button.
+        self.tab.nameChanged.connect(self.changeWidgetName)
         
         #set custom stylesheet for the widget area
         self.setStyleSheet("""QTabWidget::pane { 
@@ -69,3 +81,6 @@ class customTabWidget(QTabWidget):
             self.plusButton.move(w-self.plusButton.width(), h)
         else:
             self.plusButton.move(size-3, h)
+            
+    def changeWidgetName(self, index, newName):
+        self.widget(index).setObjectName(newName)

@@ -259,6 +259,19 @@ class LineLabel(QGraphicsTextItem):
     def focusOutEvent(self, event):
         super(LineLabel, self).focusOutEvent(event)
         self.setTextInteractionFlags(Qt.NoTextInteraction)
+        
+    def __getstate__(self):
+        return {
+            "text": self.toPlainText(),
+            "index": self.index,
+            "gap": self.gap,
+            "pos": (self.pos().x(), self.pos().y())
+        }
+    
+    def __setstate__(self, dict):
+        self.setPlainText(dict['text'])
+        self.index = dict['index']
+        self.gap = dict['gap']
 
 
 def findIndex(line, pos):
@@ -919,8 +932,13 @@ class Line(QGraphicsPathItem):
             "_classname_": self.__class__.__name__,
             "startPoint": (self.startPoint.x(), self.startPoint.y()),
             "endPoint": (self.endPoint.x(), self.endPoint.y()),
-            "points": [(point.x(), point.y()) for point in self.points]
+            "points": [(point.x(), point.y()) for point in self.points],
+            "startGripItem": hex(id(self.startGripItem)),
+            "endGripItem": hex(id(self.endGripItem)) if self.endGripItem else 0,
+            "refLine": hex(id(self.refLine)) if self.refLine else 0,
+            "refIndex": self.refIndex,
+            "label": [i for i in self.label],
+            "id": hex(id(self))
         }
-    
     def __setstate__(self, dict):
         self.points = [QPointF(x, y) for x, y in dict["points"]]

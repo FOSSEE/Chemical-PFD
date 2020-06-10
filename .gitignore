@@ -2,5 +2,5 @@
 src/main/python/experimental/*
 *.pfd
 .vscode
-.vscode/*.json
-src/main/resources/base/toolbar/*.png
+.vscode/*.jsons
+.idea/*

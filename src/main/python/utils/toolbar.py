@@ -20,6 +20,7 @@ class toolbar(QDockWidget):
     def __init__(self, parent = None):
         super(toolbar, self).__init__(parent)
         self.toolbarButtonDict = dict() #initializes empty dict to store toolbar buttons
+        self.toolbarButtonClassList = []
         self.toolbarItems(toolbarItems.keys()) #creates all necessary buttons
         
         self.setFeatures(QDockWidget.DockWidgetFloatable | QDockWidget.DockWidgetMovable)
@@ -59,8 +60,9 @@ class toolbar(QDockWidget):
     def populateToolbar(self, list):
         #called everytime the button box needs to be updated(incase of a filter)
         self.clearLayout() #clears layout
-        for item in list:
-            self.diagAreaLayout.addWidget(self.toolbarButtonDict[item])
+        for itemClass in list:
+            for item in self.toolbarButtonDict[itemClass].keys():
+                self.diagAreaLayout.addWidget(self.toolbarButtonDict[itemClass][item])
         self.resize()
             
     def searchQuery(self):
@@ -86,13 +88,16 @@ class toolbar(QDockWidget):
         self.diagAreaWidget.setLayout(self.diagAreaLayout)
         self.diagArea.setWidget(self.diagAreaWidget)
 
-    def toolbarItems(self, items):
+    def toolbarItems(self, itemClasses):
         #helper functions to create required buttons
-        for item in items:
-            obj = toolbarItems[item]
-            button = toolbarButton(self, obj)
-            button.clicked.connect(lambda : self.toolbuttonClicked.emit(obj))
-            self.toolbarButtonDict[item] = button
+        for itemClass in itemClasses:
+            self.toolbarButtonDict[itemClass] = {}
+            self.toolbarButtonClassList.append(itemClass)
+            for item in toolbarItems[itemClass].keys():
+                obj = toolbarItems[itemClass][item]
+                button = toolbarButton(self, obj)
+                button.clicked.connect(lambda : self.toolbuttonClicked.emit(obj))
+                self.toolbarButtonDict[itemClass][item] = button
             
     @property
     def toolbarItemList(self):
