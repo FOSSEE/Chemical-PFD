@@ -61,17 +61,17 @@
     },
     "Heating or Cooling Arrangements": {
         "905Exchanger": {
-            "name": "905Exchanger",
+            "name": "Exchanger",
             "icon": ".\\Heating or Cooling Arrangements\\905Exchanger.png",
             "class": "Heating or Cooling Arrangements",
-            "object": "905Exchanger",
+            "object": "Exchanger",
             "args": []
         },
         "907Kettle Reboiler": {
-            "name": "907Kettle Reboiler",
+            "name": "Kettle Reboiler",
             "icon": ".\\Heating or Cooling Arrangements\\907Kettle Reboiler.png",
             "class": "Heating or Cooling Arrangements",
-            "object": "907KettleReboiler",
+            "object": "KettleReboiler",
             "args": []
         },
         "Exchanger": {
@@ -165,7 +165,7 @@
             "args": []
         },
         "Ejector(Vapor Service)": {
-            "name": "Ejector(Vapor Service)",
+            "name": "EjectorVapor Service",
             "icon": ".\\Pumps\\Ejector(Vapor Service).png",
             "class": "Pumps",
             "object": "EjectorVaporService",
@@ -222,22 +222,6 @@
             "icon": ".\\Storage Vessels Tanks\\Floating Roof Tank.png",
             "class": "Storage Vessels Tanks",
             "object": "FloatingRoofTank",
-            "args": []
-        }
-    },
-    "Valves": {
-        "Gate Valve": {
-            "name": "Gate Valve",
-            "icon": ".\\Valves\\Gate Valve.png",
-            "class": "Valves",
-            "object": "GateValve",
-            "args": []
-        },
-        "Globe Valve": {
-            "name": "Globe Valve",
-            "icon": ".\\Valves\\Globe Valve.png",
-            "class": "Valves",
-            "object": "GlobeValve",
             "args": []
         }
     }
