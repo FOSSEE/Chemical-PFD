@@ -1,3 +1,25 @@
+/*
+    background darker = #004646
+    background dark and slighly darker = #007A7A
+    background dark = #006666
+    background normal and slighly darker = #008F8F
+    background normal = #00B8B8
+    background light = #EBFFFF
+    background lighter = #ffffff
+
+    lists background = #006666
+    lists background (alternate) = #008F8F
+    lists backgrounds selection = #00E0E0
+
+    foreground = black
+
+    selection darker = #004646
+    selection dark = #006666
+    selection normal = #008F8F
+    selection inbetween normal and light = #00B8B8 (used to build SpinBoxes)
+    selection light = #00E0E0
+    selection lighter = #D6FFFF 
+*/
 QLineEdit {
     color: #ffffff;
     background-color: #b6b6b6;
@@ -15,17 +37,18 @@ QLineEdit {
 QLineEdit:focus{
     border-color: #7cabf9;
 }
-QTabBar {
+tabBarPlus {
     qproperty-drawBase: 0;
     left: 5px;
     background-color: transparent;
+    font-size: 15px;
 }
 
-QTabBar:focus {
+tabBarPlus:focus {
     border: 0px transparent black;
 }
 
-QTabBar::close-button {
+tabBarPlus::close-button {
     padding: 0px;
     margin: 0px;
     border-radius: 2px;
@@ -34,55 +57,56 @@ QTabBar::close-button {
     background-repeat: none;
 }
 
-QTabBar::close-button:hover {
+tabBarPlus::close-button:hover {
     background-color: #7cabf9;
 }
 
-QTabBar::close-button:pressed {
+tabBarPlus::close-button:pressed {
     background-color: #adc5ed;
 }
 
-QTabBar::scroller { /* the width of the scroll buttons */
+tabBarPlus::scroller { /* the width of the scroll buttons */
     width: 20px;
 }
 
-QTabBar::tab:top,
-QTabBar::tab:bottom {
+tabBarPlus::tab:top,
+tabBarPlus::tab:bottom {
     color: black;
     border: 1px solid #b6b6b6;
     border-left-color: #e6e6e6;
     border-right-width: 0px;
     background-color: white;
-    padding:0px 15px;
+    padding:5px 15px;
+    width: 100px;
 }
 
-QTabBar::tab:top:first,
-QTabBar::tab:bottom:first {
+tabBarPlus::tab:top:first,
+tabBarPlus::tab:bottom:first {
     border-top-left-radius: 6px;
     border-bottom-left-radius: 6px;
 }
 
-QTabBar::tab:top:last,
-QTabBar::tab:bottom:last {
+tabBarPlus::tab:top:last,
+tabBarPlus::tab:bottom:last {
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
     border-right-width: 1px;
 }
 
-QTabBar::tab:top:selected,
-QTabBar::tab:bottom:selected {
+tabBarPlus::tab:top:selected,
+tabBarPlus::tab:bottom:selected {
     color: black;
     background-color: qlineargradient(spread:pad, x1:1, y1:0.545, x2:1, y2:0, stop:0 #3874f2, stop:1 #5e90fa);
     border-color: #3874f2;
 }
 
-QTabBar::tab:top:!selected:hover,
-QTabBar::tab:bottom:!selected:hover {
+tabBarPlus::tab:top:!selected:hover,
+tabBarPlus::tab:bottom:!selected:hover {
     color: black;
 }
 
-QTabBar::tab:top:only-one ,
-QTabBar::tab:bottom:only-one {
+tabBarPlus::tab:top:only-one ,
+tabBarPlus::tab:bottom:only-one {
     border: 1px solid #1b3774;
     border-radius: 6px;
 }
@@ -98,6 +122,21 @@ fileWindow::title{
     text-align: center;
     background-color: white;
 }
+fileWindow::close-button {
+    padding: 0px;
+    margin: 0px;
+    border-radius: 2px;
+    background-image: url("src/main/resources/base/ui/close.svg");
+    background-position: center center;
+    background-repeat: none;
+}
+fileWindow::close-button:hover {
+    background-color: #7cabf9;
+}
+
+fileWindow::close-button:pressed {
+    background-color: #adc5ed;
+}
 
 QMainWindow {
     background-color: white;
@@ -107,6 +146,7 @@ QDockWidget#Toolbar{
     background-color: white;
     border: 1px solid #e6e6e6;
 }
+
 QDockWidget::float-button {
     border: 1px transparent #e6e6e6;
     border-radius: 2px;
@@ -202,7 +242,6 @@ customTabWidget QPushButton{
     padding: 1px;
     border: 0px solid #E6E6E3;
     border-radius: 10px;
-    top: -5px;
 }
 customTabWidget QPushButton:hover{
     background: rgba(230, 230, 227, 60%);

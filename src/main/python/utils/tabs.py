@@ -59,7 +59,7 @@ class customTabWidget(QTabWidget):
         #move the new tab button to correct location
         size = sum([self.tab.tabRect(i).width() for i in range(self.tab.count())])
         # calculate width of all tabs 
-        h = max(self.tab.geometry().bottom() - self.plusButton.height()-10, -5) #align with bottom of tabbar
+        h = max(self.tab.geometry().bottom() - self.plusButton.height(), 0) #align with bottom of tabbar
         w = self.tab.width()
         if size > w: #if all the tabs do not overflow the tab bar, add at the end
             self.plusButton.move(w-self.plusButton.width(), h)

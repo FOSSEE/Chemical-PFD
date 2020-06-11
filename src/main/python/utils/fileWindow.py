@@ -53,6 +53,7 @@ class fileWindow(QMdiSubWindow):
         self.setWindowFlag(Qt.CustomizeWindowHint, True)
         self.setWindowFlag(Qt.WindowMinimizeButtonHint, False)
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
+        self.setWindowFlag(Qt.WindowCloseButtonHint, True)
     
     def createSideViewArea(self):
         #creates the side view widgets and sets them to invisible
