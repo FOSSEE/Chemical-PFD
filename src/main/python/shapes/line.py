@@ -136,14 +136,18 @@ class LineLabel(QGraphicsTextItem):
         self.setParentItem(parent)
         self.line = QGraphicsLineItem()
         self.line.setParentItem(self)
+        self.line.setPen(QPen(Qt.black, 2, Qt.SolidLine))
         self.line.setFlag(QGraphicsItem.ItemStacksBehindParent)
         self.resetPos()
 
     def paint(self, painter, option, widget):
         painter.save()
+        painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
         painter.setBrush(QBrush(Qt.white))
+
         painter.drawEllipse(self.boundingRect())
         painter.restore()
+        
         super(LineLabel, self).paint(painter, option, widget)
 
     def updateLabel(self):
