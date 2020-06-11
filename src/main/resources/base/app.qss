@@ -24,7 +24,7 @@ QLineEdit {
     color: #ffffff;
     background-color: #b6b6b6;
     selection-color: black;
-    selection-background-color: #5e90fa;
+    selection-background-color: #00E0E0;
     /* Padding and margin defined */
     border-style: solid;
     border: 1px solid #b6b6b6; /* border top color defined after QAbstractSpinBox, QLineEdit and QComboBox */
@@ -58,7 +58,7 @@ tabBarPlus::close-button {
 }
 
 tabBarPlus::close-button:hover {
-    background-color: #7cabf9;
+    background-color: #006666;
 }
 
 tabBarPlus::close-button:pressed {
@@ -95,9 +95,9 @@ tabBarPlus::tab:bottom:last {
 
 tabBarPlus::tab:top:selected,
 tabBarPlus::tab:bottom:selected {
-    color: black;
-    background-color: qlineargradient(spread:pad, x1:1, y1:0.545, x2:1, y2:0, stop:0 #3874f2, stop:1 #5e90fa);
-    border-color: #3874f2;
+    color: white;
+    background-color: qlineargradient(spread:pad, x1:1, y1:0.545, x2:1, y2:0, stop:0 #00b0b0, stop:1 #00BaBa);
+    border-color: #006666;
 }
 
 tabBarPlus::tab:top:!selected:hover,
@@ -126,12 +126,12 @@ fileWindow::close-button {
     padding: 0px;
     margin: 0px;
     border-radius: 2px;
-    background-image: url("src/main/resources/base/ui/close.svg");
+    background-image: url("src/main/resources/base/ui/close.png");
     background-position: center center;
     background-repeat: none;
 }
 fileWindow::close-button:hover {
-    background-color: #7cabf9;
+    background-color: #004646;
 }
 
 fileWindow::close-button:pressed {
@@ -143,7 +143,7 @@ QMainWindow {
 }
 
 QDockWidget#Title {
-    background-color: #7cabf9;
+    background-color: #004646;
 }
 QDockWidget#Toolbar{
     background-color: white;
@@ -191,7 +191,7 @@ QToolButton {
 QToolButton:hover,
 QToolButton:focus {
     color: black;
-    border: 3px solid #3874f2;
+    border: 3px solid #00BaBa;
 }
 
 QToolButton:disabled,
@@ -202,12 +202,12 @@ QToolButton:disabled:checked {
 }
 
 QToolButton:pressed {
-    border-color: #7cabf9;
+    border-color: #004646;
 }
 
 QToolButton:checked {
-    background-color: #5e90fa;
-    border-color: #3874f2;
+    background-color: #006666;
+    border-color: #004646;
 }
 
 sectionLabel{
@@ -228,8 +228,7 @@ sectionLabel:first{
 
 customView QPushButton{
     background-color: rgba(214, 54, 40, 50%);
-    background-image: url("src/main/resources/base/ui/close.svg");
-    border: 1px groove white;
+    border: 1px dashed white;
     border-radius: 2px;
     font-size: 18px;
     font-weight: Bold;
