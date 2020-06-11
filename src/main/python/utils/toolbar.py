@@ -161,7 +161,7 @@ class toolbarButton(QToolButton):
     
     def minimumSizeHint(self):
         #defines button size
-        return QSize(40, 40)
+        return QSize(55, 55)
 
 class sectionLabel(QLabel):
     
