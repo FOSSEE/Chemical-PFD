@@ -72,7 +72,7 @@ class flowLayout(QLayout):
             spaceX = self.spacing() + wid.style().layoutSpacing(QSizePolicy.ToolButton, QSizePolicy.ToolButton, Qt.Horizontal)
             spaceY = self.spacing() + wid.style().layoutSpacing(QSizePolicy.ToolButton, QSizePolicy.ToolButton, Qt.Vertical)
             nextX = x + item.sizeHint().width() + spaceX
-            if nextX - spaceX > rect.right() and lineHeight > 0:
+            if nextX + spaceX > rect.right() and lineHeight > 0:
                 x = rect.x()
                 y = y + lineHeight + spaceY
                 nextX = x + item.sizeHint().width() + spaceX

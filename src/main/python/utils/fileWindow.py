@@ -53,6 +53,7 @@ class fileWindow(QMdiSubWindow):
         self.setWindowFlag(Qt.CustomizeWindowHint, True)
         self.setWindowFlag(Qt.WindowMinimizeButtonHint, False)
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
+        self.setWindowFlag(Qt.WindowCloseButtonHint, True)
     
     def createSideViewArea(self):
         #creates the side view widgets and sets them to invisible
@@ -60,6 +61,7 @@ class fileWindow(QMdiSubWindow):
         self.sideView = customView(parent = self)
         self.sideView.setInteractive(False)
         self.sideViewCloseButton = QPushButton('×', self.sideView)
+        self.sideViewCloseButton.setObjectName("sideViewCloseButton")
         self.sideViewCloseButton.setFlat(True)
         self.sideViewCloseButton.setFixedSize(20, 20)
         self.moveSideViewCloseButton()
