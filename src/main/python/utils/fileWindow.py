@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, QPoint
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QFileDialog, QHBoxLayout,
                              QMdiSubWindow, QMenu, QPushButton, QSizePolicy,
-                             QSplitter, QWidget, QStyle)
+                             QSplitter, QWidget, QStyle, QSizePolicy)
 from os import path
 from . import dialogs
 from .graphics import customView
@@ -38,8 +38,17 @@ class fileWindow(QMdiSubWindow):
         self.mainWidget = QWidget(self)
         layout = QHBoxLayout(self.mainWidget)
         self.createSideViewArea() #create the side view objects
+        
+        left = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        left.setHorizontalStretch(1)
+        self.tabber.setSizePolicy(left)
+        
+        right = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        right.setHorizontalStretch(1)
+        self.sideView.setSizePolicy(right)
+        
         layout.addWidget(self.tabber)
-        layout.addWidget(self.splitter)
+        # layout.addWidget(self.splitter)
         layout.addWidget(self.sideView)
         self.mainWidget.setLayout(layout)
         self.setWidget(self.mainWidget)
@@ -57,7 +66,7 @@ class fileWindow(QMdiSubWindow):
     
     def createSideViewArea(self):
         #creates the side view widgets and sets them to invisible
-        self.splitter = QSplitter(Qt.Vertical ,self)
+        # self.splitter = QSplitter(Qt.Vertical ,self)
         self.sideView = customView(parent = self)
         self.sideView.setInteractive(False)
         self.sideViewCloseButton = QPushButton('×', self.sideView)
@@ -66,36 +75,26 @@ class fileWindow(QMdiSubWindow):
         self.sideViewCloseButton.setFixedSize(20, 20)
         self.moveSideViewCloseButton()
         self.sideViewCloseButton.clicked.connect(lambda: setattr(self, 'sideViewTab', None))
-        self.splitter.setVisible(False)
+        # self.splitter.setVisible(False)
         self.sideView.setVisible(False)
         self.sideView.setContextMenuPolicy(Qt.CustomContextMenu)
         self.sideView.customContextMenuRequested.connect(self.sideViewContextMenu)
+        self.sideView.resize(self.width()//2 - self.sideView.frameWidth(), self.height())
         
     def resizeHandler(self):
         # resize Handler to handle resize cases.
         parentRect = self.mdiArea().size()
-        print(parentRect)
         current = self.tabber.currentWidget()
         width, height = current.dimensions
-        
-        # if side view is visible, set width to maximum possible, else use minimum requirement
-        if self.sideViewTab:
-            width = parentRect.width()
-            height = parentRect.height()
-            self.moveSideViewCloseButton()
-            self.sideView.resize(self.size().width()//2 - self.sideView.frameWidth(), self.size().height())
-            
-        else:
-            width = min(parentRect.width(), width + 100)
-            height = min(parentRect.height(), height + 200)
+        width = min(parentRect.width(), width + 100)
+        height = min(parentRect.height(), height + 150)
         
         if len(self.parent().parent().subWindowList()) > 1:
             height -= 20
         
-        # set element dimensions  
+        # set element dimensions
         self.setFixedSize(width, height)
-        self.tabber.resize(width, height)
-        self.tabber.currentWidget().adjustView()
+        current.adjustView()
          
     def contextMenu(self, point):
         #function to display the right click menu at point of right click
@@ -120,16 +119,15 @@ class fileWindow(QMdiSubWindow):
     def sideViewToggle(self):
         #Function checks if current side view tab is set, and toggles view as required
         if self.sideViewTab:
-            self.splitter.setVisible(True)
+            # self.splitter.setVisible(True)
             self.sideView.setVisible(True)
             self.sideView.setScene(self.tabber.currentWidget().painter)
-            self.moveSideViewCloseButton()
             self.resizeHandler()
             return True
         else:           
-            self.splitter.setVisible(False)
-            self.sideView.setVisible(False)
-            self.resizeHandler()            
+            # self.splitter.setVisible(False)
+            self.sideView.setVisible(False)  
+            self.resizeHandler()
             return False
         
     def moveSideViewCloseButton(self):

@@ -41,17 +41,18 @@ class canvas(customView):
     def resizeView(self, w, h):
         #helper function to resize canvas
         self.painter.setSceneRect(0, 0, w, h)
-
+        
     def adjustView(self):
         #utitily to adjust current diagram view
         width, height = self.dimensions
         frameWidth = self.frameWidth()
         #update view size
         self.setSceneRect(0, 0, width - frameWidth*2, height)
-        
+            
     def resizeEvent(self, event):
         #overloaded function to also view size on window update
-        self.adjustView()
+        # self.adjustView()
+        pass
    
     def setCanvasSize(self, size):
         """
