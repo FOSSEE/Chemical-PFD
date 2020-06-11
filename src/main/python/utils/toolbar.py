@@ -2,11 +2,11 @@ from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtCore import QSize, Qt, pyqtSignal, QMimeData
 from PyQt5.QtGui import QIcon, QDrag
 from PyQt5.QtWidgets import (QBoxLayout, QDockWidget, QGridLayout, QLineEdit,
-                             QScrollArea, QToolButton, QWidget, QApplication, QStyle, QLabel)
+                             QScrollArea, QToolButton, QWidget, QStyle, QLabel)
 from re import search, IGNORECASE
 
 from .data import toolbarItems
-from .app import fileImporter
+from .app import fileImporter, app
 from .layout import flowLayout
 
 # resourceManager = ApplicationContext() #Used to load images, mainly toolbar icons
@@ -39,14 +39,14 @@ class toolbar(QDockWidget):
         
         #create a scrollable area to house all buttons
         self.diagArea = QScrollArea(self)
-        self.diagArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.diagArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.diagArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.diagArea.setWidgetResizable(True)
         self.layout.addWidget(self.diagArea, stretch=1)
         self.diagAreaWidget = QWidget(self.diagArea) #inner widget for scroll area
         #custom layout for inner widget
         self.diagAreaLayout = flowLayout(self.diagAreaWidget)
-        
+        self.diagAreaLayout.setSizeConstraint(flowLayout.SetMinimumSize)
         self.setWidget(self.widget) #set main widget to dockwidget        
     
     def clearLayout(self):
@@ -81,18 +81,25 @@ class toolbar(QDockWidget):
         parent = self.parentWidget() #used to get parent dimensions
         self.layout.setDirection(QBoxLayout.TopToBottom) # here so that a horizontal toolbar can be implemented later
         # self.setFixedHeight(self.height()) #span available height
-        width = self.width() - QApplication.style().pixelMetric(QStyle.PM_ScrollBarExtent)
+        self.searchBox.setMinimumWidth(.18*parent.width())
+        width = self.width()
+        scrollBar = self.diagArea.verticalScrollBar()
+        height = self.diagAreaLayout.heightForWidth(width)
+        if scrollBar.isVisible():
+            width -= app.app.style().pixelMetric(QStyle.PM_ScrollBarExtent)
         
         # the following line, sets the required height for the current width, so that blank space doesnt occur
-        self.diagAreaWidget.setMinimumHeight(self.diagAreaLayout.heightForWidth(width))
-        self.setMinimumWidth(.17*parent.width()) #12% of parent width
+        self.diagAreaWidget.setMinimumHeight(height)
+        self.setMinimumWidth(.2*parent.width()) #12% of parent width
         # self.setMinimumWidth(self.diagAreaLayout.minimumSize().width()) #12% of parent width
         self.diagAreaWidget.setLayout(self.diagAreaLayout)
         self.diagArea.setWidget(self.diagAreaWidget)
         
         for _, label in self.toolbarLabelDict.items():
-            label.setFixedSize(width, 20)
-        
+            label.setFixedWidth(width)
+    
+    def resizeEvent(self, event):
+        self.resize()  
 
     def toolbarItems(self, itemClasses):
         #helper functions to create required buttons
@@ -139,7 +146,7 @@ class toolbarButton(QToolButton):
         #handles drag
         if not (event.buttons() and Qt.LeftButton):
             return #ignore if left click is not held
-        if (event.pos() - self.dragStartPosition).manhattanLength() < QApplication.startDragDistance():
+        if (event.pos() - self.dragStartPosition).manhattanLength() < app.app.startDragDistance():
             return #check if mouse was dragged enough, manhattan length is a rough and quick method in qt
         
         drag = QDrag(self) #create drag object
@@ -154,18 +161,9 @@ class toolbarButton(QToolButton):
     
     def minimumSizeHint(self):
         #defines button size
-        return QSize(40, 40)
-    
+        return QSize(55, 55)
+
 class sectionLabel(QLabel):
     
     def __init__(self, *args):
         super(sectionLabel, self).__init__(*args)
-        self.setAlignment(Qt.AlignHCenter)
-        self.setStyleSheet("""
-            QLabel{
-                background-color: #E6E6E3;
-                border: 2px solid gray;
-                border-left: 0px;
-                background-clip: padding;
-            }
-        """)

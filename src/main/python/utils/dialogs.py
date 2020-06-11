@@ -58,7 +58,6 @@ class paperDims(QDialog):
         super(paperDims, self).exec_()
         self.deleteLater() #remove from memory
         #if ok was pressed return value else return None
-        print(self.landscapeCheckBox.isChecked())
         return (self.returnCanvasSize, self.returnCanvasPPI, self.landscapeCheckBox.isChecked()) if self.result() else None
 
 class sideViewSwitchDialog(QDialog):

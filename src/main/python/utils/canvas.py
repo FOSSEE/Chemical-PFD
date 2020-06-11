@@ -16,7 +16,7 @@ class canvas(QWidget):
     for context menu and dialogs.
     """
         
-    def __init__(self, parent=None, size= 'A4', ppi= '72' , parentMdiArea = None, parentFileWindow = None, landscape=False):
+    def __init__(self, parent=None, size= 'A0', ppi= '72' , parentMdiArea = None, parentFileWindow = None, landscape=True):
         super(canvas, self).__init__(parent)
         
         #Store values for the canvas dimensions for ease of access, these are here just to be

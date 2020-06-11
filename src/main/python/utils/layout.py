@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt, QRect, QPoint, QSize
 from PyQt5.QtWidgets import QLayout, QSizePolicy
 
 class flowLayout(QLayout):
-    def __init__(self, parent=None, margin=0, spacing=-1):
+    def __init__(self, parent=None, margin=0, spacing=12):
         super(flowLayout, self).__init__(parent)
 
         if parent is not None:

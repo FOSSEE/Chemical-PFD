@@ -1,0 +1,203 @@
+QLineEdit {
+    color: #ffffff;
+    background-color: #b6b6b6;
+    selection-color: black;
+    selection-background-color: #5e90fa;
+    /* Padding and margin defined */
+    border-style: solid;
+    border: 1px solid #b6b6b6; /* border top color defined after QAbstractSpinBox, QLineEdit and QComboBox */
+    border-top-color: #a2a2a0; /* Creates an inset effect inside the elements */
+    padding: 2px 6px 2px 6px; /* This makes text colour work on QComboBox */
+    margin: 0px 2px 0px 2px;
+    border-radius: 3px;
+}
+
+QLineEdit:focus{
+    border-color: #7cabf9;
+}
+
+QFrame{
+    background-color: white;
+}
+
+QTabBar {
+    qproperty-drawBase: 0;
+    left: 5px;
+    background-color: transparent;
+}
+
+QTabBar:focus {
+    border: 0px transparent black;
+}
+
+QTabBar::close-button {
+    padding: 0px;
+    margin: 0px;
+    border-radius: 2px;
+    background-image: url("src/main/resources/base/ui/close.svg");
+    background-position: center center;
+    background-repeat: none;
+}
+
+QTabBar::close-button:hover {
+    background-color: #7cabf9;
+}
+
+QTabBar::close-button:pressed {
+    background-color: #adc5ed;
+}
+
+QTabBar::scroller { /* the width of the scroll buttons */
+    width: 20px;
+}
+
+QTabBar::tab:top,
+QTabBar::tab:bottom {
+    color: black;
+    border: 1px solid #b6b6b6;
+    border-left-color: #e6e6e6;
+    border-right-width: 0px;
+    background-color: white;
+    padding:0px 15px;
+}
+
+QTabBar::tab:top:first,
+QTabBar::tab:bottom:first {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+QTabBar::tab:top:last,
+QTabBar::tab:bottom:last {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-right-width: 1px;
+}
+
+QTabBar::tab:top:selected,
+QTabBar::tab:bottom:selected {
+    color: black;
+    background-color: qlineargradient(spread:pad, x1:1, y1:0.545, x2:1, y2:0, stop:0 #3874f2, stop:1 #5e90fa);
+    border-color: #3874f2;
+}
+
+QTabBar::tab:top:!selected:hover,
+QTabBar::tab:bottom:!selected:hover {
+    color: black;
+}
+
+QTabBar::tab:top:only-one ,
+QTabBar::tab:bottom:only-one {
+    border: 1px solid #1b3774;
+    border-radius: 6px;
+}
+
+QDockWidget {
+    color: white;
+    background-color: white;
+    border: 1px solid #e6e6e6;
+}
+
+QDockWidget::float-button {
+    border: 1px transparent #e6e6e6;
+    border-radius: 2px;
+    background: transparent;
+    subcontrol-origin: padding;
+    subcontrol-position: right center;
+}
+QDockWidget::float-button {
+    right: 4px;
+}
+
+QDockWidget::float-button:hover {
+    background: #f5f5f5;
+}
+
+QDockWidget::float-button:pressed {
+    /*padding: 1px -1px -1px 1px;*/
+    background-color: #e0e0e0;
+}
+
+QScrollArea{
+    border-style: none;
+    border-width: 0px;
+}
+
+QToolButton {
+    color: #f2f2f2;
+    text-align: center;
+    background-color: rgba(213, 213, 213, 0);
+    border: 0px solid #828282;
+    outline: none;
+    border-radius: 8px;
+}
+
+QToolButton:hover,
+QToolButton:focus {
+    color: black;
+    border: 3px solid #3874f2;
+}
+
+QToolButton:disabled,
+QToolButton:disabled:checked {
+    color: #b6b6b6;
+    background-color: #e6e6e6;
+    border-color: #b6b6b6;
+}
+
+QToolButton:pressed {
+    border-color: #7cabf9;
+}
+
+QToolButton:checked {
+    background-color: #5e90fa;
+    border-color: #3874f2;
+}
+
+sectionLabel{
+    border-color: gray;
+    border-style: solid;
+    border-width: 0px 0px 1px 0px;
+    padding-bottom: 3px;
+    margin-bottom: 3px;
+    margin-top: 10px;
+    text-align: left;
+    font-size: 20px;
+}
+
+sectionLabel:first-child{
+    margin-top: 0px;
+}
+
+customView QPushButton{
+    background: rgba(214, 54, 40, 50%);
+    border: 1px groove white;
+    border-radius: 2px;
+    font-size: 18px;
+    font-weight: Bold;
+    padding: 1px 2px 3px 3px;
+    color: rgba(255, 255, 255, 50%);
+}
+customView QPushButton:Hover{
+    background: rgba(214, 54, 40, 90%);
+    color: rgba(255, 255, 255, 90%);            
+}
+
+customTabWidget QPushButton{
+    background: rgba(230, 230, 227, 0%);
+    padding: 1px;
+    border: 0px solid #E6E6E3;
+    border-radius: 10px;
+    top: -5px;
+}
+customTabWidget QPushButton:hover{
+    background: rgba(230, 230, 227, 60%);
+}
+
+customTabWidget::pane { 
+    margin: 0px,1px,1px,1px;
+    border: 2px solid #E6E6E3;
+    border-radius: 7px;
+    padding: 1px;
+    background-color: #E6E6E3;
+}

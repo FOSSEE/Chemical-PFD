@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   id="svg3305"
+   version="1.1"
+   viewBox="0 0 18.572141 18.358872"
+   height="18.358871mm"
+   width="18.572142mm">
+  <defs
+     id="defs3299">
+    <linearGradient
+       id="linearGradient5135"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop5133" />
+    </linearGradient>
+    <linearGradient
+       gradientTransform="matrix(0.0745283,0,0,0.0745283,126.33199,56.55539)"
+       y2="894.49042"
+       x2="306.71027"
+       y1="894.49042"
+       x1="56.083565"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient3920"
+       xlink:href="#linearGradient5135" />
+    <linearGradient
+       gradientTransform="matrix(0.0745283,0,0,0.0745283,126.33199,56.55539)"
+       y2="894.49042"
+       x2="306.71027"
+       y1="894.49042"
+       x1="56.083565"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient3922"
+       xlink:href="#linearGradient5135" />
+    <linearGradient
+       gradientTransform="matrix(0.0745283,0,0,0.0745283,126.33199,56.55539)"
+       y2="894.49042"
+       x2="306.71027"
+       y1="894.49042"
+       x1="56.083565"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient3928"
+       xlink:href="#linearGradient5135" />
+    <linearGradient
+       gradientTransform="matrix(0.0745283,0,0,0.0745283,126.33199,56.55539)"
+       y2="894.49042"
+       x2="306.71027"
+       y1="894.49042"
+       x1="56.083565"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient3932"
+       xlink:href="#linearGradient5135" />
+  </defs>
+  <metadata
+     id="metadata3302">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-130.5118,-114.03592)"
+     id="layer1">
+    <g
+       style="stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none"
+       id="g3948">
+      <ellipse
+         ry="6.9867759"
+         rx="6.773838"
+         cy="123.2276"
+         cx="137.41814"
+         id="ellipse4170"
+         style="fill:none;fill-rule:evenodd;stroke:url(#linearGradient3920);stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:url(#linearGradient3922);stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 149.08394,120.88289 h -13.0243 l 3.53839,2.86083 -3.57603,2.89847 12.98665,-0.0753"
+         id="path4198" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:url(#linearGradient3928);stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 137.29069,130.21218 v 2.18261"
+         id="path4204" />
+      <path
+         id="path4214"
+         d="m 137.03183,116.21871 0.003,-2.18261"
+         style="fill:none;fill-rule:evenodd;stroke:url(#linearGradient3932);stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+  </g>
+</svg>
