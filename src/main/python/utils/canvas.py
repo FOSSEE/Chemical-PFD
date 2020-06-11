@@ -37,7 +37,11 @@ class canvas(customView):
         self.painter.setSceneRect(0, 0, *paperSizes[self._canvasSize][self._ppi])
         self.parentMdiArea = parentMdiArea
         self.parentFileWindow = parentFileWindow
+        self.customContextMenuRequested.connect(self.sideViewContextMenu)
 
+    def sideViewContextMenu(self, pos):
+        self.parentFileWindow.sideViewContextMenu(self.mapTo(self.parentFileWindow, pos))
+        
     def resizeView(self, w, h):
         #helper function to resize canvas
         self.painter.setSceneRect(0, 0, w, h)
