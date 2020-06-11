@@ -31,7 +31,7 @@ class canvas(customView):
         #set layout and background color
         self.painter = customScene()    
         self.painter.setBackgroundBrush(QBrush(Qt.white)) #set white background
-        self.setScene = self.painter
+        self.setScene(self.painter)
         
         #set initial paper size for the scene
         self.painter.setSceneRect(0, 0, *paperSizes[self._canvasSize][self._ppi])
