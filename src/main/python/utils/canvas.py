@@ -69,8 +69,8 @@ class canvas(QWidget):
         #if view is visible use half of available width
         factor = 2 if self.parentFileWindow.sideViewTab is not None else 1
         #use minimum width required to fit the view
-        width = min((prect.width() - 40)//factor, width) 
-        height = min(prect.height() - 80, height)
+        width = min((prect.width() - 60)//factor, width) 
+        height = min(prect.height() - 120, height)
         #set view dims
         self.view.setFixedWidth(width)
         self.view.setFixedHeight(height)
