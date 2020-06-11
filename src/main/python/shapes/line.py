@@ -1,7 +1,7 @@
 import math
-from PyQt5.QtGui import QPen, QPainterPath, QBrush, QPainterPathStroker, QPainter, QCursor
+from PyQt5.QtGui import QPen, QPainterPath, QBrush, QPainterPathStroker, QPainter, QCursor, QPolygonF
 from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPathItem, QGraphicsTextItem, QMenu, QGraphicsLineItem
-from PyQt5.QtCore import Qt, QPointF, QRectF
+from PyQt5.QtCore import Qt, QPointF, QRectF, QLineF
 
 
 class Grabber(QGraphicsPathItem):
@@ -62,7 +62,7 @@ class Grabber(QGraphicsPathItem):
     def paint(self, painter, option, widget):
         """paints the path of grabber only if it is selected
         """
-        if self.isSelected() and not self.m_annotation_item.isSelected() :
+        if self.isSelected() and not self.m_annotation_item.isSelected():
             # show parent line of grabber
             self.m_annotation_item.setSelected(True)
         painter.setBrush(self.brush)
@@ -78,7 +78,7 @@ class Grabber(QGraphicsPathItem):
         """Overrides shape method and set shape to segment on which grabber is located"""
         index = self.m_index
         startPoint = QPointF(self.parentItem().points[index])
-        endPoint = QPointF(self.parentItem().points[index+1])
+        endPoint = QPointF(self.parentItem().points[index + 1])
         startPoint = self.mapFromParent(startPoint)
         endPoint = self.mapFromParent(endPoint)
         path = QPainterPath(startPoint)
@@ -120,6 +120,7 @@ class Grabber(QGraphicsPathItem):
         self.pen = QPen(Qt.white, -1, Qt.SolidLine)
         self.brush = QBrush(Qt.transparent)
 
+
 class LineLabel(QGraphicsTextItem):
     def __init__(self, pos, parent=None):
         super(LineLabel, self).__init__()
@@ -135,14 +136,18 @@ class LineLabel(QGraphicsTextItem):
         self.setParentItem(parent)
         self.line = QGraphicsLineItem()
         self.line.setParentItem(self)
+        self.line.setPen(QPen(Qt.black, 2, Qt.SolidLine))
         self.line.setFlag(QGraphicsItem.ItemStacksBehindParent)
         self.resetPos()
 
     def paint(self, painter, option, widget):
         painter.save()
+        painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
         painter.setBrush(QBrush(Qt.white))
+
         painter.drawEllipse(self.boundingRect())
         painter.restore()
+        
         super(LineLabel, self).paint(painter, option, widget)
 
     def updateLabel(self):
@@ -309,6 +314,7 @@ class Line(QGraphicsPathItem):
     """
     Extends QGraphicsPathItem to draw zig-zag line consisting of multiple points
     """
+
     def __init__(self, startPoint, endPoint, **args):
         QGraphicsItem.__init__(self, **args)
         self.startPoint = startPoint
@@ -323,12 +329,18 @@ class Line(QGraphicsPathItem):
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
         self.setAcceptHoverEvents(True)
         # store reference if line connect another line
-        self.refLine = None                                             # reference line
-        self.refIndex = None                                            # start index of segment to which it connects
+        self.refLine = None  # reference line
+        self.refIndex = None  # start index of segment to which it connects
         self.commonPathsCenters = []
         self.midLines = []
         self.label = []
+        self.arrowFlag = True
 
+    def boundingRect(self):
+        rect = self.shape().boundingRect()
+        rect.adjust(-10,-10,10,10)
+        return rect
+    
     def advance(self, phase):
         if not phase:
             return
@@ -351,7 +363,7 @@ class Line(QGraphicsPathItem):
                         if item.refLine:
                             i = len(item.points) - 2
                             x1, y1 = item.points[i].x(), item.points[i].y()
-                            x2, y2 = item.points[i+1].x(), item.points[i+1].y()
+                            x2, y2 = item.points[i + 1].x(), item.points[i + 1].y()
                             x, y = center.x(), center.y()
                             if x == x1 == x2 and not min(y1, y2) + 8 <= y < max(y1, y2) - 8:
                                 continue
@@ -367,6 +379,7 @@ class Line(QGraphicsPathItem):
         color = Qt.red if self.isSelected() else Qt.black
         painter.setPen(QPen(color, 2, Qt.SolidLine))
         path = QPainterPath(self.startPoint)
+        arrowHead = QPolygonF()
         # iterating over all points of line
         for i in range(len(self.points) - 1):
             x1, y1 = self.points[i].x(), self.points[i].y()
@@ -396,6 +409,31 @@ class Line(QGraphicsPathItem):
                             path.arcTo(QRectF(x - 8, y - 8, 16, 16), 0, -180)
                             path.lineTo(point - QPointF(8, 0))
             path.lineTo(self.points[i + 1])
+            if i == len(self.points) - 2 and self.arrowFlag:
+                arrow_size = 20.0
+                line = QLineF(self.points[i], self.points[i + 1])
+                if line.length() < 20:
+                    continue
+                angle = math.acos(line.dx() / line.length())
+
+                if line.dy() >= 0:
+                    angle = (math.pi * 2) - angle
+
+                arrow_p1 = line.p2() - QPointF(math.sin(angle + math.pi / 2.5) * arrow_size,
+                                               math.cos(angle + math.pi / 2.5) * arrow_size)
+
+                arrow_p2 = line.p2() - QPointF(math.sin(angle + math.pi - math.pi / 2.5) * arrow_size,
+                                               math.cos(angle + math.pi - math.pi / 2.5) * arrow_size)
+
+                arrowHead = QPolygonF()
+                arrowHead.append(line.p2())
+                arrowHead.append(arrow_p1)
+                arrowHead.append(arrow_p2)
+                # path.addPolygon(arrowHead)
+                painter.save()
+                painter.setBrush(Qt.black)
+                painter.drawPolygon(arrowHead)
+                painter.restore()
 
         painter.drawPath(path)
 
@@ -453,9 +491,9 @@ class Line(QGraphicsPathItem):
             start = self.startPoint
             end = self.endPoint
             sitem = self.startGripItem.mapRectToScene(self.startGripItem.m_annotation_item.boundingRect())
-            eitem= self.endGripItem.mapRectToScene(self.endGripItem.m_annotation_item.boundingRect())
+            eitem = self.endGripItem.mapRectToScene(self.endGripItem.m_annotation_item.boundingRect())
             if self.refLine:
-                eitem = self.endGripItem.mapRectToScene(QRectF(0,0,0,0))
+                eitem = self.endGripItem.mapRectToScene(QRectF(0, 0, 0, 0))
 
             if self.startGripItem.m_location in ["right"]:
                 if self.endGripItem.m_location in ["top"]:
@@ -463,7 +501,7 @@ class Line(QGraphicsPathItem):
                         if start.y() + offset < end.y():
                             self.points = [start, QPointF(end.x(), start.y()), end]
                         else:
-                            if start.x()+offset < eitem.left()-offset:
+                            if start.x() + offset < eitem.left() - offset:
                                 self.points = [start, ns, QPointF(ns.x(), pe.y()), pe, end]
                             else:
                                 x = max(eitem.right() + offset, ns.x())
@@ -568,7 +606,7 @@ class Line(QGraphicsPathItem):
                 elif self.endGripItem.m_location in ["bottom"]:
                     if start.x() + offset < eitem.left():
                         if end.y() < sitem.top() - offset:
-                            self.points = [start, ns, QPointF(ns.x(),sitem.top()),
+                            self.points = [start, ns, QPointF(ns.x(), sitem.top()),
                                            QPointF(pe.x(), sitem.top()), end]
                         else:
                             y = max(sitem.bottom(), pe.y())
@@ -754,7 +792,7 @@ class Line(QGraphicsPathItem):
                 self.points[len(self.points) - 2] = QPointF(point.x(), self.endPoint.y())
             else:
                 self.points[len(self.points) - 2] = QPointF(self.endPoint.x(), point.y())
-        
+
         if self.refLine:
             self.endPoint = self.points[len(self.points) - 1]
 
@@ -830,7 +868,6 @@ class Line(QGraphicsPathItem):
                     self.endGripItem.line = None
                 if self.refLine:
                     if self in self.refLine.midLines: self.refLine.midLines.remove(self)
-            
 
         return super(Line, self).itemChange(change, value)
 
@@ -871,18 +908,18 @@ class Line(QGraphicsPathItem):
                 line.points[i].setX(point1.x())
                 if line.points[i].y() < min(point1.y(), point2.y()):
                     line.points[i].setY(min(point1.y(), point2.y()))
-                    line.points[i-1].setY(min(point1.y(), point2.y()))
+                    line.points[i - 1].setY(min(point1.y(), point2.y()))
                 elif line.points[i].y() > max(point1.y(), point2.y()):
                     line.points[i].setY(max(point1.y(), point2.y()))
-                    line.points[i-1].setY(max(point1.y(), point2.y()))
+                    line.points[i - 1].setY(max(point1.y(), point2.y()))
             elif point1.y() == point2.y():
                 line.points[i].setY(point1.y())
                 if line.points[i].x() < min(point1.x(), point2.x()):
                     line.points[i].setX(min(point1.x(), point2.x()))
-                    line.points[i-1].setX(min(point1.x(), point2.x()))
+                    line.points[i - 1].setX(min(point1.x(), point2.x()))
                 elif line.points[i].x() > max(point1.x(), point2.x()):
                     line.points[i].setX(max(point1.x(), point2.x()))
-                    line.points[i-1].setX(max(point1.x(), point2.x()))
+                    line.points[i - 1].setX(max(point1.x(), point2.x()))
             line.updatePath()
 
     def removeFromCanvas(self):
@@ -920,9 +957,21 @@ class Line(QGraphicsPathItem):
         """
         contextMenu = QMenu()
         addLableAction = contextMenu.addAction("add Label")
+        if self.arrowFlag is True:
+            str = "Hide Arrow"
+        else:
+            str = "Add Arrow"
+        changeArrowFlag = contextMenu.addAction(str)
         action = contextMenu.exec_(event.screenPos())
         if action == addLableAction:
             self.label.append(LineLabel(event.scenePos(), self))
+        if action == changeArrowFlag:
+            if str == "Hide Arrow":
+                self.arrowFlag =False
+            else:
+                self.arrowFlag =True
+            self.update()
+
     def setPenStyle(self, style):
         """change current pen style for line"""
         self.penStyle = style
