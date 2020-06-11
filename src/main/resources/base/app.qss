@@ -52,7 +52,7 @@ tabBarPlus::close-button {
     padding: 0px;
     margin: 0px;
     border-radius: 2px;
-    background-image: url("src/main/resources/base/ui/close.svg");
+    background-image: url("src/main/resources/base/ui/close.png");
     background-position: center center;
     background-repeat: none;
 }
@@ -142,6 +142,9 @@ QMainWindow {
     background-color: white;
 }
 
+QDockWidget#Title {
+    background-color: #7cabf9;
+}
 QDockWidget#Toolbar{
     background-color: white;
     border: 1px solid #e6e6e6;
@@ -224,7 +227,8 @@ sectionLabel:first{
 }
 
 customView QPushButton{
-    background: rgba(214, 54, 40, 50%);
+    background-color: rgba(214, 54, 40, 50%);
+    background-image: url("src/main/resources/base/ui/close.svg");
     border: 1px groove white;
     border-radius: 2px;
     font-size: 18px;
@@ -233,8 +237,7 @@ customView QPushButton{
     color: rgba(255, 255, 255, 50%);
 }
 customView QPushButton:Hover{
-    background: rgba(214, 54, 40, 90%);
-    color: rgba(255, 255, 255, 90%);            
+    background-color: rgba(214, 54, 40, 90%);  
 }
 
 customTabWidget QPushButton{
