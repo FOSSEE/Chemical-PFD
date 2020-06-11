@@ -32,12 +32,6 @@ class canvas(customView):
         self.painter = customScene()    
         self.painter.setBackgroundBrush(QBrush(Qt.white)) #set white background
         self.setScene = self.painter
-        # self = customView(self.painter, self) #create a viewport for the canvas board
-        
-        # self.layout = QHBoxLayout(self) #create the layout of the canvas, the canvas could just subclass QGView instead
-        # self.layout.addWidget(self, alignment=Qt.AlignCenter)
-        # self.layout.setContentsMargins(0, 0, 0, 0)
-        # self.setLayout(self.layout)
         
         #set initial paper size for the scene
         self.painter.setSceneRect(0, 0, *paperSizes[self._canvasSize][self._ppi])
@@ -54,21 +48,6 @@ class canvas(customView):
         frameWidth = self.frameWidth()
         #update view size
         self.setSceneRect(0, 0, width - frameWidth*2, height)
-        
-        # use the available mdi area, also add padding
-        prect = self.parentMdiArea.rect()
-        width = width
-        height = height
-
-        # add scrollbar size to width and height if they are visible, avoids clipping
-        if self.verticalScrollBar().isVisible():
-            width += self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
-        if self.horizontalScrollBar().isVisible():
-            height += self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
-        
-        #if view is visible use half of available width
-        #use minimum width required to fit the view
-        #set view dims
         
     def resizeEvent(self, event):
         #overloaded function to also view size on window update

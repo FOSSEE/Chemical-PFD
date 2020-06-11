@@ -83,7 +83,7 @@ class fileWindow(QMdiSubWindow):
             width = parentRect.width()
             height = parentRect.height()
             self.moveSideViewCloseButton()
-            self.sideView.setSceneRect(0, 0, self.size().width()//2 - self.sideView.frameWidth(), self.size().height()//2)
+            self.sideView.resize(self.size().width()//2 - self.sideView.frameWidth(), self.size().height())
             
         else:
             width = min(parentRect.width(), width + 100)
