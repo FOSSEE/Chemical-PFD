@@ -28,8 +28,9 @@ class toolbar(QDockWidget):
         self.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea | Qt.NoDockWidgetArea)
         #declare main widget and layout
         self.widget = QWidget(self)
+        self.widget.setObjectName("ToolbarWidget")
         self.layout = QBoxLayout(QBoxLayout.TopToBottom, self.widget)
-        self.setAllowedAreas(Qt.AllDockWidgetAreas)
+        self.setWindowFlags(Qt.FramelessWindowHint)
         
         self.searchBox = QLineEdit(self.widget) #search box to search through componenets
         
@@ -44,10 +45,11 @@ class toolbar(QDockWidget):
         self.diagArea.setWidgetResizable(True)
         self.layout.addWidget(self.diagArea, stretch=1)
         self.diagAreaWidget = QWidget(self.diagArea) #inner widget for scroll area
+        self.diagAreaWidget.setObjectName("ToolbarScrollWidget")
         #custom layout for inner widget
         self.diagAreaLayout = flowLayout(self.diagAreaWidget)
         self.diagAreaLayout.setSizeConstraint(flowLayout.SetMinimumSize)
-        self.setWidget(self.widget) #set main widget to dockwidget        
+        self.setWidget(self.widget) #set main widget to dockwidget
     
     def clearLayout(self):
         # used to clear all items from toolbar, by parenting it to the toolbar instead

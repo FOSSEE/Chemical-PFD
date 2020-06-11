@@ -15,11 +15,6 @@ QLineEdit {
 QLineEdit:focus{
     border-color: #7cabf9;
 }
-
-QFrame{
-    background-color: white;
-}
-
 QTabBar {
     qproperty-drawBase: 0;
     left: 5px;
@@ -91,13 +86,27 @@ QTabBar::tab:bottom:only-one {
     border: 1px solid #1b3774;
     border-radius: 6px;
 }
-
-QDockWidget {
+fileWindow {
+    border-width: 2px;
+    outline: 0;
     color: white;
+    background-color: white;
+}
+fileWindow::title{
+    color: black;
+    border-width: 0px;
+    text-align: center;
+    background-color: white;
+}
+
+QMainWindow {
+    background-color: white;
+}
+
+QDockWidget#Toolbar{
     background-color: white;
     border: 1px solid #e6e6e6;
 }
-
 QDockWidget::float-button {
     border: 1px transparent #e6e6e6;
     border-radius: 2px;
@@ -121,6 +130,10 @@ QDockWidget::float-button:pressed {
 QScrollArea{
     border-style: none;
     border-width: 0px;
+}
+
+QWidget#ToolbarScrollWidget {
+    background-color: white;
 }
 
 QToolButton {
@@ -155,17 +168,18 @@ QToolButton:checked {
 }
 
 sectionLabel{
-    border-color: gray;
+    border-color: #BBD0E9;
     border-style: solid;
-    border-width: 0px 0px 1px 0px;
+    border-width: 0px 0px 2px 0px;
     padding-bottom: 3px;
     margin-bottom: 3px;
     margin-top: 10px;
     text-align: left;
     font-size: 20px;
+    color: gray;
 }
 
-sectionLabel:first-child{
+sectionLabel:first{
     margin-top: 0px;
 }
 
