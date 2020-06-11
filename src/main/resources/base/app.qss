@@ -256,3 +256,6 @@ customTabWidget::pane {
     padding: 1px;
     background-color: #E6E6E3;
 }
+canvas{
+    bottom: -20px;
+}

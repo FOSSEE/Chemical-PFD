@@ -74,6 +74,7 @@ class fileWindow(QMdiSubWindow):
     def resizeHandler(self):
         # resize Handler to handle resize cases.
         parentRect = self.mdiArea().size()
+        print(parentRect)
         current = self.tabber.currentWidget()
         width, height = current.dimensions
         
@@ -82,6 +83,7 @@ class fileWindow(QMdiSubWindow):
             width = parentRect.width()
             height = parentRect.height()
             self.moveSideViewCloseButton()
+            self.sideView.setSceneRect(0, 0, self.size().width()//2 - self.sideView.frameWidth(), self.size().height()//2)
             
         else:
             width = min(parentRect.width(), width + 100)

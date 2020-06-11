@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt, QPointF
 from PyQt5.QtGui import QBrush, QPalette
 from PyQt5.QtWidgets import (QFileDialog, QApplication, QHBoxLayout, QMenu,
-                             QTabWidget, QWidget, QSpacerItem, QStyle)
+                             QTabWidget, QWidget, QSpacerItem, QStyle,)
 
 from . import dialogs
 from .graphics import customView, customScene
@@ -10,14 +10,14 @@ from .app import shapeGrips, lines
 
 import shapes
 
-class canvas(QWidget):
+class canvas(customView):
     """
     Defines the work area for a single sheet. Contains a QGraphicScene along with necessary properties
     for context menu and dialogs.
     """
         
     def __init__(self, parent=None, size= 'A0', ppi= '72' , parentMdiArea = None, parentFileWindow = None, landscape=True):
-        super(canvas, self).__init__(parent)
+        super(canvas, self).__init__(parent=parent)
         
         #Store values for the canvas dimensions for ease of access, these are here just to be
         # manipulated by the setters and getters
@@ -31,13 +31,13 @@ class canvas(QWidget):
         #set layout and background color
         self.painter = customScene()    
         self.painter.setBackgroundBrush(QBrush(Qt.white)) #set white background
+        self.setScene = self.painter
+        # self = customView(self.painter, self) #create a viewport for the canvas board
         
-        self.view = customView(self.painter, self) #create a viewport for the canvas board
-        
-        self.layout = QHBoxLayout(self) #create the layout of the canvas, the canvas could just subclass QGView instead
-        self.layout.addWidget(self.view, alignment=Qt.AlignCenter)
-        self.layout.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(self.layout)
+        # self.layout = QHBoxLayout(self) #create the layout of the canvas, the canvas could just subclass QGView instead
+        # self.layout.addWidget(self, alignment=Qt.AlignCenter)
+        # self.layout.setContentsMargins(0, 0, 0, 0)
+        # self.setLayout(self.layout)
         
         #set initial paper size for the scene
         self.painter.setSceneRect(0, 0, *paperSizes[self._canvasSize][self._ppi])
@@ -51,29 +51,24 @@ class canvas(QWidget):
     def adjustView(self):
         #utitily to adjust current diagram view
         width, height = self.dimensions
-        frameWidth = self.view.frameWidth()
+        frameWidth = self.frameWidth()
         #update view size
-        self.view.setSceneRect(0, 0, width - frameWidth*2, height)
+        self.setSceneRect(0, 0, width - frameWidth*2, height)
         
         # use the available mdi area, also add padding
         prect = self.parentMdiArea.rect()
-        width = width + 20
-        height = height + 60
+        width = width
+        height = height
 
         # add scrollbar size to width and height if they are visible, avoids clipping
-        if self.view.verticalScrollBar().isVisible():
+        if self.verticalScrollBar().isVisible():
             width += self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
-        if self.view.horizontalScrollBar().isVisible():
+        if self.horizontalScrollBar().isVisible():
             height += self.style().pixelMetric(QStyle.PM_ScrollBarExtent)
         
         #if view is visible use half of available width
-        factor = 2 if self.parentFileWindow.sideViewTab is not None else 1
         #use minimum width required to fit the view
-        width = min((prect.width() - 60)//factor, width) 
-        height = min(prect.height() - 120, height)
         #set view dims
-        self.view.setFixedWidth(width)
-        self.view.setFixedHeight(height)
         
     def resizeEvent(self, event):
         #overloaded function to also view size on window update
