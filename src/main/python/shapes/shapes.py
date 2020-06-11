@@ -553,7 +553,7 @@ class InflowLine(NodeItem):
     def __init__(self):
         super(InflowLine, self).__init__("svg/piping/Inflow Line")
         self.grips = [
-            [100, 50, "right",100]
+            [100, 50, "right"]
         ]
 
 
@@ -614,7 +614,7 @@ class EjectorVaporService(NodeItem):
     def __init__(self):
         super(EjectorVaporService, self).__init__("svg/Pumps/Ejector(Vapor Service)")
         self.grips = [
-            [36.13693385176994, 100, "top"],
+            [18, 100, "top"],
             [0, 50, "left"],
             [100, 50, "right"]
         ]
@@ -655,8 +655,9 @@ class Fan(NodeItem):
     def __init__(self):
         super(Fan, self).__init__("svg/Compressors/Fan")
         self.grips = [
-            [41.4323581, 100, "top"],
-            [61.1489583, 100, "top"]
+            [50, 79.92762310350343, "top"],
+            [0, 79.92762310350343, "left"],
+            [100, 79.92762310350343, "right"]
         ]
 
 
@@ -684,9 +685,9 @@ class Turbine(NodeItem):
         super(Turbine, self).__init__("svg/Compressors/Turbine")
         self.grips = [
             [18.06209745144267, 79.11931909160472, "top"],
-            [31.70124309729519,  85.23160045698314, "top"],
+            [45.2091373550176,  91.385325275219, "top"],
             [18.06209745144267, 16.41537491819628, "bottom"],
-            [31.70124309729519, 11.72724129646674, "bottom"]
+            [45.2091373550176, 4.5725942986116, "bottom"]
         ]
 
 
@@ -694,8 +695,11 @@ class OilGasOrPulverizedFuelFurnace(NodeItem):
     def __init__(self):
         super(OilGasOrPulverizedFuelFurnace, self).__init__("svg/Furnaces and Boilers/Oil Gas or Pulverized Fuel Furnace")
         self.grips = [
-            [15.2887853, 56.4147177, "top"],
-            [84.7112147, 56.4147177, "top"]
+            [58.27673386073162,100,"top"],
+            [0,19.692723451106,"left"] ,
+            [17.2777337415748,33.3944873323144,"left",66.7889746646288],
+            [100,33.3944873323144,"right",66.7889746646288],
+            [57.9723659874,0,"bottom",81.389264491796]
         ]
 
 
@@ -703,9 +707,10 @@ class SolidFuelFurnace(NodeItem):
     def __init__(self):
         super(SolidFuelFurnace, self).__init__("svg/Furnaces and Boilers/Solid Fuel Furnace")
         self.grips = [
-            [36.13693385176994, 100, "top"],
-            [0, 50, "left"],
-            [100, 50, "right"]
+            [50,100,"top"],
+            [0,33.39352642259468,"left",66.78705284518936],
+            [100,33.39352642259468,"right",66.78705284518936],
+            [50,0,"bottom",100]
         ]
 
 
@@ -734,9 +739,10 @@ class Exchanger(NodeItem):
     def __init__(self):
         super(Exchanger, self).__init__("svg/Heating or Cooling Arrangements/Exchanger")
         self.grips = [
-            [13.1018813062, 100, "top"],
-            [0, 50, "left"],
-            [100, 50, "right"]
+            [100,31.74474612706027,"right"],
+            [100,62.70549343934227,"right"],
+            [33.68240920045628,100,"top"],
+            [33.68240920045628,0,"bottom"]
         ]
 
 
@@ -753,9 +759,10 @@ class HeatExchanger(NodeItem):
     def __init__(self):
         super(HeatExchanger, self).__init__("svg/Heating or Cooling Arrangements/Heat Exchanger")
         self.grips = [
-            [50, 100, "top"],
-            [21.15509548928236, 30, "left"],
-            [79.57853462426666, 30, "right"]
+            [0,47.14356681569796,"left"],
+            [100,47.14356681569796,"right"],
+            [50.92839727035332,100,"top"],
+            [50.92839727035332,0,"bottom"]
         ]
 
 
@@ -763,8 +770,8 @@ class ImmersionCoil(NodeItem):
     def __init__(self):
         super(ImmersionCoil, self).__init__("svg/Heating or Cooling Arrangements/Immersion Coil")
         self.grips = [
-            [22.85680252121469, 83, "left"],
-            [46.81088180183039, 83, "right"]
+            [44.56276981957,100,"top"],
+            [88.232463407718,100,"top"]
         ]
 
 
@@ -772,40 +779,36 @@ class HorizontalVessel(NodeItem):
     def __init__(self):
         super(HorizontalVessel, self).__init__("svg/Process Vessels/Horizontal Vessel")
         self.grips = [
-            [18.06209745144267, 79.11931909160472, "top"],
-            [31.70124309729519, 85.23160045698314, "top"],
-            [18.06209745144267, 16.41537491819628, "bottom"],
-            [31.70124309729519, 11.72724129646674, "bottom"]
+            [50,100,"top",87.08554680344],
+            [0,50,"left"],
+            [100,50,"right"],
+            [50,0,"bottom",87.08554680344]
         ]
 
 class PackedVessel(NodeItem):
     def __init__(self):
         super(PackedVessel, self).__init__("svg/Process Vessels/Packed Vessel")
         self.grips = [
-            [18.06209745144267, 79.11931909160472, "top"],
-            [31.70124309729519, 85.23160045698314, "top"],
-            [18.06209745144267, 16.41537491819628, "bottom"],
-            [31.70124309729519, 11.72724129646674, "bottom"]
+            [50,100,"top"],
+            [0,50,"left",86.703566201060],
+            [100,50,"right",86.703566201060],
+            [50,0,"bottom"]
         ]
 
 class TraysOrPlates(NodeItem):
     def __init__(self):
         super(TraysOrPlates, self).__init__("svg/Process Vessels/Trays or plates")
         self.grips = [
-            [18.06209745144267, 79.11931909160472, "top"],
-            [31.70124309729519, 85.23160045698314, "top"],
-            [18.06209745144267, 16.41537491819628, "bottom"],
-            [31.70124309729519, 11.72724129646674, "bottom"]
         ]
 
 class VerticalVessel(NodeItem):
     def __init__(self):
         super(VerticalVessel, self).__init__("svg/Process Vessels/Vertical Vessel")
         self.grips = [
-            [18.06209745144267, 79.11931909160472, "top"],
-            [31.70124309729519, 85.23160045698314, "top"],
-            [18.06209745144267, 16.41537491819628, "bottom"],
-            [31.70124309729519, 11.72724129646674, "bottom"]
+            [50,100,"top"],
+            [0,50,"left",86.703566201060],
+            [100,50,"right",86.703566201060],
+            [50,0,"bottom"]
         ]
 
 
@@ -813,20 +816,20 @@ class Separators(NodeItem):
     def __init__(self):
         super(Separators, self).__init__("svg/Separators/Separators for Liquids, Decanter")
         self.grips = [
-            [18.06209745144267, 79.11931909160472, "top"],
-            [31.70124309729519, 85.23160045698314, "top"],
-            [18.06209745144267, 16.41537491819628, "bottom"],
-            [31.70124309729519, 11.72724129646674, "bottom"]
+            [50,100,"top",100],
+            [0,50,"left",100],
+            [100,50,"right",100],
+            [50,0,"bottom",100]
         ]
 
 class FixedRoofTank(NodeItem):
     def __init__(self):
         super(FixedRoofTank, self).__init__("svg/Storage Vessels Tanks/Fixed Roof Tank")
         self.grips = [
-            [18.06209745144267, 79.11931909160472, "top"],
-            [31.70124309729519, 85.23160045698314, "top"],
-            [18.06209745144267, 16.41537491819628, "bottom"],
-            [31.70124309729519, 11.72724129646674, "bottom"]
+            [50,100,"top"],
+            [0,50,"left",100],
+            [100,50,"right",100],
+            [50,0,"bottom",100]
         ]
 
 
@@ -834,20 +837,19 @@ class FloatingRoofTank(NodeItem):
     def __init__(self):
         super(FloatingRoofTank, self).__init__("svg/Storage Vessels Tanks/Floating Roof Tank")
         self.grips = [
-            [18.06209745144267, 79.11931909160472, "top"],
-            [31.70124309729519, 85.23160045698314, "top"],
-            [18.06209745144267, 16.41537491819628, "bottom"],
-            [31.70124309729519, 11.72724129646674, "bottom"]
+            [0,50,"left",100],
+            [100,50,"right",100],
+            [50,0,"bottom",100]
         ]
 
 class SeparatorsForLiquidsDecanter(NodeItem):
     def __init__(self):
         super(SeparatorsForLiquidsDecanter, self).__init__("svg/Separators/Separators for Liquids, Decanter")
         self.grips = [
-            [18.06209745144267, 79.11931909160472, "top"],
-            [31.70124309729519, 85.23160045698314, "top"],
-            [18.06209745144267, 16.41537491819628, "bottom"],
-            [31.70124309729519, 11.72724129646674, "bottom"]
+            [50,100,"top",100],
+            [0,50,"left",100],
+            [100,50,"right",100],
+            [50,0,"bottom",100]
         ]
 
 
