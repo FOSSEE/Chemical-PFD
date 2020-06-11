@@ -553,7 +553,7 @@ class InflowLine(NodeItem):
     def __init__(self):
         super(InflowLine, self).__init__("svg/piping/Inflow Line")
         self.grips = [
-            [100, 50, "right"]
+            [100, 50, "right",100]
         ]
 
 
@@ -651,13 +651,13 @@ class EjectorCompressor(NodeItem):
         ]
 
 
-# class Fan(NodeItem):
-#     def __init__(self):
-#         super(Fan, self).__init__("svg/Compressors/Fan")
-#         self.grips = [
-#             [41.4323581, 100, "top"],
-#             [61.1489583, 100, "top"]
-#         ]
+class Fan(NodeItem):
+    def __init__(self):
+        super(Fan, self).__init__("svg/Compressors/Fan")
+        self.grips = [
+            [41.4323581, 100, "top"],
+            [61.1489583, 100, "top"]
+        ]
 
 
 class PositiveDisplacementCompressor(NodeItem):
@@ -688,3 +688,166 @@ class Turbine(NodeItem):
             [18.06209745144267, 16.41537491819628, "bottom"],
             [31.70124309729519, 11.72724129646674, "bottom"]
         ]
+
+
+class OilGasOrPulverizedFuelFurnace(NodeItem):
+    def __init__(self):
+        super(OilGasOrPulverizedFuelFurnace, self).__init__("svg/Furnaces and Boilers/Oil Gas or Pulverized Fuel Furnace")
+        self.grips = [
+            [15.2887853, 56.4147177, "top"],
+            [84.7112147, 56.4147177, "top"]
+        ]
+
+
+class SolidFuelFurnace(NodeItem):
+    def __init__(self):
+        super(SolidFuelFurnace, self).__init__("svg/Furnaces and Boilers/Solid Fuel Furnace")
+        self.grips = [
+            [36.13693385176994, 100, "top"],
+            [0, 50, "left"],
+            [100, 50, "right"]
+        ]
+
+
+# class Exchanger(NodeItem):
+#     def __init__(self):
+#         super(Exchanger, self).__init__("svg/Heating or Cooling Arrangements/905Exchanger")
+#         self.grips = [
+#             [92.8093483, 70.60413752309337, "right"],
+#             [7.913824600849647, 70.60413752309337, "left"],
+#             [4.136894788615162, 86.9886362, "left"]
+#         ]
+
+
+# class KettleReboiler(NodeItem):
+#     def __init__(self):
+#         super(KettleReboiler, self).__init__("svg/Heating or Cooling Arrangements/907Kettle Reboiler")
+#         self.grips = [
+#             [41.316753407496, 89.824108247573, "top"],
+#             [62.0517030576456, 79.183192150093, "top"],
+#             [41.316753407496, 6.447877022097, "bottom"],
+#             [62.0517030576456, 16.14847772052, "bottom"]
+#         ]
+
+
+class Exchanger(NodeItem):
+    def __init__(self):
+        super(Exchanger, self).__init__("svg/Heating or Cooling Arrangements/Exchanger")
+        self.grips = [
+            [13.1018813062, 100, "top"],
+            [0, 50, "left"],
+            [100, 50, "right"]
+        ]
+
+
+# class Fan(NodeItem):
+#     def __init__(self):
+#         super(Fan, self).__init__("svg/Compressors/Fan")
+#         self.grips = [
+#             [41.4323581, 100, "top"],
+#             [61.1489583, 100, "top"]
+#         ]
+
+
+class HeatExchanger(NodeItem):
+    def __init__(self):
+        super(HeatExchanger, self).__init__("svg/Heating or Cooling Arrangements/Heat Exchanger")
+        self.grips = [
+            [50, 100, "top"],
+            [21.15509548928236, 30, "left"],
+            [79.57853462426666, 30, "right"]
+        ]
+
+
+class ImmersionCoil(NodeItem):
+    def __init__(self):
+        super(ImmersionCoil, self).__init__("svg/Heating or Cooling Arrangements/Immersion Coil")
+        self.grips = [
+            [22.85680252121469, 83, "left"],
+            [46.81088180183039, 83, "right"]
+        ]
+
+
+class HorizontalVessel(NodeItem):
+    def __init__(self):
+        super(HorizontalVessel, self).__init__("svg/Process Vessels/Horizontal Vessel")
+        self.grips = [
+            [18.06209745144267, 79.11931909160472, "top"],
+            [31.70124309729519, 85.23160045698314, "top"],
+            [18.06209745144267, 16.41537491819628, "bottom"],
+            [31.70124309729519, 11.72724129646674, "bottom"]
+        ]
+
+class PackedVessel(NodeItem):
+    def __init__(self):
+        super(PackedVessel, self).__init__("svg/Process Vessels/Packed Vessel")
+        self.grips = [
+            [18.06209745144267, 79.11931909160472, "top"],
+            [31.70124309729519, 85.23160045698314, "top"],
+            [18.06209745144267, 16.41537491819628, "bottom"],
+            [31.70124309729519, 11.72724129646674, "bottom"]
+        ]
+
+class TraysOrPlates(NodeItem):
+    def __init__(self):
+        super(TraysOrPlates, self).__init__("svg/Process Vessels/Trays or plates")
+        self.grips = [
+            [18.06209745144267, 79.11931909160472, "top"],
+            [31.70124309729519, 85.23160045698314, "top"],
+            [18.06209745144267, 16.41537491819628, "bottom"],
+            [31.70124309729519, 11.72724129646674, "bottom"]
+        ]
+
+class VerticalVessel(NodeItem):
+    def __init__(self):
+        super(VerticalVessel, self).__init__("svg/Process Vessels/Vertical Vessel")
+        self.grips = [
+            [18.06209745144267, 79.11931909160472, "top"],
+            [31.70124309729519, 85.23160045698314, "top"],
+            [18.06209745144267, 16.41537491819628, "bottom"],
+            [31.70124309729519, 11.72724129646674, "bottom"]
+        ]
+
+
+class Separators(NodeItem):
+    def __init__(self):
+        super(Separators, self).__init__("svg/Separators/Separators for Liquids, Decanter")
+        self.grips = [
+            [18.06209745144267, 79.11931909160472, "top"],
+            [31.70124309729519, 85.23160045698314, "top"],
+            [18.06209745144267, 16.41537491819628, "bottom"],
+            [31.70124309729519, 11.72724129646674, "bottom"]
+        ]
+
+class FixedRoofTank(NodeItem):
+    def __init__(self):
+        super(FixedRoofTank, self).__init__("svg/Storage Vessels Tanks/Fixed Roof Tank")
+        self.grips = [
+            [18.06209745144267, 79.11931909160472, "top"],
+            [31.70124309729519, 85.23160045698314, "top"],
+            [18.06209745144267, 16.41537491819628, "bottom"],
+            [31.70124309729519, 11.72724129646674, "bottom"]
+        ]
+
+
+class FloatingRoofTank(NodeItem):
+    def __init__(self):
+        super(FloatingRoofTank, self).__init__("svg/Storage Vessels Tanks/Floating Roof Tank")
+        self.grips = [
+            [18.06209745144267, 79.11931909160472, "top"],
+            [31.70124309729519, 85.23160045698314, "top"],
+            [18.06209745144267, 16.41537491819628, "bottom"],
+            [31.70124309729519, 11.72724129646674, "bottom"]
+        ]
+
+class SeparatorsForLiquidsDecanter(NodeItem):
+    def __init__(self):
+        super(SeparatorsForLiquidsDecanter, self).__init__("svg/Separators/Separators for Liquids, Decanter")
+        self.grips = [
+            [18.06209745144267, 79.11931909160472, "top"],
+            [31.70124309729519, 85.23160045698314, "top"],
+            [18.06209745144267, 16.41537491819628, "bottom"],
+            [31.70124309729519, 11.72724129646674, "bottom"]
+        ]
+
+
