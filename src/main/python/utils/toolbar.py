@@ -81,7 +81,7 @@ class toolbar(QDockWidget):
         parent = self.parentWidget() #used to get parent dimensions
         self.layout.setDirection(QBoxLayout.TopToBottom) # here so that a horizontal toolbar can be implemented later
         # self.setFixedHeight(self.height()) #span available height
-        self.searchBox.setMinimumWidth(.15*parent.width())
+        self.searchBox.setMinimumWidth(.18*parent.width())
         width = self.width()
         scrollBar = self.diagArea.verticalScrollBar()
         height = self.diagAreaLayout.heightForWidth(width)
@@ -90,7 +90,7 @@ class toolbar(QDockWidget):
         
         # the following line, sets the required height for the current width, so that blank space doesnt occur
         self.diagAreaWidget.setMinimumHeight(height)
-        self.setMinimumWidth(.18*parent.width()) #12% of parent width
+        self.setMinimumWidth(.2*parent.width()) #12% of parent width
         # self.setMinimumWidth(self.diagAreaLayout.minimumSize().width()) #12% of parent width
         self.diagAreaWidget.setLayout(self.diagAreaLayout)
         self.diagArea.setWidget(self.diagAreaWidget)
@@ -161,7 +161,7 @@ class toolbarButton(QToolButton):
     
     def minimumSizeHint(self):
         #defines button size
-        return QSize(40, 40)
+        return QSize(55, 55)
 
 class sectionLabel(QLabel):
     

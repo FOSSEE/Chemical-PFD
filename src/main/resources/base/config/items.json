@@ -1,71 +1,4 @@
 {
-    "Piping": {
-        "Inflow Line": {
-            "name": "Inflow Line",
-            "icon": ".\\Piping\\Inflow Line.png",
-            "class": "Piping",
-            "object": "InflowLine",
-            "args": []
-        },
-        "Outflow Line": {
-            "name": "Outflow Line",
-            "icon": ".\\Piping\\Outflow Line.png",
-            "class": "Piping",
-            "object": "OutflowLine",
-            "args": []
-        }
-    },
-    "Pumps": {
-        "Duplex Pump": {
-            "name": "Duplex Pump",
-            "icon": ".\\Pumps\\Duplex Pump.png",
-            "class": "Pumps",
-            "object": "DuplexPump",
-            "args": []
-        },
-        "Plunger Pump": {
-            "name": "Plunger Pump",
-            "icon": ".\\Pumps\\Plunger Pump.png",
-            "class": "Pumps",
-            "object": "PlungerPump",
-            "args": []
-        },
-        "Proportioning Pump": {
-            "name": "Proportioning Pump",
-            "icon": ".\\Pumps\\Proportioning Pump.png",
-            "class": "Pumps",
-            "object": "ProportioningPump",
-            "args": []
-        },
-        "Reciprocating Pump": {
-            "name": "Reciprocating Pump",
-            "icon": ".\\Pumps\\Reciprocating Pump.png",
-            "class": "Pumps",
-            "object": "ReciprocatingPump",
-            "args": []
-        },
-        "Blowing Egg": {
-            "name": "Blowing Egg",
-            "icon": ".\\Pumps\\Blowing Egg.png",
-            "class": "Pumps",
-            "object": "BlowingEgg",
-            "args": []
-        },
-        "Ejector(Vapor Service)": {
-            "name": "Ejector(Vapor Service)",
-            "icon": ".\\Pumps\\Ejector(Vapor Service).png",
-            "class": "Pumps",
-            "object": "Ejector(VaporService)",
-            "args": []
-        },
-        "Hand Pump with Drum": {
-            "name": "Hand Pump with Drum",
-            "icon": ".\\Pumps\\Hand Pump with Drum.png",
-            "class": "Pumps",
-            "object": "HandPumpWithDrum",
-            "args": []
-        }
-    },
     "Compressors": {
         "Centrifugal Compressor": {
             "name": "Centrifugal Compressor",
@@ -107,6 +40,188 @@
             "icon": ".\\Compressors\\Turbine.png",
             "class": "Compressors",
             "object": "Turbine",
+            "args": []
+        }
+    },
+    "Furnaces and Boilers": {
+        "Oil Gas or Pulverized Fuel Furnace": {
+            "name": "Oil Gas or Pulverized Fuel Furnace",
+            "icon": ".\\Furnaces and Boilers\\Oil Gas or Pulverized Fuel Furnace.png",
+            "class": "Furnaces and Boilers",
+            "object": "OilGasOrPulverizedFuelFurnace",
+            "args": []
+        },
+        "Solid Fuel Furnace": {
+            "name": "Solid Fuel Furnace",
+            "icon": ".\\Furnaces and Boilers\\Solid Fuel Furnace.png",
+            "class": "Furnaces and Boilers",
+            "object": "SolidFuelFurnace",
+            "args": []
+        }
+    },
+    "Heating or Cooling Arrangements": {
+        "905Exchanger": {
+            "name": "Exchanger",
+            "icon": ".\\Heating or Cooling Arrangements\\905Exchanger.png",
+            "class": "Heating or Cooling Arrangements",
+            "object": "Exchanger",
+            "args": []
+        },
+        "907Kettle Reboiler": {
+            "name": "Kettle Reboiler",
+            "icon": ".\\Heating or Cooling Arrangements\\907Kettle Reboiler.png",
+            "class": "Heating or Cooling Arrangements",
+            "object": "KettleReboiler",
+            "args": []
+        },
+        "Exchanger": {
+            "name": "Exchanger",
+            "icon": ".\\Heating or Cooling Arrangements\\Exchanger.png",
+            "class": "Heating or Cooling Arrangements",
+            "object": "Exchanger",
+            "args": []
+        },
+        "Heat Exchanger": {
+            "name": "Heat Exchanger",
+            "icon": ".\\Heating or Cooling Arrangements\\Heat Exchanger.png",
+            "class": "Heating or Cooling Arrangements",
+            "object": "HeatExchanger",
+            "args": []
+        },
+        "Immersion Coil": {
+            "name": "Immersion Coil",
+            "icon": ".\\Heating or Cooling Arrangements\\Immersion Coil.png",
+            "class": "Heating or Cooling Arrangements",
+            "object": "ImmersionCoil",
+            "args": []
+        },
+        "Kettle Reboiler": {
+            "name": "Kettle Reboiler",
+            "icon": ".\\Heating or Cooling Arrangements\\Kettle Reboiler.png",
+            "class": "Heating or Cooling Arrangements",
+            "object": "KettleReboiler",
+            "args": []
+        }
+    },
+    "Piping": {
+        "Inflow Line": {
+            "name": "Inflow Line",
+            "icon": ".\\Piping\\Inflow Line.png",
+            "class": "Piping",
+            "object": "InflowLine",
+            "args": []
+        },
+        "Outflow Line": {
+            "name": "Outflow Line",
+            "icon": ".\\Piping\\Outflow Line.png",
+            "class": "Piping",
+            "object": "OutflowLine",
+            "args": []
+        }
+    },
+    "Process Vessels": {
+        "Horizontal Vessel": {
+            "name": "Horizontal Vessel",
+            "icon": ".\\Process Vessels\\Horizontal Vessel.png",
+            "class": "Process Vessels",
+            "object": "HorizontalVessel",
+            "args": []
+        },
+        "Packed Vessel": {
+            "name": "Packed Vessel",
+            "icon": ".\\Process Vessels\\Packed Vessel.png",
+            "class": "Process Vessels",
+            "object": "PackedVessel",
+            "args": []
+        },
+        "Trays or plates": {
+            "name": "Trays or plates",
+            "icon": ".\\Process Vessels\\Trays or plates.png",
+            "class": "Process Vessels",
+            "object": "TraysOrPlates",
+            "args": []
+        },
+        "Vertical Vessel": {
+            "name": "Vertical Vessel",
+            "icon": ".\\Process Vessels\\Vertical Vessel.png",
+            "class": "Process Vessels",
+            "object": "VerticalVessel",
+            "args": []
+        }
+    },
+    "Pumps": {
+        "Blowing Egg": {
+            "name": "Blowing Egg",
+            "icon": ".\\Pumps\\Blowing Egg.png",
+            "class": "Pumps",
+            "object": "BlowingEgg",
+            "args": []
+        },
+        "Duplex Pump": {
+            "name": "Duplex Pump",
+            "icon": ".\\Pumps\\Duplex Pump.png",
+            "class": "Pumps",
+            "object": "DuplexPump",
+            "args": []
+        },
+        "Ejector(Vapor Service)": {
+            "name": "EjectorVapor Service",
+            "icon": ".\\Pumps\\Ejector(Vapor Service).png",
+            "class": "Pumps",
+            "object": "EjectorVaporService",
+            "args": []
+        },
+        "Hand Pump with Drum": {
+            "name": "Hand Pump with Drum",
+            "icon": ".\\Pumps\\Hand Pump with Drum.png",
+            "class": "Pumps",
+            "object": "HandPumpWithDrum",
+            "args": []
+        },
+        "Plunger Pump": {
+            "name": "Plunger Pump",
+            "icon": ".\\Pumps\\Plunger Pump.png",
+            "class": "Pumps",
+            "object": "PlungerPump",
+            "args": []
+        },
+        "Proportioning Pump": {
+            "name": "Proportioning Pump",
+            "icon": ".\\Pumps\\Proportioning Pump.png",
+            "class": "Pumps",
+            "object": "ProportioningPump",
+            "args": []
+        },
+        "Reciprocating Pump": {
+            "name": "Reciprocating Pump",
+            "icon": ".\\Pumps\\Reciprocating Pump.png",
+            "class": "Pumps",
+            "object": "ReciprocatingPump",
+            "args": []
+        }
+    },
+    "Separators": {
+        "Separators for Liquids, Decanter": {
+            "name": "Separators for Liquids, Decanter",
+            "icon": ".\\Separators\\Separators for Liquids, Decanter.png",
+            "class": "Separators",
+            "object": "SeparatorsForLiquids,Decanter",
+            "args": []
+        }
+    },
+    "Storage Vessels Tanks": {
+        "Fixed Roof Tank": {
+            "name": "Fixed Roof Tank",
+            "icon": ".\\Storage Vessels Tanks\\Fixed Roof Tank.png",
+            "class": "Storage Vessels Tanks",
+            "object": "FixedRoofTank",
+            "args": []
+        },
+        "Floating Roof Tank": {
+            "name": "Floating Roof Tank",
+            "icon": ".\\Storage Vessels Tanks\\Floating Roof Tank.png",
+            "class": "Storage Vessels Tanks",
+            "object": "FloatingRoofTank",
             "args": []
         }
     }

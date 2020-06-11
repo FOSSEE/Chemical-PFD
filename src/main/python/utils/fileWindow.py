@@ -20,7 +20,7 @@ class fileWindow(QMdiSubWindow):
     fileCloseEvent = pyqtSignal(int)
     tabChangeEvent = pyqtSignal()
     
-    def __init__(self, parent = None, title = 'New Project', size = 'A4', ppi = '72'):
+    def __init__(self, parent = None, title = 'New Project', size = 'A0', ppi = '72'):
         super(fileWindow, self).__init__(parent)
         self._sideViewTab = None
         self.index = None

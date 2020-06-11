@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   id="svg2644"
+   version="1.1"
+   viewBox="0 0 18.33902 14.380303"
+   height="14.380302mm"
+   width="18.33902mm">
+  <defs
+     id="defs2638">
+    <linearGradient
+       id="linearGradient5099"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop5097" />
+    </linearGradient>
+    <linearGradient
+       gradientTransform="matrix(0.0724309,0,0,0.0724309,87.453124,65.125291)"
+       y2="520.27844"
+       x2="703.30212"
+       y1="520.27844"
+       x1="472.18188"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient3229"
+       xlink:href="#linearGradient5099" />
+    <linearGradient
+       gradientTransform="matrix(0.0724309,0,0,0.0724309,87.453124,65.125291)"
+       y2="520.27844"
+       x2="703.30212"
+       y1="520.27844"
+       x1="472.18188"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient3231"
+       xlink:href="#linearGradient5099" />
+  </defs>
+  <metadata
+     id="metadata2641">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-120.31733,-95.619366)"
+     id="layer1">
+    <g
+       id="g3237">
+      <ellipse
+         style="fill:none;fill-rule:evenodd;stroke:url(#linearGradient3229);stroke-width:0.799999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="path3336"
+         cx="129.66988"
+         cy="102.80952"
+         rx="6.5832062"
+         ry="6.7901516" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:url(#linearGradient3231);stroke-width:0.799999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 120.31733,103.22017 h 5.09661 v -2.65441 l 7.94748,4.9538 0.0268,-2.29939 4.86813,0.0215 v 0 -0.0215"
+         id="path4144" />
+    </g>
+  </g>
+</svg>
