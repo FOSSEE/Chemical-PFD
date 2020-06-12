@@ -184,7 +184,7 @@ class appWindow(QMainWindow):
     #Key input handler
     def keyPressEvent(self, event):
         #overload key press event for custom keyboard shortcuts
-        if event.modifiers() and Qt.ControlModifier:
+        if event.modifiers() & Qt.ControlModifier:
             if event.key() == Qt.Key_N:
                 self.newProject()
                 
