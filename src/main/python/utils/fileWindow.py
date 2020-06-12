@@ -86,8 +86,14 @@ class fileWindow(QMdiSubWindow):
         parentRect = self.mdiArea().size()
         current = self.tabber.currentWidget()
         width, height = current.dimensions
-        width = min(parentRect.width(), width + 100)
-        height = min(parentRect.height(), height + 150)
+        
+        if self.sideViewTab:
+            width2, height2 = self.sideViewTab.dimensions
+            width = min(parentRect.width(), width + width2)
+            height = min(parentRect.height(), height + height2)
+        else:
+            width = min(parentRect.width(), width + 100)
+            height = min(parentRect.height(), height + 150)
         
         if len(self.parent().parent().subWindowList()) > 1:
             height -= 20
