@@ -259,3 +259,9 @@ customTabWidget::pane {
 canvas{
     bottom: -20px;
 }
+
+customTabWidget customView {
+    border-width: 0px;
+    padding: 5px;
+    border-radius: 2px;
+}
