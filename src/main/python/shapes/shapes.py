@@ -525,10 +525,10 @@ class NodeItem(QGraphicsSvgItem):
         :return:
         """
         contextMenu = QMenu()
-        addLableAction = contextMenu.addAction("add Label")
-        # addLableAction.triggered.connect(self.addLabel)
+        addLabelAction = contextMenu.addAction("add Label")
+        # addLabelAction.triggered.connect(self.addLabel)
         action = contextMenu.exec_(event.screenPos())
-        if action == addLableAction:
+        if action == addLabelAction:
             self.label = ItemLabel(event.scenePos(), self)
 
     def __getstate__(self):
