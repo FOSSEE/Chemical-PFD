@@ -211,7 +211,7 @@ QToolButton:checked {
 }
 
 sectionLabel{
-    border-color: #BBD0E9;
+    border-color: #00B8B8;
     border-style: solid;
     border-width: 0px 0px 2px 0px;
     padding-bottom: 3px;
