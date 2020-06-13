@@ -334,7 +334,8 @@ class Line(QGraphicsPathItem):
         self.commonPathsCenters = []
         self.midLines = []
         self.label = []
-        self.arrowFlag = True
+        self.startGap = None
+        self.endGap = None
 
     def boundingRect(self):
         rect = self.shape().boundingRect()
@@ -409,7 +410,7 @@ class Line(QGraphicsPathItem):
                             path.arcTo(QRectF(x - 8, y - 8, 16, 16), 0, -180)
                             path.lineTo(point - QPointF(8, 0))
             path.lineTo(self.points[i + 1])
-            if i == len(self.points) - 2 and self.arrowFlag:
+            if i == len(self.points) - 2:
                 arrow_size = 20.0
                 line = QLineF(self.points[i], self.points[i + 1])
                 if line.length() < 20:
@@ -464,7 +465,7 @@ class Line(QGraphicsPathItem):
                     direction = "top"
                 else:
                     direction = "bottom"
-            self.endGripItem = LineGripItem(self, -1, direction, self)
+            self.endGripItem = LineGripItem(self, -1,[0,0,direction], self)
             self.endGripItem.setPos(self.endPoint)
 
         if self.startGripItem and self.endGripItem:
@@ -863,23 +864,20 @@ class Line(QGraphicsPathItem):
                 if line.scene():
                     line.scene().removeItem(line)
             if self.startGripItem and self.startGripItem.line and not self.startGripItem.tempLine:
-                self.startGripItem.line = None
+                if self in self.startGripItem.line:self.startGripItem.line.remove(self)
                 if self.endGripItem and self.endGripItem.line:
-                    self.endGripItem.line = None
+                    if self in self.endGripItem.line:self.endGripItem.line.remove(self)
                 if self.refLine:
                     if self in self.refLine.midLines: self.refLine.midLines.remove(self)
 
         return super(Line, self).itemChange(change, value)
 
-    def updateLine(self, startPoint=None, endPoint=None):
+    def updateLine(self, endPoint=None):
 
         """This function is used to update connecting line when it add on
            canvas and when it's grip item  moves
         :return:
         """
-        self.prepareGeometryChange()
-        if startPoint:
-            self.startPoint = startPoint
         if endPoint:
             self.endPoint = endPoint
             self.createPath()
@@ -888,14 +886,34 @@ class Line(QGraphicsPathItem):
 
         if self.startGripItem and self.endGripItem:
             item = self.startGripItem
-            self.startPoint = item.parentItem().mapToScene(item.pos())
+            startPoint = item.parentItem().mapToScene(item.pos())
+            if len(self.startGripItem.grip) ==4 and self.startGripItem.m_location in ["top", "bottom"]:
+                startPoint.setX(startPoint.x()-self.startGap*self.startGripItem.boundingRect().width())
+            elif len(self.startGripItem.grip) ==4:
+                startPoint.setY(
+                    startPoint.y() - self.startGap * self.startGripItem.boundingRect().height())
+            self.startPoint = startPoint
             item = self.endGripItem
-            self.endPoint = item.parentItem().mapToScene(item.pos())
+            endPoint = item.parentItem().mapToScene(item.pos())
+            if len(self.endGripItem.grip) == 4 and self.endGripItem.m_location in ["top", "bottom"]:
+                endPoint.setX(
+                    endPoint.x() - self.endGap * self.endGripItem.boundingRect().width())
+            elif len(self.endGripItem.grip) == 4:
+                endPoint.setY(
+                    endPoint.y() - self.endGap * self.endGripItem.boundingRect().height())
+            self.endPoint = endPoint
             self.updatePath()
 
         if self.startGripItem and self.refLine:
             item = self.startGripItem
-            self.startPoint = item.parentItem().mapToScene(item.pos())
+            startPoint = item.parentItem().mapToScene(item.pos())
+            if len(self.startGripItem.grip) == 4 and self.startGripItem.m_location in ["top", "bottom"]:
+                startPoint.setX(
+                    startPoint.x() - self.startGap * self.startGripItem.boundingRect().width())
+            elif len(self.startGripItem.grip) == 4:
+                startPoint.setY(
+                    startPoint.y() - self.startGap* self.startGripItem.boundingRect().height())
+            self.startPoint = startPoint
             self.updatePath()
 
     def updateMidLines(self):
@@ -956,25 +974,10 @@ class Line(QGraphicsPathItem):
         :return:
         """
         contextMenu = QMenu()
-        addLableAction = contextMenu.addAction("add Label")
-        if self.arrowFlag is True:
-            str = "Hide Arrow"
-        else:
-            str = "Add Arrow"
-        changeArrowFlag = contextMenu.addAction(str)
+        addLableAction = contextMenu.addAction("Add Text Label")
         action = contextMenu.exec_(event.screenPos())
         if action == addLableAction:
             self.label.append(LineLabel(event.scenePos(), self))
-        if action == changeArrowFlag:
-            if str == "Hide Arrow":
-                self.arrowFlag =False
-            else:
-                self.arrowFlag =True
-            self.update()
-
-    def setPenStyle(self, style):
-        """change current pen style for line"""
-        self.penStyle = style
 
     def __getstate__(self):
         return {
