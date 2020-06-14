@@ -265,3 +265,20 @@ customTabWidget customView {
     padding: 5px;
     border-radius: 2px;
 }
+
+QHeaderView::section {
+    padding: 4px;
+    border-style: none;
+    border-bottom: 1px solid #fffff8;
+    border-right: 1px solid #fffff8;
+}
+
+QHeaderView::section:horizontal
+{
+    border-top: 1px solid #fffff8;
+}
+
+QHeaderView::section:vertical
+{
+    border-left: 1px solid #fffff8;
+}
