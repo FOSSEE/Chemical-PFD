@@ -14,10 +14,6 @@ class streamTable(QTableWidget):
             col = self.getCol(point.x())
             row = self.getRow(point.y())
             menu = QMenu("Context Menu", self)
-            if col == 1:
-                menu.addAction("Insert Coulumn to Left", lambda x=col-1:self.insertColRight(col))
-            if row == 1:
-                menu.addAction("Insert Row up", lambda x=row-1:self.insertRowBottom(row))
             menu.addAction("Insert Column to right", lambda x=col: self.insertColRight(col))
             menu.addAction("Insert Row to bottom", lambda x=point: self.insertRowBottom(row))
             menu.exec_(self.mapToGlobal(point)+ QPoint(20, 25))
