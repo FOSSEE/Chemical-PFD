@@ -11,9 +11,15 @@ class streamTable(QTableWidget):
     def mousePressEvent(self, event):
         if event.button() == Qt.RightButton:
             point = event.pos()
+            col = self.getCol(point.x())
+            row = self.getRow(point.y())
             menu = QMenu("Context Menu", self)
-            menu.addAction("Insert Column to right", lambda x=point: self.insertColRight(x.x()))
-            menu.addAction("Insert Row to bottom", lambda x=point: self.insertRowBottom(x.y()))
+            if col == 1:
+                menu.addAction("Insert Coulumn to Left", lambda x=col-1:self.insertColRight(col))
+            if row == 1:
+                menu.addAction("Insert Row up", lambda x=row-1:self.insertRowBottom(row))
+            menu.addAction("Insert Column to right", lambda x=col: self.insertColRight(col))
+            menu.addAction("Insert Row to bottom", lambda x=point: self.insertRowBottom(row))
             menu.exec_(self.mapToGlobal(point)+ QPoint(20, 25))
             event.accept()
         return super(streamTable, self).mousePressEvent(event)
@@ -21,22 +27,28 @@ class streamTable(QTableWidget):
     # def mouseDoubleClickEvent(self):
     #     return super(streamTable, self).mouseDoubleClickEvent()
     
-    def insertRowBottom(self, point):
+    def getRow(self, point):
         h = self.horizontalHeader().height()
         i = 0
         while (h < point):
             h += self.rowHeight(i)
             i += 1
-        self.insertRow(i + 1)
-        self.resize(self.sizeHint())
-        
-    def insertColRight(self, point):
+        return i
+    
+    def getCol(self, point):
         w = self.verticalHeader().width()
         i = 0
         while (w < point):
             w += self.columnWidth(i)
             i += 1
-        self.insertColumn(i + 1)
+        return i
+    
+    def insertRowBottom(self, row):
+        self.insertRow(row + 1)
+        self.resize(self.sizeHint())
+        
+    def insertColRight(self, col):
+        self.insertColumn(col + 1)
         self.resize(self.sizeHint())
         
     def resizeHandler(self):
