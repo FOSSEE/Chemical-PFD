@@ -350,14 +350,14 @@ class LineGripItem(QGraphicsPathItem):
                     endPoint = item.parentItem().mapToScene(item.pos())
                     gap = 0
                     # restrict line to one grip
-                    if self.size is None and len(item.lines) > 0:
+                    if item.size is None and len(item.lines) > 0:
                         break
                     # in case of rectangle grip
-                    if self.size and item.m_location in ["top", "bottom"]:
+                    if item.size and item.m_location in ["top", "bottom"]:
                         mpos = self.mapToScene(mouseEvent.pos())
                         gap = (endPoint.x() - mpos.x()) / item.boundingRect().width()
                         endPoint.setX(mpos.x())
-                    elif self.size:
+                    elif item.size:
                         mpos = self.mapToScene(mouseEvent.pos())
                         gap = (endPoint.y() - mpos.y()) / item.boundingRect().height()
                         endPoint.setY(mpos.y())
