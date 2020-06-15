@@ -964,7 +964,10 @@ class Line(QGraphicsPathItem):
         changeArrowFlag = contextMenu.addAction(str)
         action = contextMenu.exec_(event.screenPos())
         if action == addLableAction:
-            self.label.append(LineLabel(event.scenePos(), self))
+            newLabel = LineLabel(event.scenePos(), self)
+            self.label.append(newLabel)
+            self.scene().labelAdded.emit(newLabel)
+            
         if action == changeArrowFlag:
             if str == "Hide Arrow":
                 self.arrowFlag =False

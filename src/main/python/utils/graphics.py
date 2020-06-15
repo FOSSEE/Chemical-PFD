@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, QPointF
+from PyQt5.QtCore import Qt, QPointF, pyqtSignal
 from PyQt5.QtGui import QPen, QKeySequence
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsProxyWidget, QGraphicsItem, QUndoStack, QAction, QUndoView
 
@@ -11,6 +11,7 @@ class customView(QGraphicsView):
     """
     Defines custom QGraphicsView with zoom features and drag-drop accept event, overriding wheel event
     """
+    
     def __init__(self, scene = None, parent=None):
         if scene is not None: #overloaded constructor
             super(customView, self).__init__(scene, parent)
@@ -83,6 +84,8 @@ class customScene(QGraphicsScene):
     """
     Extends QGraphicsScene with undo-redo functionality
     """
+    labelAdded = pyqtSignal(shapes.QGraphicsItem)
+    
     def __init__(self, *args, parent=None):
         super(customScene, self).__init__(*args,  parent=parent)
         

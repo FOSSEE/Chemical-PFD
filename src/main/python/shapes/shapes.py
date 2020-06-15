@@ -530,6 +530,7 @@ class NodeItem(QGraphicsSvgItem):
         action = contextMenu.exec_(event.screenPos())
         if action == addLabelAction:
             self.label = ItemLabel(event.scenePos(), self)
+            self.scene().labelAdded.emit(self.label)
 
     def __getstate__(self):
         return {

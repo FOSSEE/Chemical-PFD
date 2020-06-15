@@ -1,22 +1,21 @@
-from PyQt5.QtCore import Qt, QSize, QRectF, QPoint, QAbstractTableModel, pyqtSignal
+from PyQt5.QtCore import Qt, QSize, QRect, QPoint, QAbstractTableModel, pyqtSignal, QModelIndex
 from PyQt5.QtGui import QBrush, QPen, QColor
 from PyQt5.QtWidgets import QTableView, QMenu, QGraphicsRectItem, QInputDialog, QStyledItemDelegate
 
 from collections import defaultdict
 
 class streamTableModel(QAbstractTableModel):
-    layoutAboutToBeChanged = pyqtSignal()
-    layoutChanged = pyqtSignal()
+    updateEvent = pyqtSignal()
     
     def __init__(self, parent, list, header, *args):
         super(streamTableModel, self).__init__(parent, *args)
         self.list = list
         self.header = header
         
-    def rowCount(self, parent):
+    def rowCount(self, parent=None):
         return len(self.list)
     
-    def columnCount(self, parent):
+    def columnCount(self, parent=None):
         return len(self.list[0])
     
     def data(self, index, role):
@@ -26,6 +25,29 @@ class streamTableModel(QAbstractTableModel):
             return None
         return self.list[index.row()][index.column()]
     
+    def setData(self, index, value, role):
+        if not index.isValid():
+            return False
+        elif role != Qt.EditRole:
+            return False
+        self.list[index.row()][index.column()] = value
+        return True 
+    
+    def insertColumn(self, int):
+        self.beginInsertColumns(QModelIndex(), int, int)
+        for item in self.list:
+            item.insert(int, 0)
+        self.header.insert(int, "newVal")
+        self.endInsertColumns()
+        self.updateEvent.emit()
+    
+    def insertRow(self, int=None, name="Name"):
+        int = int if int else self.rowCount()+1
+        self.beginInsertRows(QModelIndex(), int, int)
+        self.list.insert(int, [name] + [0 for _ in range(self.columnCount()-1)])
+        self.endInsertRows()
+        self.updateEvent.emit()
+        
     def headerData(self, col, orientation, role):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return self.header[col]
@@ -33,39 +55,34 @@ class streamTableModel(QAbstractTableModel):
     
     def flags(self, index):
         return (super(streamTableModel, self).flags(index) | Qt.ItemIsEditable)
-    # def sort(self, col, order):
-    #     """sort table by given column number col"""
-    #     self.layoutAboutToBeChanged.emit()
-    #     self.list = sorted(self.list, lambda x: x[col])
-    #     if order == Qt.DescendingOrder:
-    #         self.list.reverse()
-    #     self.layoutChanged.emit()
-#
         
 class streamTable(QTableView):
     
-    def __init__(self, int, int_, canvas=None, parent=None):
+    def __init__(self, itemLabels=[], canvas=None, parent=None):
         super(streamTable, self).__init__(parent=parent)
         self.canvas = canvas
+        self.items = itemLabels
         list = []
-        for i in range(int):
-            list.append([f'name {i+1}']+[0 for _ in range(int_ - 1)])
+        for i, item in enumerate(itemLabels):
+            list.append([item.toPlainText()]+[0 for _ in range(5)])
         header = ["name", "val1", "val2", "val3", "val4", "val5"]
         self.model = streamTableModel(self, list, header)
+        self.setShowGrid(False)
+        self.verticalHeader().hide()
         self.setModel(self.model)
-        # self.setSortingEnabled(True)
         self.borderThickness = defaultdict(lambda: 1)
-    
+        self.model.updateEvent.connect(self.refresh)
+        
     def mousePressEvent(self, event):
         if event.button() == Qt.RightButton:
             point = event.pos()
-            col = self.getCol(point.x())
-            row = self.getRow(point.y())
+            # col = self.getCol(point.x())
+            index = self.indexAt(point)
             menu = QMenu("Context Menu", self)
-            menu.addAction("Change bottom border thickness", lambda x=row: self.changeRowBorder(x))
-            menu.addAction("Change right border thickness", lambda x=col: self.changeColBorder(x))
-            menu.addAction("Insert Column to right", lambda x=col: self.insertColRight(col))
-            menu.addAction("Insert Row to bottom", lambda x=row: self.insertRowBottom(row))
+            menu.addAction("Change bottom border thickness", lambda x=index.row(): self.changeRowBorder(x))
+            menu.addAction("Change right border thickness", lambda x=index.column(): self.changeColBorder(x))
+            menu.addAction("Insert Column to right", lambda x=index.column(): self.insertColRight(x))
+            menu.addAction("Insert Row to bottom", lambda x=index.row(): self.insertRowBottom(x))
             menu.exec_(self.mapToGlobal(point)+ QPoint(20, 25))
             event.accept()
         return super(streamTable, self).mousePressEvent(event)
@@ -79,51 +96,30 @@ class streamTable(QTableView):
         newWidth, bool = QInputDialog.getInt(self, "Change Vertical Border Width", "Enter new Width in pixels", self.borderThickness[-col], 0, 10, step=1)
         if bool:
             self.setItemDelegateForColumn(col, drawBorderDelegate(self, newWidth, False))
-            
-    def getRow(self, point):
-        h = self.horizontalHeader().height()
-        i = -1
-        while (h < point):
-            h += self.rowHeight(i)
-            i += 1
-        return i
-    
-    def getCol(self, point):
-        w = self.verticalHeader().width()
-        i = -1
-        while (w < point):
-            w += self.columnWidth(i)
-            i += 1
-        return i
     
     def insertRowBottom(self, row):
-        self.insertRow(row + 1)
-        self.resize(self.sizeHint())
+        self.model.insertRow(row + 1)
         
     def insertColRight(self, col):
-        self.insertColumn(col + 1)
-        self.resize(self.sizeHint())
+        self.model.insertColumn(col + 1)
+    
+    def refresh(self):
+        self.resizeHandler()
         
     def resizeHandler(self):
         self.resize(self.sizeHint())
         
     def sizeHint(self):
-        w = self.verticalHeader().width() + 4
-        for i in range(self.model.columnCount(self)):
-            w += self.columnWidth(i)
-        h = self.horizontalHeader().height() + 4
-        for i in range(self.model.rowCount(self)):
-            h += self.rowHeight(i)
-        return QSize(w, h)
+        return self.rect().size()
     
     def rect(self):
         w = self.verticalHeader().width() + 4
-        for i in range(self.model.columnCount(self)):
+        for i in range(self.model.columnCount()):
             w += self.columnWidth(i)
         h = self.horizontalHeader().height() + 4
-        for i in range(self.model.rowCount(self)):
+        for i in range(self.model.rowCount()):
             h += self.rowHeight(i)
-        return QRectF(0, 0, w, h)
+        return QRect(0, 0, w, h)
     
     def cellEntered(self, row, column):
         print(row, column)
@@ -146,5 +142,5 @@ class drawBorderDelegate(QStyledItemDelegate):
 
 class moveRect(QGraphicsRectItem):
     def __init__(self, *args):
-        super(moveRect, self).__init__(*args)
+        super(moveRect, self).__init__(-10, -10, 10, 10)
         self.setBrush(QBrush(QColor(0, 0, 0, 120)))

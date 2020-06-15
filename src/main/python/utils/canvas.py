@@ -30,7 +30,8 @@ class canvas(customView):
         # when we will draw items on this, this might be changed if QGraphicScene is subclassed.
         
         #set layout and background color
-        self.painter = customScene()    
+        self.painter = customScene()
+        self.painter.labelAdded.connect(self.updateStreamTable)  
         self.painter.setBackgroundBrush(QBrush(Qt.white)) #set white background
         self.setScene(self.painter)
         
@@ -41,17 +42,19 @@ class canvas(customView):
         self.customContextMenuRequested.connect(self.sideViewContextMenu)
     
     def addStreamTable(self, pos=QPointF(0, 0), table=None):
-        self.streamTable = table if table else streamTable(5, 5, canvas=self)
+        self.streamTable = table if table else streamTable(self.labelItems, canvas=self)
         
-        self.streamTableRect = moveRect(-10, -10, 10, 10)
+        self.streamTableRect = moveRect()
         self.streamTableRect.setFlags(moveRect.ItemIsMovable |
                                       moveRect.ItemIsSelectable)
         self.streamTableProxy = QGraphicsProxyWidget(self.streamTableRect)
         self.streamTableProxy.setWidget(self.streamTable)
         self.painter.addItem(self.streamTableRect)
         self.streamTableRect.setPos(pos)
-        # proxy = self.painter.addWidget(self.streamTable)
-        # proxy.setPos(pos)
+        
+    def updateStreamTable(self, item):
+        if self.streamTable:
+            self.streamTable.model.insertRow(name=item.toPlainText())
         
     def sideViewContextMenu(self, pos):
         self.parentFileWindow.sideViewContextMenu(self.mapTo(self.parentFileWindow, pos))
@@ -94,7 +97,12 @@ class canvas(customView):
         # generator to filter out certain items
         for i in self.painter.items():
             yield i
-    
+            
+    @property
+    def labelItems(self):
+        for i in self.items:
+            if isinstance(i, (shapes.ItemLabel, shapes.LineLabel)):
+                yield i
     @property
     def canvasSize(self):
         return self._canvasSize
