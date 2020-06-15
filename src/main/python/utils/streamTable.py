@@ -1,14 +1,59 @@
-from PyQt5.QtCore import Qt, QSize, QRectF, QPoint
+from PyQt5.QtCore import Qt, QSize, QRectF, QPoint, QAbstractTableModel, pyqtSignal
 from PyQt5.QtGui import QBrush, QPen, QColor
-from PyQt5.QtWidgets import QTableWidget, QMenu, QGraphicsRectItem, QInputDialog, QStyledItemDelegate
+from PyQt5.QtWidgets import QTableView, QMenu, QGraphicsRectItem, QInputDialog, QStyledItemDelegate
 
 from collections import defaultdict
 
-class streamTable(QTableWidget):
+class streamTableModel(QAbstractTableModel):
+    layoutAboutToBeChanged = pyqtSignal()
+    layoutChanged = pyqtSignal()
+    
+    def __init__(self, parent, list, header, *args):
+        super(streamTableModel, self).__init__(parent, *args)
+        self.list = list
+        self.header = header
+        
+    def rowCount(self, parent):
+        return len(self.list)
+    
+    def columnCount(self, parent):
+        return len(self.list[0])
+    
+    def data(self, index, role):
+        if not index.isValid():
+            return None
+        elif role != Qt.DisplayRole:
+            return None
+        return self.list[index.row()][index.column()]
+    
+    def headerData(self, col, orientation, role):
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            return self.header[col]
+        return None
+    
+    def flags(self, index):
+        return (super(streamTableModel, self).flags(index) | Qt.ItemIsEditable)
+    # def sort(self, col, order):
+    #     """sort table by given column number col"""
+    #     self.layoutAboutToBeChanged.emit()
+    #     self.list = sorted(self.list, lambda x: x[col])
+    #     if order == Qt.DescendingOrder:
+    #         self.list.reverse()
+    #     self.layoutChanged.emit()
+#
+        
+class streamTable(QTableView):
     
     def __init__(self, int, int_, canvas=None, parent=None):
-        super(streamTable, self).__init__(int, int_, parent=parent)
+        super(streamTable, self).__init__(parent=parent)
         self.canvas = canvas
+        list = []
+        for i in range(int):
+            list.append([f'name {i+1}']+[0 for _ in range(int_ - 1)])
+        header = ["name", "val1", "val2", "val3", "val4", "val5"]
+        self.model = streamTableModel(self, list, header)
+        self.setModel(self.model)
+        # self.setSortingEnabled(True)
         self.borderThickness = defaultdict(lambda: 1)
     
     def mousePressEvent(self, event):
@@ -64,19 +109,19 @@ class streamTable(QTableWidget):
         
     def sizeHint(self):
         w = self.verticalHeader().width() + 4
-        for i in range(self.columnCount()):
+        for i in range(self.model.columnCount(self)):
             w += self.columnWidth(i)
         h = self.horizontalHeader().height() + 4
-        for i in range(self.rowCount()):
+        for i in range(self.model.rowCount(self)):
             h += self.rowHeight(i)
         return QSize(w, h)
     
     def rect(self):
         w = self.verticalHeader().width() + 4
-        for i in range(self.columnCount()):
+        for i in range(self.model.columnCount(self)):
             w += self.columnWidth(i)
         h = self.horizontalHeader().height() + 4
-        for i in range(self.rowCount()):
+        for i in range(self.model.rowCount(self)):
             h += self.rowHeight(i)
         return QRectF(0, 0, w, h)
     
