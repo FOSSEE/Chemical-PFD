@@ -12,10 +12,10 @@ class streamTableModel(QAbstractTableModel):
         self.list = list
         self.header = header
         
-    def rowCount(self, parent=None):
+    def columnCount(self, parent=None):
         return len(self.list)
     
-    def columnCount(self, parent=None):
+    def rowCount(self, parent=None):
         return len(self.header)
     
     def data(self, index, role):
@@ -23,39 +23,39 @@ class streamTableModel(QAbstractTableModel):
             return None
         elif role != Qt.DisplayRole:
             return None
-        if index.column() == 0:
-            return self.list[index.row()][index.column()].toPlainText()
+        if index.row() == 0:
+            return self.list[index.column()][index.row()].toPlainText()
         else:
-            return self.list[index.row()][index.column()]
+            return self.list[index.column()][index.row()]
     
     def setData(self, index, value, role):
         if not index.isValid():
             return False
         elif role != Qt.EditRole:
             return False
-        if index.column() == 0:
-            self.list[index.row()][index.column()].setPlainText(value)
+        if index.row() == 0:
+            self.list[index.column()][index.row()].setPlainText(value)
         else:
-            self.list[index.row()][index.column()] = value
+            self.list[index.column()][index.row()] = value
         return True 
     
-    def insertColumn(self, int):
+    def insertColumn(self, int=None, item=None):
+        int = int if int else self.rowCount()+1
         self.beginInsertColumns(QModelIndex(), int, int)
-        for item in self.list:
-            item.insert(int, 0)
-        self.header.insert(int, "newVal")
+        self.list.insert(int, [item] + [0 for _ in range(self.rowCount()-1)])
         self.endInsertColumns()
         self.updateEvent.emit()
     
-    def insertRow(self, int=None, item=None):
-        int = int if int else self.rowCount()+1
+    def insertRow(self, int=None, name="newVal"):
         self.beginInsertRows(QModelIndex(), int, int)
-        self.list.insert(int, [item] + [0 for _ in range(self.columnCount()-1)])
+        for item in self.list:
+            item.insert(int, 0)
+        self.header.insert(int, name)
         self.endInsertRows()
         self.updateEvent.emit()
         
     def headerData(self, col, orientation, role):
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+        if orientation == Qt.Vertical and role == Qt.DisplayRole:
             return self.header[col]
         return None
     
@@ -73,7 +73,7 @@ class streamTable(QTableView):
         header = ["name", "val1", "val2", "val3", "val4", "val5"]
         self.model = streamTableModel(self, list, header)
         self.setShowGrid(False)
-        self.verticalHeader().hide()
+        self.horizontalHeader().hide()
         self.setModel(self.model)
         self.borderThickness = defaultdict(lambda: 1)
         self.model.updateEvent.connect(self.refresh)

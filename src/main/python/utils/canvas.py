@@ -54,7 +54,7 @@ class canvas(customView):
         
     def updateStreamTable(self, item):
         if self.streamTable:
-            self.streamTable.model.insertRow(item = item)
+            self.streamTable.model.insertColumn(item = item)
         
     def sideViewContextMenu(self, pos):
         self.parentFileWindow.sideViewContextMenu(self.mapTo(self.parentFileWindow, pos))
