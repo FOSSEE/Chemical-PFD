@@ -72,8 +72,8 @@ class streamTable(QTableView):
         self.setShowGrid(False)
         self.horizontalHeader().hide()
         self.setModel(self.model)
-        self.borderThickness = defaultdict(lambda: 1)
-        self.model.updateEvent.connect(self.refresh)
+        self.borderThickness = defaultdict(lambda: False)
+        self.model.updateEvent.connect(self.resizeHandler)
         
     def mousePressEvent(self, event):
         if event.button() == Qt.RightButton:
@@ -87,21 +87,37 @@ class streamTable(QTableView):
             event.accept()
         return super(streamTable, self).mousePressEvent(event)
     
+    # def mouseDoubleClickEvent(self, event):
+    #     pos = event.pos()
+    #     if pos.x() < self.verticalHeader().width():
+    #         index = self.rowAt(pos.y())
+    #         newName, bool = QInputDialog.getText(self, "Change Property Name", "Enter new name",
+    #                                    text = self.model.header[index])
+    #         if bool:
+    #             for i in self.model.list:
+    #                 i.values[newName] = i.values.pop(self.model.header[index])
+    #             self.repaint()
+    #     return super().mouseDoubleClickEvent(event)
+    
     def changeRowBorder(self, row):
-        newWidth, bool = QInputDialog.getInt(self, "Change Horizontal Border Width", "Enter new Width in pixels", self.borderThickness[row], 0, 10, step=1)
-        if bool:
-            self.setItemDelegateForRow(row, drawBorderDelegate(self, newWidth, True))
+        if self.borderThickness[row]:
+            self.borderThickness[row] = False
+            self.setItemDelegateForRow(row, QStyledItemDelegate(self))
+        else:
+            self.borderThickness[row] = True
+            self.setItemDelegateForRow(row, drawBorderDelegate(self))
     
-    def changeColBorder(self, col):
-        newWidth, bool = QInputDialog.getInt(self, "Change Vertical Border Width", "Enter new Width in pixels", self.borderThickness[-col], 0, 10, step=1)
-        if bool:
-            self.setItemDelegateForColumn(col, drawBorderDelegate(self, newWidth, False))
-    
+    # def changeColBorder(self, col):
+    #     newWidth, bool = QInputDialog.getInt(self, "Change Vertical Border Width", "Enter new Width in pixels", self.borderThickness[-col], 0, 10, step=1)
+    #     if bool:
+    #         self.setItemDelegateForColumn(col, drawBorderDelegate(self, newWidth, False))
+
     def insertRowBottom(self, row):
-        self.model.insertRow(row + 1)
-        
-    def refresh(self):
-        self.resizeHandler()
+        name, bool = QInputDialog.getText(self, "New Property", "Enter name", 
+                                             text = "newVal")
+        if bool:
+            self.model.insertRow(row + 1, name)
+            self.repaint()
         
     def resizeHandler(self):
         self.resize(self.sizeHint())
@@ -120,18 +136,17 @@ class streamTable(QTableView):
 
 class drawBorderDelegate(QStyledItemDelegate):
     
-    def __init__(self, parent, bool1, bool2 = True):
-        super(drawBorderDelegate, self).__init__(parent)
-        self.horizontal = bool1
-        self.bottom = bool2
+    # def __init__(self, parent):
+    #     super(drawBorderDelegate, self).__init__(parent)
     
     def paint(self, painter, option, index):
         rect = option.rect
-        if self.horizontal:
-            painter.drawLine(rect.bottomLeft(), rect.bottomRight())
-        else:
-            painter.drawLine(rect.topRight(), rect.bottomRight())
-        painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
+        # if self.horizontal:
+            # painter.drawLine(rect.bottomLeft(), rect.bottomRight())
+        # else:
+        #     painter.drawLine(rect.topRight(), rect.bottomRight())
+        painter.drawLine(rect.bottomLeft(), rect.bottomRight())
+        painter.setPen(QPen(Qt.black, 1, Qt.SolidLine))
         super(drawBorderDelegate, self).paint(painter, option, index)
 
 class moveRect(QGraphicsRectItem):
