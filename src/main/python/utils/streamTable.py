@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt, QSize, QRect, QPoint, QAbstractTableModel, pyqtSignal, QModelIndex
-from PyQt5.QtGui import QBrush, QPen, QColor
+from PyQt5.QtGui import QBrush, QPen, QColor, QCursor
 from PyQt5.QtWidgets import QTableView, QMenu, QGraphicsRectItem, QInputDialog, QStyledItemDelegate
 
 from collections import defaultdict
@@ -85,8 +85,6 @@ class streamTable(QTableView):
             index = self.indexAt(point)
             menu = QMenu("Context Menu", self)
             menu.addAction("Change bottom border thickness", lambda x=index.row(): self.changeRowBorder(x))
-            menu.addAction("Change right border thickness", lambda x=index.column(): self.changeColBorder(x))
-            menu.addAction("Insert Column to right", lambda x=index.column(): self.insertColRight(x))
             menu.addAction("Insert Row to bottom", lambda x=index.row(): self.insertRowBottom(x))
             menu.exec_(self.mapToGlobal(point)+ QPoint(20, 25))
             event.accept()
@@ -105,9 +103,6 @@ class streamTable(QTableView):
     def insertRowBottom(self, row):
         self.model.insertRow(row + 1)
         
-    def insertColRight(self, col):
-        self.model.insertColumn(col + 1)
-    
     def refresh(self):
         self.resizeHandler()
         
@@ -121,20 +116,17 @@ class streamTable(QTableView):
         w = self.verticalHeader().width() + 4
         for i in range(self.model.columnCount()):
             w += self.columnWidth(i)
-        h = self.horizontalHeader().height() + 4
+        h = 4
         for i in range(self.model.rowCount()):
             h += self.rowHeight(i)
         return QRect(0, 0, w, h)
-    
-    def cellEntered(self, row, column):
-        print(row, column)
 
 class drawBorderDelegate(QStyledItemDelegate):
-    def __init__(self, parent, width, bool1, bool2 = True):
+    
+    def __init__(self, parent, bool1, bool2 = True):
         super(drawBorderDelegate, self).__init__(parent)
         self.horizontal = bool1
         self.bottom = bool2
-        self.width = width
     
     def paint(self, painter, option, index):
         rect = option.rect
@@ -142,10 +134,22 @@ class drawBorderDelegate(QStyledItemDelegate):
             painter.drawLine(rect.bottomLeft(), rect.bottomRight())
         else:
             painter.drawLine(rect.topRight(), rect.bottomRight())
-        painter.setPen(QPen(Qt.black, self.width, Qt.SolidLine))
+        painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
         super(drawBorderDelegate, self).paint(painter, option, index)
 
 class moveRect(QGraphicsRectItem):
-    def __init__(self, *args):
-        super(moveRect, self).__init__(-10, -10, 10, 10)
+    
+    def __init__(self, sideLength = 15, *args):
+        super(moveRect, self).__init__(-sideLength, -sideLength, sideLength, sideLength)
+        self.setBrush(Qt.transparent)
+        self.setPen(QPen(Qt.transparent))
+        self.setCursor(QCursor(Qt.SizeAllCursor))
+        self.setAcceptHoverEvents(True)
+        
+    def hoverEnterEvent(self, event):
         self.setBrush(QBrush(QColor(0, 0, 0, 120)))
+        return super(moveRect, self).hoverEnterEvent(event)
+        
+    def hoverLeaveEvent(self, event):
+        self.setBrush(QBrush(QColor(0, 0, 0, 0)))
+        return super(moveRect, self).hoverLeaveEvent(event)
