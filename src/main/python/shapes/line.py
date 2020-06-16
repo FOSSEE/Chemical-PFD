@@ -1,8 +1,9 @@
 import math
 from PyQt5.QtGui import QPen, QPainterPath, QBrush, QPainterPathStroker, QPainter, QCursor, QPolygonF
 from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPathItem, QGraphicsTextItem, QMenu, QGraphicsLineItem
-from PyQt5.QtCore import Qt, QPointF, QRectF, QLineF
+from PyQt5.QtCore import Qt, QPointF, QRectF, QLineF, pyqtSignal
 
+from collections import defaultdict
 
 class Grabber(QGraphicsPathItem):
     """
@@ -122,6 +123,8 @@ class Grabber(QGraphicsPathItem):
 
 
 class LineLabel(QGraphicsTextItem):
+    nameChanged = pyqtSignal()
+    
     def __init__(self, pos, parent=None):
         super(LineLabel, self).__init__()
         self.setPlainText("abc")
@@ -139,7 +142,8 @@ class LineLabel(QGraphicsTextItem):
         self.line.setPen(QPen(Qt.black, 2, Qt.SolidLine))
         self.line.setFlag(QGraphicsItem.ItemStacksBehindParent)
         self.resetPos()
-
+        self.values = defaultdict(lambda: 0)
+        
     def paint(self, painter, option, widget):
         painter.save()
         painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
@@ -264,6 +268,7 @@ class LineLabel(QGraphicsTextItem):
     def focusOutEvent(self, event):
         super(LineLabel, self).focusOutEvent(event)
         self.setTextInteractionFlags(Qt.NoTextInteraction)
+        self.nameChanged.emit()
         
     def __getstate__(self):
         return {

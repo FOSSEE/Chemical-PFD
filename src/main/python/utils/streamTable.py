@@ -24,9 +24,9 @@ class streamTableModel(QAbstractTableModel):
         elif role != Qt.DisplayRole:
             return None
         if index.row() == 0:
-            return self.list[index.column()][index.row()].toPlainText()
+            return self.list[index.column()].toPlainText()
         else:
-            return self.list[index.column()][index.row()]
+            return self.list[index.column()].values[self.header[index.row()]]
     
     def setData(self, index, value, role):
         if not index.isValid():
@@ -34,22 +34,20 @@ class streamTableModel(QAbstractTableModel):
         elif role != Qt.EditRole:
             return False
         if index.row() == 0:
-            self.list[index.column()][index.row()].setPlainText(value)
+            self.list[index.column()].setPlainText(value)
         else:
-            self.list[index.column()][index.row()] = value
+            self.list[index.column()].values[self.header[index.row()]] = value
         return True 
     
     def insertColumn(self, int=None, item=None):
         int = int if int else self.rowCount()+1
         self.beginInsertColumns(QModelIndex(), int, int)
-        self.list.insert(int, [item] + [0 for _ in range(self.rowCount()-1)])
+        self.list.insert(int, item)
         self.endInsertColumns()
         self.updateEvent.emit()
     
     def insertRow(self, int=None, name="newVal"):
         self.beginInsertRows(QModelIndex(), int, int)
-        for item in self.list:
-            item.insert(int, 0)
         self.header.insert(int, name)
         self.endInsertRows()
         self.updateEvent.emit()
@@ -67,11 +65,10 @@ class streamTable(QTableView):
     def __init__(self, itemLabels=[], canvas=None, parent=None):
         super(streamTable, self).__init__(parent=parent)
         self.canvas = canvas
-        list = []
-        for i, item in enumerate(itemLabels):
-            list.append([item] + [0 for _ in range(5)])
+        for i in itemLabels:
+            i.nameChanged.connect(self.repaint)
         header = ["name", "val1", "val2", "val3", "val4", "val5"]
-        self.model = streamTableModel(self, list, header)
+        self.model = streamTableModel(self, itemLabels, header)
         self.setShowGrid(False)
         self.horizontalHeader().hide()
         self.setModel(self.model)

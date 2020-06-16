@@ -100,9 +100,8 @@ class canvas(customView):
             
     @property
     def labelItems(self):
-        for i in self.items:
-            if isinstance(i, shapes.LineLabel):
-                yield i
+        return [i for i in self.items if isinstance(i, shapes.LineLabel)]
+    
     @property
     def canvasSize(self):
         return self._canvasSize
