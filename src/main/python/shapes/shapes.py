@@ -102,9 +102,13 @@ class SizeGripItem(QGraphicsPathItem):
         self.setPen(QPen(QColor("black"), 0))
         self.setZValue(2)
         # property direction
-        self._direction = orientationEnum.index(direction)
-        self.m_index = index
+        self._direction = (orientationEnum.index(direction) + self.parentItem().rotation) % 4
+        self._m_index = index
 
+    @property
+    def m_index(self):
+        return (self._m_index + self.parentItem().rotation) % 4
+    
     @property
     def direction(self):
         """
