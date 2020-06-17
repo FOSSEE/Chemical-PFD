@@ -19,6 +19,10 @@ class streamTableModel(QAbstractTableModel):
         return len(self.header)
     
     def data(self, index, role):
+        if role == Qt.TextAlignmentRole:
+            return Qt.AlignHCenter
+        if role == Qt.BackgroundColorRole:
+            return Qt.white
         if not index.isValid():
             return None
         elif role != Qt.DisplayRole:
@@ -129,7 +133,7 @@ class streamTable(QTableView):
         w = self.verticalHeader().width() + 4
         for i in range(self.model.columnCount()):
             w += self.columnWidth(i)
-        h = 4
+        h = 0
         for i in range(self.model.rowCount()):
             h += self.rowHeight(i)
         return QRect(0, 0, w, h)
