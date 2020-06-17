@@ -268,13 +268,27 @@ customTabWidget customView {
 QHeaderView {
     qproperty-defaultAlignment: AlignHCenter;
 }
+
 QHeaderView::section {
     padding: 4px;
     border-style: none;
     background-color: white;
 }
 
+QHeaderView::section:first{
+    border-bottom: 1px solid black;
+}
+
 QTableView {
     border: none;
-    background-color: white;
+}
+
+QTableView::item {
+    border: none;
+    color: black;
+}
+
+QTableView::item:selected {
+    background-color: transparent;
+    color: black;
 }
