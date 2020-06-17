@@ -1,6 +1,6 @@
 from PyQt5.QtCore import Qt, QSize, QRect, QPoint, QAbstractTableModel, pyqtSignal, QModelIndex
 from PyQt5.QtGui import QBrush, QPen, QColor, QCursor
-from PyQt5.QtWidgets import QTableView, QMenu, QGraphicsRectItem, QInputDialog, QStyledItemDelegate
+from PyQt5.QtWidgets import QTableView, QMenu, QGraphicsRectItem, QInputDialog, QStyledItemDelegate, QHeaderView
 
 from collections import defaultdict
 
@@ -55,6 +55,14 @@ class streamTableModel(QAbstractTableModel):
         self.header.insert(int, name)
         self.endInsertRows()
         self.updateEvent.emit()
+    
+    def deleteRow(self, row):
+        self.beginRemoveRows(QModelIndex(), row, row)
+        valName = self.header.pop(row)
+        self.endRemoveRows()
+        for i in self.list:
+            i.values.pop(valName)
+        self.updateEvent.emit()
         
     def headerData(self, col, orientation, role):
         if orientation == Qt.Vertical and role == Qt.DisplayRole:
@@ -74,10 +82,17 @@ class streamTable(QTableView):
         header = ["name", "val1", "val2", "val3", "val4", "val5"]
         self.model = streamTableModel(self, itemLabels, header)
         self.setShowGrid(False)
+        
         self.horizontalHeader().hide()
+        header = verticalHeader(Qt.Vertical, self)
+        self.setVerticalHeader(header)
+        header.labelChangeRequested.connect(self.labelChange)
+        
         self.setModel(self.model)
         self.borderThickness = defaultdict(lambda: False)
         self.model.updateEvent.connect(self.resizeHandler)
+        
+        self.setItemDelegateForRow(0, drawBorderDelegate(self))
         
     def mousePressEvent(self, event):
         if event.button() == Qt.RightButton:
@@ -85,23 +100,12 @@ class streamTable(QTableView):
             # col = self.getCol(point.x())
             index = self.indexAt(point)
             menu = QMenu("Context Menu", self)
-            menu.addAction("Change bottom border thickness", lambda x=index.row(): self.changeRowBorder(x))
+            menu.addAction("Toggle bottom border thickness", lambda x=index.row(): self.changeRowBorder(x))
             menu.addAction("Insert Row to bottom", lambda x=index.row(): self.insertRowBottom(x))
+            menu.addAction("Delete row", lambda x=index.row(): self.model.deleteRow(x))
             menu.exec_(self.mapToGlobal(point)+ QPoint(20, 25))
             event.accept()
         return super(streamTable, self).mousePressEvent(event)
-    
-    # def mouseDoubleClickEvent(self, event):
-    #     pos = event.pos()
-    #     if pos.x() < self.verticalHeader().width():
-    #         index = self.rowAt(pos.y())
-    #         newName, bool = QInputDialog.getText(self, "Change Property Name", "Enter new name",
-    #                                    text = self.model.header[index])
-    #         if bool:
-    #             for i in self.model.list:
-    #                 i.values[newName] = i.values.pop(self.model.header[index])
-    #             self.repaint()
-    #     return super().mouseDoubleClickEvent(event)
     
     def changeRowBorder(self, row):
         if self.borderThickness[row]:
@@ -111,10 +115,14 @@ class streamTable(QTableView):
             self.borderThickness[row] = True
             self.setItemDelegateForRow(row, drawBorderDelegate(self))
     
-    # def changeColBorder(self, col):
-    #     newWidth, bool = QInputDialog.getInt(self, "Change Vertical Border Width", "Enter new Width in pixels", self.borderThickness[-col], 0, 10, step=1)
-    #     if bool:
-    #         self.setItemDelegateForColumn(col, drawBorderDelegate(self, newWidth, False))
+    def labelChange(self, index):
+        newName, bool = QInputDialog.getText(self, "Change Property Name", "Enter new name", 
+                                             text = self.model.header[index])
+        if bool:
+            for i in self.model.list:
+                i.values[newName] = i.values.pop(self.model.header[index])
+            self.model.header[index] = newName
+            self.repaint()
 
     def insertRowBottom(self, row):
         name, bool = QInputDialog.getText(self, "New Property", "Enter name", 
@@ -145,10 +153,6 @@ class drawBorderDelegate(QStyledItemDelegate):
     
     def paint(self, painter, option, index):
         rect = option.rect
-        # if self.horizontal:
-            # painter.drawLine(rect.bottomLeft(), rect.bottomRight())
-        # else:
-        #     painter.drawLine(rect.topRight(), rect.bottomRight())
         painter.drawLine(rect.bottomLeft(), rect.bottomRight())
         painter.setPen(QPen(Qt.black, 1, Qt.SolidLine))
         super(drawBorderDelegate, self).paint(painter, option, index)
@@ -169,3 +173,11 @@ class moveRect(QGraphicsRectItem):
     def hoverLeaveEvent(self, event):
         self.setBrush(QBrush(QColor(0, 0, 0, 0)))
         return super(moveRect, self).hoverLeaveEvent(event)
+    
+class verticalHeader(QHeaderView):
+    labelChangeRequested = pyqtSignal(int)
+    
+    def mouseDoubleClickEvent(self, event):
+        index = self.logicalIndexAt(event.pos())
+        self.labelChangeRequested.emit(index)
+        return super().mouseDoubleClickEvent(event)
