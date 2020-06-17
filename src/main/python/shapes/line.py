@@ -14,15 +14,18 @@ class Grabber(QGraphicsPathItem):
 
     def __init__(self, annotation_line, index, direction):
         super(Grabber, self).__init__()
-        self.m_index = index
+        # store line to which it connects
         self.m_annotation_item = annotation_line
-        self._direction = direction
+        # index of first point of segment of above line
+        self.m_index = index
+        self.direction = direction
         self.setPath(Grabber.circle)
         # set graphical settings for this item
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
         self.setAcceptHoverEvents(True)
+        # initially make invisible
         self.pen = QPen(Qt.white, -1, Qt.SolidLine)
         self.brush = QBrush(Qt.transparent)
 
@@ -30,7 +33,7 @@ class Grabber(QGraphicsPathItem):
         """ move position of grabber after resize"""
         if change == QGraphicsItem.ItemPositionChange and self.isEnabled():
             p = QPointF(self.pos())
-            if self._direction == Qt.Horizontal:
+            if self.direction == Qt.Horizontal:
                 p.setX(value.x())
                 if self.parentItem().refLine and self.m_index == len(self.parentItem().points) - 2:
                     points = self.parentItem().refLine.points
@@ -42,7 +45,7 @@ class Grabber(QGraphicsPathItem):
                         p.setX(min(point1.x(), point2.x()))
                     elif p.x() > max(point1.x(), point2.x()):
                         p.setX(max(point1.x(), point2.x()))
-            elif self._direction == Qt.Vertical:
+            elif self.direction == Qt.Vertical:
                 p.setY(value.y())
                 if self.parentItem().refLine and self.m_index == len(self.parentItem().points) - 2:
                     points = self.parentItem().refLine.points
@@ -70,18 +73,16 @@ class Grabber(QGraphicsPathItem):
         painter.setPen(self.pen)
         painter.drawPath(self.path())
 
-        # To paint path of shape
-        # color = Qt.red if self.isSelected() else Qt.black
-        # painter.setPen(QPen(Qt.blue, 1, Qt.SolidLine))
-        # painter.drawPath(self.shape())
-
     def shape(self):
         """Overrides shape method and set shape to segment on which grabber is located"""
         index = self.m_index
+        # take start and end point of segment
         startPoint = QPointF(self.parentItem().points[index])
         endPoint = QPointF(self.parentItem().points[index + 1])
+        # map in grabber's co-ordinate
         startPoint = self.mapFromParent(startPoint)
         endPoint = self.mapFromParent(endPoint)
+        # create path as line
         path = QPainterPath(startPoint)
         path.lineTo(endPoint)
         # generate outlines for path
@@ -92,15 +93,12 @@ class Grabber(QGraphicsPathItem):
     def boundingRect(self):
         return self.shape().boundingRect()
 
-    def mousePressEvent(self, event):
-        super(Grabber, self).mousePressEvent(event)
-
     def hoverEnterEvent(self, event):
         """
         Changes cursor to horizontal movement or vertical movement
          depending on the direction of the grabber on mouse enter
         """
-        if self._direction == Qt.Horizontal:
+        if self.direction == Qt.Horizontal:
             self.setCursor(QCursor(Qt.SplitHCursor))
         else:
             self.setCursor(QCursor(Qt.SplitVCursor))
@@ -114,10 +112,12 @@ class Grabber(QGraphicsPathItem):
         super(Grabber, self).hoverLeaveEvent(event)
 
     def show(self):
+        # set pen to show
         self.pen = QPen(Qt.black, 2, Qt.SolidLine)
         self.brush = QBrush(Qt.cyan)
 
     def hide(self):
+        # set pen to transparent
         self.pen = QPen(Qt.white, -1, Qt.SolidLine)
         self.brush = QBrush(Qt.transparent)
 
@@ -127,57 +127,69 @@ class LineLabel(QGraphicsTextItem):
     
     def __init__(self, pos, parent=None):
         super(LineLabel, self).__init__()
+        # initial text
         self.setPlainText("abc")
+        # stores index of first point of segment
         self.index = None
+        # distance from line segment
         self.gap = None
+        # set graphical setting
         self.setFlags(QGraphicsItem.ItemIsMovable |
                       QGraphicsItem.ItemIsSelectable |
                       QGraphicsItem.ItemIsFocusable)
         self.setTextInteractionFlags(Qt.NoTextInteraction)
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
+        # set center of text label at mouse pos
         self.setPos(pos - self.boundingRect().center())
         self.setParentItem(parent)
+        # add line item to test label
         self.line = QGraphicsLineItem()
         self.line.setParentItem(self)
         self.line.setPen(QPen(Qt.black, 2, Qt.SolidLine))
         self.line.setFlag(QGraphicsItem.ItemStacksBehindParent)
+        # reset position of line
         self.resetPos()
         self.values = defaultdict(lambda: 0)
         
     def paint(self, painter, option, widget):
-        painter.save()
-        painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
-        painter.setBrush(QBrush(Qt.white))
-
-        painter.drawEllipse(self.boundingRect())
-        painter.restore()
-        
+        # draw ellipse shape
+        painter.save()  # save painter
+        painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))  # set pen to painter
+        painter.setBrush(QBrush(Qt.white))  # set brush
+        painter.drawEllipse(self.boundingRect())  # draw ellipse
+        painter.restore()  # restore painter as before drawing ellipse
         super(LineLabel, self).paint(painter, option, widget)
 
     def updateLabel(self):
-        offset = self.gap
-        points = self.parentItem().points
-        firstPoint = points[self.index]
-        endPoint = points[self.index + 1]
+        # finds new position on segment
+        offset = self.gap  # distance from segment
+        points = self.parentItem().points  # points of line
+        firstPoint = points[self.index]  # first point of segment on which label is attached
+        endPoint = points[self.index + 1]  # second point
         center = self.mapToParent(self.boundingRect().center())
         newPos = center
+        # if segment is vertical
         if firstPoint.x() == endPoint.x():
             newPos.setX(firstPoint.x() + self.gap)
             if min(firstPoint.y(), endPoint.y()) > newPos.y():
                 newPos.setY(min(firstPoint.y(), endPoint.y()))
             elif newPos.y() > max(firstPoint.y(), endPoint.y()):
                 newPos.setY(max(firstPoint.y(), endPoint.y()))
-
+        # segment is horizontal
         elif firstPoint.y() == endPoint.y():
             newPos.setY(firstPoint.y() + self.gap)
             if min(firstPoint.x(), endPoint.x()) > newPos.x():
                 newPos.setX(min(firstPoint.x(), endPoint.x()))
             elif newPos.x() > max(firstPoint.x(), endPoint.x()):
                 newPos.setX(max(firstPoint.x(), endPoint.x()))
+        # transfer center positon to top left
         newPos -= QPointF(self.boundingRect().width() / 2, self.boundingRect().height() / 2)
         self.setPos(newPos)
 
     def resetPos(self):
+        """ finds the segment of line on which mouse is clicked for adding label
+        and resets it's position on that segment
+        """
         points = self.parentItem().points
         min_A = QPointF()
         min_B = QPointF()
@@ -213,9 +225,10 @@ class LineLabel(QGraphicsTextItem):
             self.gap = -30 + self.boundingRect().height() / 2
 
     def itemChange(self, change, value):
+        # if position of label changes
         if change == QGraphicsItem.ItemPositionChange and self.scene():
-            newPos = QPointF(value)
-            newPos += QPointF(self.boundingRect().width() / 2, self.boundingRect().height() / 2)
+            newPos = QPointF(value)  # new position
+            newPos += QPointF(self.boundingRect().width() / 2, self.boundingRect().height() / 2)  # pos of center
             points = self.parentItem().points
             firstPoint = points[self.index]
             endPoint = points[self.index + 1]
@@ -229,7 +242,8 @@ class LineLabel(QGraphicsTextItem):
                     newPos.setX(min(firstPoint.x(), endPoint.x()))
                 elif newPos.x() > max(firstPoint.x(), endPoint.x()):
                     newPos.setX(max(firstPoint.x(), endPoint.x()))
-            newPos -= QPointF(self.boundingRect().width() / 2, self.boundingRect().height() / 2)
+            newPos -= QPointF(self.boundingRect().width() / 2,
+                              self.boundingRect().height() / 2)  # change center pos to top-left
             return newPos
         if change == QGraphicsItem.ItemPositionHasChanged and self.scene():
             self.updateGap()
@@ -238,6 +252,7 @@ class LineLabel(QGraphicsTextItem):
         return super(LineLabel, self).itemChange(change, value)
 
     def updateGap(self):
+        # updates distance of line from it's connection segment
         points = self.parentItem().points
         firstPoint = points[self.index]
         endPoint = points[self.index + 1]
@@ -250,6 +265,7 @@ class LineLabel(QGraphicsTextItem):
             self.gap = center.y() - firstPoint.y()
 
     def updateLine(self):
+        # updates line item of label
         points = self.parentItem().points
         firstPoint = points[self.index]
         endPoint = points[self.index + 1]
@@ -261,6 +277,7 @@ class LineLabel(QGraphicsTextItem):
             self.line.setLine(center.x(), center.y(), center.x(), point.y())
 
     def mouseDoubleClickEvent(self, event):
+        # set text editable
         self.setTextInteractionFlags(Qt.TextEditorInteraction)
         self.setFocus()
         super(LineLabel, self).mouseDoubleClickEvent(event)
@@ -270,6 +287,8 @@ class LineLabel(QGraphicsTextItem):
         self.setTextInteractionFlags(Qt.NoTextInteraction)
         self.nameChanged.emit()
         
+        self.setTextInteractionFlags(Qt.NoTextInteraction)  # set text non interactive
+
     def __getstate__(self):
         return {
             "text": self.toPlainText(),
@@ -277,7 +296,7 @@ class LineLabel(QGraphicsTextItem):
             "gap": self.gap,
             "pos": (self.pos().x(), self.pos().y())
         }
-    
+
     def __setstate__(self, dict):
         self.setPlainText(dict['text'])
         self.index = dict['index']
@@ -285,11 +304,13 @@ class LineLabel(QGraphicsTextItem):
 
 
 def findIndex(line, pos):
+    # finds index of first point of segment of line which is nearer to given position
     points = line.points
     min_A = QPointF()
     min_B = QPointF()
     min_dis = math.inf
     index = -1
+    # iterating over points of line
     for i in range(len(points) - 1):
         A = points[i]
         B = points[i + 1]
@@ -298,7 +319,7 @@ def findIndex(line, pos):
         BAy = B.y() - A.y()
         CAx = C.x() - A.x()
         CAy = C.y() - A.y()
-        length = math.sqrt(BAx * BAx + BAy * BAy)
+        length = math.sqrt(BAx * BAx + BAy * BAy)  # length of segment
         if BAx == 0:
             if not min(A.y(), B.y()) <= C.y() <= max(A.y(), B.y()):
                 continue
@@ -322,10 +343,12 @@ class Line(QGraphicsPathItem):
 
     def __init__(self, startPoint, endPoint, **args):
         QGraphicsItem.__init__(self, **args)
+        # store startpoint and endpoint of line
         self.startPoint = startPoint
         self.endPoint = endPoint
         # stores all points of line
         self.points = []
+        # stores grips of line
         self.startGripItem = None
         self.endGripItem = None
         self.m_grabbers = []
@@ -339,32 +362,38 @@ class Line(QGraphicsPathItem):
         self.commonPathsCenters = []
         self.midLines = []
         self.label = []
-        self.arrowFlag = True
+        # if line point on rectangle grip
+        self.startGap = None # distance from center of start grip
+        self.endGap = None # distance from center of end grip
 
     def boundingRect(self):
+        # adjust bounding rect such that it contains intersection curve and arrow
         rect = self.shape().boundingRect()
-        rect.adjust(-10,-10,10,10)
+        rect.adjust(-10, -10, 10, 10)
         return rect
-    
+
     def advance(self, phase):
+        """ called by scene when item moves or updates on scene
+        """
         if not phase:
             return
-        # items colliding with line
-        # items = self.collidingItems(Qt.IntersectsItemShape)
+        # fine collision with line in ascending order
         items = self.scene().items(self.shape(), Qt.IntersectsItemShape, Qt.AscendingOrder)
-        self.commonPathsCenters = []
+        self.commonPathsCenters = [] # remove all previous interaction
         # if item is line and stacked above
         for item in items:
             if type(item) in [type(self)]:
                 if item == self:
                     break
-                shape = item.shape()
-                shape = self.mapFromItem(item, item.shape())
-                commonPath = self.shape().intersected(shape)
-                polygons = commonPath.toSubpathPolygons()
+                shape = item.shape() # shape of item
+                shape = self.mapFromItem(item, item.shape()) # map shape to self
+                commonPath = self.shape().intersected(shape) # find common path btw lines
+                polygons = commonPath.toSubpathPolygons() # chane common path to polygon
                 for polygon in polygons:
-                    center = polygon.boundingRect().center()
+                    center = polygon.boundingRect().center() # center of polygon
+                    # if collision is btw perpendicular line
                     if polygon.size() == 5:
+                        # ignore collision if other line has end point on this line
                         if item.refLine:
                             i = len(item.points) - 2
                             x1, y1 = item.points[i].x(), item.points[i].y()
@@ -383,8 +412,7 @@ class Line(QGraphicsPathItem):
     def paint(self, painter, option, widget):
         color = Qt.red if self.isSelected() else Qt.black
         painter.setPen(QPen(color, 2, Qt.SolidLine))
-        path = QPainterPath(self.startPoint)
-        arrowHead = QPolygonF()
+        path = QPainterPath(self.startPoint) # start path
         # iterating over all points of line
         for i in range(len(self.points) - 1):
             x1, y1 = self.points[i].x(), self.points[i].y()
@@ -414,7 +442,8 @@ class Line(QGraphicsPathItem):
                             path.arcTo(QRectF(x - 8, y - 8, 16, 16), 0, -180)
                             path.lineTo(point - QPointF(8, 0))
             path.lineTo(self.points[i + 1])
-            if i == len(self.points) - 2 and self.arrowFlag:
+            # draw arrow in last segment
+            if i == len(self.points) - 2:
                 arrow_size = 20.0
                 line = QLineF(self.points[i], self.points[i + 1])
                 if line.length() < 20:
@@ -434,13 +463,12 @@ class Line(QGraphicsPathItem):
                 arrowHead.append(line.p2())
                 arrowHead.append(arrow_p1)
                 arrowHead.append(arrow_p2)
-                # path.addPolygon(arrowHead)
                 painter.save()
                 painter.setBrush(Qt.black)
                 painter.drawPolygon(arrowHead)
                 painter.restore()
 
-        painter.drawPath(path)
+        painter.drawPath(path) # draw final path
 
     def createPath(self):
         """
@@ -454,6 +482,7 @@ class Line(QGraphicsPathItem):
         self.points = [self.startPoint, QPointF((x0 + x1) / 2, y0), QPointF((x0 + x1) / 2, y1), self.endPoint]
         # final path of line
         if self.refLine:
+            # line has end point on other line
             from .shapes import LineGripItem
             direction = "left"
             points = self.refLine.points
@@ -469,7 +498,7 @@ class Line(QGraphicsPathItem):
                     direction = "top"
                 else:
                     direction = "bottom"
-            self.endGripItem = LineGripItem(self, -1, direction, self)
+            self.endGripItem = LineGripItem(-1, [0, 0, direction], self)
             self.endGripItem.setPos(self.endPoint)
 
         if self.startGripItem and self.endGripItem:
@@ -495,8 +524,8 @@ class Line(QGraphicsPathItem):
                 pe = QPointF(self.endPoint.x() + offset, self.endPoint.y())
             start = self.startPoint
             end = self.endPoint
-            sitem = self.startGripItem.mapRectToScene(self.startGripItem.m_annotation_item.boundingRect())
-            eitem = self.endGripItem.mapRectToScene(self.endGripItem.m_annotation_item.boundingRect())
+            sitem = self.startGripItem.mapRectToScene(self.startGripItem.parentItem().boundingRect())
+            eitem = self.endGripItem.mapRectToScene(self.endGripItem.parentItem().boundingRect())
             if self.refLine:
                 eitem = self.endGripItem.mapRectToScene(QRectF(0, 0, 0, 0))
 
@@ -756,6 +785,7 @@ class Line(QGraphicsPathItem):
         self.setPath(path)
 
         if self.refLine:
+            # remove added grip
             self.scene().removeItem(self.endGripItem)
             self.endGripItem = None
             self.addGrabber()
@@ -772,9 +802,12 @@ class Line(QGraphicsPathItem):
             path.lineTo(self.points[i])
         path.lineTo(self.endPoint)
         self.setPath(path)
+        # update grabber of line
         self.updateGrabber()
+        # update labels connected to line
         for label in self.label:
             label.updateLabel()
+        # update line have end point on this line
         self.updateMidLines()
 
     def updatePoints(self):
@@ -853,6 +886,7 @@ class Line(QGraphicsPathItem):
 
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemSelectedHasChanged:
+            # on selection stack above to show curve on it
             if value == 1:
                 self.showGripItem()
                 items = self.collidingItems(Qt.IntersectsItemShape)
@@ -864,46 +898,63 @@ class Line(QGraphicsPathItem):
                 self.hideGripItem()
             return
         if change == QGraphicsItem.ItemSceneHasChanged and not self.scene():
+            # if line is removed from scene
             for line in self.midLines:
+                # remove lines connected to it
                 if line.scene():
                     line.scene().removeItem(line)
-            if self.startGripItem and self.startGripItem.line and not self.startGripItem.tempLine:
-                self.startGripItem.line = None
-                if self.endGripItem and self.endGripItem.line:
-                    self.endGripItem.line = None
+            if self.startGripItem and self.startGripItem.lines and not self.startGripItem.tempLine:
+                # remove line reference from grips
+                if self in self.startGripItem.lines: self.startGripItem.lines.remove(self)
+                if self.endGripItem and self.endGripItem.lines:
+                    if self in self.endGripItem.lines: self.endGripItem.lines.remove(self)
                 if self.refLine:
                     if self in self.refLine.midLines: self.refLine.midLines.remove(self)
 
         return super(Line, self).itemChange(change, value)
 
-    def updateLine(self, startPoint=None, endPoint=None):
+    def updateLine(self, endPoint=None):
 
         """This function is used to update connecting line when it add on
            canvas and when it's grip item  moves
         :return:
         """
-        self.prepareGeometryChange()
-        if startPoint:
-            self.startPoint = startPoint
         if endPoint:
             self.endPoint = endPoint
             self.createPath()
             self.updateGrabber()
             return
-
-        if self.startGripItem and self.endGripItem:
+        # update start point
+        if self.startGripItem:
             item = self.startGripItem
-            self.startPoint = item.parentItem().mapToScene(item.pos())
+            startPoint = item.parentItem().mapToScene(item.pos()) # center of grip
+            # end grip is rectangle
+            if item.size and item.m_location in ["top", "bottom"]:
+                startPoint.setX(startPoint.x() - self.startGap * item.boundingRect().width())
+            elif item.size:
+                startPoint.setY(
+                    startPoint.y() - self.startGap * item.boundingRect().height())
+            self.startPoint = startPoint
+        # end point on line
+        if self.endGripItem:
             item = self.endGripItem
-            self.endPoint = item.parentItem().mapToScene(item.pos())
+            endPoint = item.parentItem().mapToScene(item.pos()) # center of grip
+            # end grip is rectangle
+            if item.size and item.m_location in ["top", "bottom"]:
+                endPoint.setX(
+                    endPoint.x() - self.endGap * item.boundingRect().width())
+            elif item.size:
+                endPoint.setY(
+                    endPoint.y() - self.endGap * item.boundingRect().height())
+            self.endPoint = endPoint
             self.updatePath()
-
-        if self.startGripItem and self.refLine:
-            item = self.startGripItem
-            self.startPoint = item.parentItem().mapToScene(item.pos())
+        # end point on other line
+        elif self.refLine:
             self.updatePath()
 
     def updateMidLines(self):
+        """ Updates all lines connecting to it
+        """
         for line in self.midLines:
             points = line.refLine.points
             point1 = points[line.refIndex]
@@ -926,13 +977,6 @@ class Line(QGraphicsPathItem):
                     line.points[i].setX(max(point1.x(), point2.x()))
                     line.points[i - 1].setX(max(point1.x(), point2.x()))
             line.updatePath()
-
-    def removeFromCanvas(self):
-        """This function is used to remove connecting line from canvas
-        :return:
-        """
-        if self.scene():
-            self.scene().removeItem(self)
 
     def showGripItem(self):
         """shows grip items which contains line
@@ -960,29 +1004,14 @@ class Line(QGraphicsPathItem):
         """Pop up menu
         :return:
         """
+        # create a menu and add action
         contextMenu = QMenu()
-        addLableAction = contextMenu.addAction("add Label")
-        if self.arrowFlag is True:
-            str = "Hide Arrow"
-        else:
-            str = "Add Arrow"
-        changeArrowFlag = contextMenu.addAction(str)
+        addLableAction = contextMenu.addAction("Add Text Label")  # add action for text label
         action = contextMenu.exec_(event.screenPos())
+        # check for label action and add text label as child
         if action == addLableAction:
-            newLabel = LineLabel(event.scenePos(), self)
-            self.label.append(newLabel)
-            self.scene().labelAdded.emit(newLabel)
-            
-        if action == changeArrowFlag:
-            if str == "Hide Arrow":
-                self.arrowFlag =False
-            else:
-                self.arrowFlag =True
-            self.update()
-
-    def setPenStyle(self, style):
-        """change current pen style for line"""
-        self.penStyle = style
+            print(event.scenePos(), event.pos())
+            self.label.append(LineLabel(event.scenePos(), self))  # text label as child
 
     def __getstate__(self):
         return {
@@ -997,5 +1026,6 @@ class Line(QGraphicsPathItem):
             "label": [i for i in self.label],
             "id": hex(id(self))
         }
+
     def __setstate__(self, dict):
         self.points = [QPointF(x, y) for x, y in dict["points"]]
