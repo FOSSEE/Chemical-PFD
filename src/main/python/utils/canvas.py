@@ -1,12 +1,13 @@
-from PyQt5.QtCore import Qt, QPointF
+from PyQt5.QtCore import Qt, QPointF, QRectF
 from PyQt5.QtGui import QBrush, QPalette
 from PyQt5.QtWidgets import (QFileDialog, QApplication, QHBoxLayout, QMenu,
-                             QTabWidget, QWidget, QSpacerItem, QStyle,)
+                             QTabWidget, QWidget, QSpacerItem, QStyle, QGraphicsProxyWidget)
 
 from . import dialogs
 from .graphics import customView, customScene
 from .data import paperSizes, ppiList, sheetDimensionList
 from .app import shapeGrips, lines
+from .streamTable import streamTable, moveRect
 
 import shapes
 
@@ -24,12 +25,13 @@ class canvas(customView):
         self._ppi = ppi
         self._canvasSize = size
         self._landscape = landscape
-        # self.setFixedSize(parent.size())
+        self.streamTable = None
         #Create area for the graphic items to be placed, this is just here right now for the future
         # when we will draw items on this, this might be changed if QGraphicScene is subclassed.
         
         #set layout and background color
-        self.painter = customScene()    
+        self.painter = customScene()
+        self.painter.labelAdded.connect(self.updateStreamTable)  
         self.painter.setBackgroundBrush(QBrush(Qt.white)) #set white background
         self.setScene(self.painter)
         
@@ -38,7 +40,22 @@ class canvas(customView):
         self.parentMdiArea = parentMdiArea
         self.parentFileWindow = parentFileWindow
         self.customContextMenuRequested.connect(self.sideViewContextMenu)
-
+    
+    def addStreamTable(self, pos=QPointF(0, 0), table=None):
+        self.streamTable = table if table else streamTable(self.labelItems, canvas=self)
+        
+        self.streamTableRect = moveRect()
+        self.streamTableRect.setFlags(moveRect.ItemIsMovable |
+                                      moveRect.ItemIsSelectable)
+        self.streamTableProxy = QGraphicsProxyWidget(self.streamTableRect)
+        self.streamTableProxy.setWidget(self.streamTable)
+        self.painter.addItem(self.streamTableRect)
+        self.streamTableRect.setPos(pos)
+        
+    def updateStreamTable(self, item):
+        if self.streamTable:
+            self.streamTable.model.insertColumn(item = item)
+        
     def sideViewContextMenu(self, pos):
         self.parentFileWindow.sideViewContextMenu(self.mapTo(self.parentFileWindow, pos))
         
@@ -80,6 +97,10 @@ class canvas(customView):
         # generator to filter out certain items
         for i in self.painter.items():
             yield i
+            
+    @property
+    def labelItems(self):
+        return [i for i in self.items if isinstance(i, shapes.LineLabel)]
     
     @property
     def canvasSize(self):

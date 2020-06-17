@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, QPointF
+from PyQt5.QtCore import Qt, QPointF, pyqtSignal
 from PyQt5.QtGui import QPen, QKeySequence
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsProxyWidget, QGraphicsItem, QUndoStack, QAction, QUndoView
 
@@ -11,6 +11,7 @@ class customView(QGraphicsView):
     """
     Defines custom QGraphicsView with zoom features and drag-drop accept event, overriding wheel event
     """
+    
     def __init__(self, scene = None, parent=None):
         if scene is not None: #overloaded constructor
             super(customView, self).__init__(scene, parent)
@@ -54,7 +55,7 @@ class customView(QGraphicsView):
      
     def wheelEvent(self, QWheelEvent):
         #overload wheelevent, to zoom if control is pressed, else scroll normally
-        if Qt.ControlModifier: #check if control is pressed
+        if QWheelEvent.modifiers() & Qt.ControlModifier: #check if control is pressed
             if QWheelEvent.source() == Qt.MouseEventNotSynthesized: #check if precision mouse(mac)
                 # angle delta is 1/8th of a degree per scroll unit
                 if self.zoom + QWheelEvent.angleDelta().y()/2880 > 0.1: # hit and trial value (2880)
@@ -65,7 +66,7 @@ class customView(QGraphicsView):
                     self.zoom += QWheelEvent.angleDelta().y()
             QWheelEvent.accept() # accept event so that scrolling doesnt happen simultaneously
         else:
-            return super().wheelEvent(self, QWheelEvent) # scroll if ctrl not pressed
+            return super(customView, self).wheelEvent(QWheelEvent) # scroll if ctrl not pressed
     
     @property
     def zoom(self):
@@ -83,6 +84,8 @@ class customScene(QGraphicsScene):
     """
     Extends QGraphicsScene with undo-redo functionality
     """
+    labelAdded = pyqtSignal(shapes.QGraphicsItem)
+    
     def __init__(self, *args, parent=None):
         super(customScene, self).__init__(*args,  parent=parent)
         

@@ -109,6 +109,8 @@ class fileWindow(QMdiSubWindow):
         menu.addAction("Remove Side View" if self.sideViewTab == self.tabber.currentWidget() else "View Side-By-Side",
                         self.sideViewMode)
         menu.addAction("Reset Zoom", lambda : setattr(self.tabber.currentWidget().view, 'zoom', 1))
+        if self.tabber.currentWidget().streamTable is None:
+            menu.addAction("Add Stream Table", lambda x=self, pos=point: x.tabber.currentWidget().addStreamTable(pos))
         menu.exec_(self.tabber.mapToGlobal(point))
     
     def sideViewMode(self): 
