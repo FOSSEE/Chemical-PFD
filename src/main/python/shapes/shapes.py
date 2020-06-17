@@ -12,6 +12,17 @@ from PyQt5.QtWidgets import (QGraphicsColorizeEffect, QGraphicsEllipseItem,
 from .line import Line, findIndex
 from utils.app import fileImporter
 
+directionsEnum = [
+    "top",
+    "right",
+    "left",
+    "bottom"
+]
+
+orientationEnum = [
+    Qt.Horizontal,
+    Qt.Vertical
+]
 
 class ItemLabel(QGraphicsTextItem):
     """Extends PyQt5's QGraphicsPathItem to create text label for svg item
@@ -91,7 +102,7 @@ class SizeGripItem(QGraphicsPathItem):
         self.setPen(QPen(QColor("black"), 0))
         self.setZValue(2)
         # property direction
-        self._direction = direction
+        self._direction = orientationEnum.index(direction)
         self.m_index = index
 
     @property
@@ -99,7 +110,10 @@ class SizeGripItem(QGraphicsPathItem):
         """
         property that returns the current intended resize direction of the grip item object
         """
-        return self._direction
+        if self.parentItem().rotation % 2:
+            return orientationEnum[(self._direction + 1)%2]
+        else:
+            return orientationEnum[self._direction]
 
     def updatePath(self):
         """updates path of size grip item
@@ -209,7 +223,7 @@ class LineGripItem(QGraphicsPathItem):
         # store position of self
         self.position = QPointF(grip[0], grip[1])
         # set location
-        self._m_location = grip[2]
+        self._m_location = directionsEnum.index(grip[2])
         # set size in case of rectangle grip
         self.size = grip[3] if len(grip) == 4 else None
         # stores current line which is in process
@@ -226,7 +240,11 @@ class LineGripItem(QGraphicsPathItem):
 
     @property
     def m_location(self):
-        return self._m_location
+        return directionsEnum[(self._m_location + self.parentItem().rotation)%4]
+    
+    @m_location.setter
+    def m_location(self, location):
+        self._m_location = directionsEnum.index(location)
 
     def shape(self):
         # return interactive path
@@ -428,7 +446,22 @@ class NodeItem(QGraphicsSvgItem):
         self.lineGripItems = []
         self.sizeGripItems = []
         self.label = None
+        self._rotation = 0
 
+    @property
+    def rotation(self):
+        return self._rotation
+    
+    @rotation.setter
+    def rotation(self, rotation):
+        self._rotation = rotation % 4
+        transform = QTransform()
+        transform.rotate(90*rotation)
+        self.setTransform(transform)
+        for i in self.lineGripItems:
+            for j in i.lines:
+                j.createPath()
+        
     def boundingRect(self):
         """Overrides QGraphicsSvgItem's boundingRect() virtual public function and
         returns a valid bounding
