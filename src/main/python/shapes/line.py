@@ -284,10 +284,8 @@ class LineLabel(QGraphicsTextItem):
 
     def focusOutEvent(self, event):
         super(LineLabel, self).focusOutEvent(event)
-        self.setTextInteractionFlags(Qt.NoTextInteraction)
-        self.nameChanged.emit()
-        
         self.setTextInteractionFlags(Qt.NoTextInteraction)  # set text non interactive
+        self.nameChanged.emit()
 
     def __getstate__(self):
         return {
