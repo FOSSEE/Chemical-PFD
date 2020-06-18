@@ -1008,8 +1008,9 @@ class Line(QGraphicsPathItem):
         action = contextMenu.exec_(event.screenPos())
         # check for label action and add text label as child
         if action == addLableAction:
-            print(event.scenePos(), event.pos())
-            self.label.append(LineLabel(event.scenePos(), self))  # text label as child
+            label = LineLabel(event.scenePos(), self)
+            self.label.append(label)  # text label as child
+            self.scene().labelAdded.emit(label)
 
     def __getstate__(self):
         return {
