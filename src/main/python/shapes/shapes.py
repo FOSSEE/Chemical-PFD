@@ -267,7 +267,7 @@ class LineGripItem(QGraphicsPathItem):
         if self.size:
             painter.save()
             pen = self.pen()
-            pen.setWidth(-1)
+            pen.setWidth(1)
             painter.setPen(pen)
             painter.drawPath(self.path())
             painter.restore()

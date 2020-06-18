@@ -190,7 +190,6 @@ class canvas(customView):
                 self.painter.addItem(labelItem)
             line.updateLine()
             line.addGrabber()
-            print(line.startGripItem)
             
         if dict['streamTable']:
             table = streamTable(self.labelItems, self)
