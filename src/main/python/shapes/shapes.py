@@ -463,6 +463,8 @@ class NodeItem(QGraphicsSvgItem):
         transform.rotate(90*rotation)
         self.setTransform(transform)
         for i in self.lineGripItems:
+            i.setTransform(transform)
+            i.updatePosition()
             for j in i.lines:
                 j.createPath()
         
