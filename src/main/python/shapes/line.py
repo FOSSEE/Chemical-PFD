@@ -300,7 +300,7 @@ class LineLabel(QGraphicsTextItem):
         self.setPlainText(dict['text'])
         self.index = dict['index']
         self.gap = dict['gap']
-        for key, value in dict['values']:
+        for key, value in dict['values'].items():
             self.values[key] = value
 
 
@@ -1033,5 +1033,7 @@ class Line(QGraphicsPathItem):
 
     def __setstate__(self, dict):
         self.points = [QPointF(x, y) for x, y in dict["points"]]
+        self.startPoint = QPointF(*dict['startPoint'])
+        self.endPoint = QPointF(*dict['endPoint'])
         self.startGap = dict['startGap']
         self.endGap = dict['endGap']

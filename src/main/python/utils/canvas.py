@@ -143,7 +143,7 @@ class canvas(customView):
             "symbols": [i for i in self.painter.items() if isinstance(i, shapes.NodeItem)],
             "lines": sorted([i for i in self.painter.items() if isinstance(i, shapes.Line)], key = lambda x: 1 if x.refLine else 0),
             "landscape": self.landscape,
-            "streamTable": [self.streamTable, (self.streamTableRect.pos().x(), self.streamTable.pos().y())] if self.streamTable else False
+            "streamTable": [self.streamTable, (self.streamTableRect.pos().x(), self.streamTableRect.pos().y())] if self.streamTable else False
         }
     
     def __setstate__(self, dict):
@@ -165,6 +165,7 @@ class canvas(customView):
                 graphicLabel = shapes.ItemLabel(pos = QPointF(*item['label']['pos']), parent = graphic)
                 graphicLabel.__setstate__(item['label'])
                 self.painter.addItem(graphicLabel)
+            graphic.rotation = item['rotation']
         
         for item in dict['lines']:
             line = shapes.Line(QPointF(*item['startPoint']), QPointF(*item['endPoint']))
@@ -189,6 +190,7 @@ class canvas(customView):
                 self.painter.addItem(labelItem)
             line.updateLine()
             line.addGrabber()
+            print(line.startGripItem)
             
         if dict['streamTable']:
             table = streamTable(self.labelItems, self)

@@ -155,7 +155,7 @@ class streamTable(QTableView):
         }
     
     def __setstate__(self, dict):
-        for key, value in dict['borderThickness']:
+        for key, value in dict['borderThickness'].items():
             self.borderThickness[key] = value
         self.model.header = dict['header']
         self.repaint()
