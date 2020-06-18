@@ -674,7 +674,8 @@ class NodeItem(QGraphicsSvgItem):
             "pos": (self.pos().x(), self.pos().y()),
             "lineGripItems": [(hex(id(i)), i.m_index) for i in self.lineGripItems],
             "label": self.label,
-            "rotation": self.rotation
+            "rotation": self.rotation,
+            "flipstate": self.flipState
         }
 
     def __setstate__(self, dict):

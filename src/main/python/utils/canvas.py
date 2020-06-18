@@ -166,6 +166,7 @@ class canvas(customView):
                 graphicLabel.__setstate__(item['label'])
                 self.painter.addItem(graphicLabel)
             graphic.rotation = item['rotation']
+            graphic.flipH, graphic.flipV = item['flipstate']
         
         for item in dict['lines']:
             line = shapes.Line(QPointF(*item['startPoint']), QPointF(*item['endPoint']))
