@@ -61,5 +61,4 @@ class JSON_Typer(JSONEncoder):
 
 importer = pyqtProperty(str, fileImporter)
 
-shapeGrips = {}
-lines = {}
+memMap = {}

@@ -147,6 +147,18 @@ class streamTable(QTableView):
         for i in range(self.model.rowCount()):
             h += self.rowHeight(i)
         return QRect(0, 0, w, h)
+    
+    def __getstate__(self):
+        return {
+            "borderThickness": self.borderThickness,
+            "header": self.model.header
+        }
+    
+    def __setstate__(self, dict):
+        for key, value in dict['borderThickness']:
+            self.borderThickness[key] = value
+        self.model.header = dict['header']
+        self.repaint()
 
 class drawBorderDelegate(QStyledItemDelegate):
     

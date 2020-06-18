@@ -292,13 +292,16 @@ class LineLabel(QGraphicsTextItem):
             "text": self.toPlainText(),
             "index": self.index,
             "gap": self.gap,
-            "pos": (self.pos().x(), self.pos().y())
+            "pos": (self.pos().x(), self.pos().y()),
+            "values": self.values
         }
 
     def __setstate__(self, dict):
         self.setPlainText(dict['text'])
         self.index = dict['index']
         self.gap = dict['gap']
+        for key, value in dict['values']:
+            self.values[key] = value
 
 
 def findIndex(line, pos):
@@ -1023,8 +1026,12 @@ class Line(QGraphicsPathItem):
             "refLine": hex(id(self.refLine)) if self.refLine else 0,
             "refIndex": self.refIndex,
             "label": [i for i in self.label],
-            "id": hex(id(self))
+            "id": hex(id(self)),
+            "startGap": self.startGap,
+            "endGap": self.endGap
         }
 
     def __setstate__(self, dict):
         self.points = [QPointF(x, y) for x, y in dict["points"]]
+        self.startGap = dict['startGap']
+        self.endGap = dict['endGap']

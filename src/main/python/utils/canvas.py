@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (QFileDialog, QApplication, QHBoxLayout, QMenu,
 from . import dialogs
 from .graphics import customView, customScene
 from .data import paperSizes, ppiList, sheetDimensionList
-from .app import shapeGrips, lines
+from .app import memMap
 from .streamTable import streamTable, moveRect
 
 import shapes
@@ -142,7 +142,8 @@ class canvas(customView):
             "ObjectName": self.objectName(),
             "symbols": [i for i in self.painter.items() if isinstance(i, shapes.NodeItem)],
             "lines": sorted([i for i in self.painter.items() if isinstance(i, shapes.Line)], key = lambda x: 1 if x.refLine else 0),
-            "landscape": self.landscape
+            "landscape": self.landscape,
+            "streamTable": [self.streamTable, (self.streamTableRect.pos().x(), self.streamTable.pos().y())] if self.streamTable else False
         }
     
     def __setstate__(self, dict):
@@ -159,7 +160,7 @@ class canvas(customView):
             graphic.updateLineGripItem()
             graphic.updateSizeGripItem()
             for gripitem in item['lineGripItems']:
-                shapeGrips[gripitem[0]] = (graphic, gripitem[1])
+                memMap[gripitem[0]] = (graphic, gripitem[1])
             if item['label']:
                 graphicLabel = shapes.ItemLabel(pos = QPointF(*item['label']['pos']), parent = graphic)
                 graphicLabel.__setstate__(item['label'])
@@ -167,19 +168,19 @@ class canvas(customView):
         
         for item in dict['lines']:
             line = shapes.Line(QPointF(*item['startPoint']), QPointF(*item['endPoint']))
-            lines[item['id']] = line
+            memMap[item['id']] = line
             line.__setstate__(dict = item)
             self.painter.addItem(line)
-            graphic, index = shapeGrips[item['startGripItem']]
+            graphic, index = memMap[item['startGripItem']]
             line.startGripItem = graphic.lineGripItems[index]
             graphic.lineGripItems[index].line = line
             if item['endGripItem']:                
-                graphic, index = shapeGrips[item['endGripItem']]
+                graphic, index = memMap[item['endGripItem']]
                 line.endGripItem = graphic.lineGripItems[index]
                 graphic.lineGripItems[index].line = line
             else:
-                line.refLine = lines[item['refLine']]
-                lines[item['refLine']].midLines.append(line)
+                line.refLine = memMap[item['refLine']]
+                memMap[item['refLine']].midLines.append(line)
                 line.refIndex = item['refIndex']
             for label in item['label']:
                 labelItem = shapes.LineLabel(QPointF(*label['pos']), line)
@@ -189,8 +190,12 @@ class canvas(customView):
             line.updateLine()
             line.addGrabber()
             
-        shapeGrips.clear()
-        lines.clear()
+        if dict['streamTable']:
+            table = streamTable(self.labelItems, self)
+            self.addStreamTable(QPointF(*dict['streamTable'][1]), table)
+            table.__setstate__(dict['streamTable'][0])
+            
+        memMap.clear()
         self.painter.advance()
         
         
