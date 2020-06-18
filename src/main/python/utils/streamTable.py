@@ -47,6 +47,7 @@ class streamTableModel(QAbstractTableModel):
         int = int if int else self.rowCount()+1
         self.beginInsertColumns(QModelIndex(), int, int)
         self.list.insert(int, item)
+        item.nameChanged.connect(self.parent().repaint)
         self.endInsertColumns()
         self.updateEvent.emit()
     
