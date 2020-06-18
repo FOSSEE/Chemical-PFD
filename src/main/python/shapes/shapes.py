@@ -244,7 +244,12 @@ class LineGripItem(QGraphicsPathItem):
 
     @property
     def m_location(self):
-        return directionsEnum[(self._m_location + self.parentItem().rotation)%4]
+        index = (self._m_location + self.parentItem().rotation)
+        if index%2:
+            index = (index + 2*self.parentItem().flipH)%4
+        else:
+            index = (index + 2*self.parentItem().flipV)%4
+        return directionsEnum[index]
     
     @m_location.setter
     def m_location(self, location):
@@ -451,7 +456,55 @@ class NodeItem(QGraphicsSvgItem):
         self.sizeGripItems = []
         self.label = None
         self._rotation = 0
+        self.flipState = [False, False]
+    
+    @property
+    def flipH(self):
+        return self.flipState[0]
+    
+    @property
+    def flipV(self):
+        return self.flipState[1]
+    
+    @flipH.setter
+    def flipH(self, state):
+        transform = QTransform()
+        if self.flipV and state:
+            self.flipState = [False, False]
+            self.rotation = self.rotation % 4
+            transform.scale(1, 1)
+        else:
+            self.flipState[0] = state
+            if state:
+                transform.scale(-1, 1)
+            else:
+                transform.scale(1, 1)
+        self.setTransform(transform)
+        for i in self.lineGripItems:
+            i.updatePosition()
+            for j in i.lines:
+                j.createPath()
 
+    @flipV.setter
+    def flipV(self, state):
+        transform = QTransform()
+        if self.flipH and state:
+            self.flipState = [False, False]
+            self.rotation = self.rotation % 4
+            transform.scale(1, 1)
+        else:
+            self.flipState[1] = state
+            transform = QTransform()
+            if state:
+                transform.scale(1, -1)
+            else:
+                transform.scale(1, 1)
+        self.setTransform(transform)
+        for i in self.lineGripItems:
+            i.updatePosition()
+            for j in i.lines:
+                j.createPath()
+            
     @property
     def rotation(self):
         return self._rotation
@@ -604,6 +657,10 @@ class NodeItem(QGraphicsSvgItem):
         # create a menu and add action
         contextMenu = QMenu()
         addLableAction = contextMenu.addAction("add Label")  # add action for text label
+        contextMenu.addAction("Rotate right", lambda : setattr(self, "rotation", self.rotation + 1))
+        contextMenu.addAction("Rotate left", lambda : setattr(self, "rotation", self.rotation - 1))
+        contextMenu.addAction("Flip Horizontally", lambda: setattr(self, "flipH", not self.flipH))
+        contextMenu.addAction("Flip Vertically", lambda: setattr(self, "flipV", not self.flipV))
         action = contextMenu.exec_(event.screenPos())
         # check for label action and add text label as child
         if action == addLableAction:
