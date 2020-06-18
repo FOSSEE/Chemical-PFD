@@ -15,8 +15,8 @@ from utils.app import fileImporter
 directionsEnum = [
     "top",
     "right",
-    "left",
-    "bottom"
+    "bottom",
+    "left"
 ]
 
 orientationEnum = [
