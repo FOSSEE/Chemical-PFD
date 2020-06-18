@@ -174,11 +174,11 @@ class canvas(customView):
             self.painter.addItem(line)
             graphic, index = memMap[item['startGripItem']]
             line.startGripItem = graphic.lineGripItems[index]
-            graphic.lineGripItems[index].line = line
+            graphic.lineGripItems[index].lines.append(line)
             if item['endGripItem']:                
                 graphic, index = memMap[item['endGripItem']]
                 line.endGripItem = graphic.lineGripItems[index]
-                graphic.lineGripItems[index].line = line
+                graphic.lineGripItems[index].lines.append(line)
             else:
                 line.refLine = memMap[item['refLine']]
                 memMap[item['refLine']].midLines.append(line)
