@@ -466,44 +466,26 @@ class NodeItem(QGraphicsSvgItem):
     def flipV(self):
         return self.flipState[1]
     
-    @flipH.setter
-    def flipH(self, state):
+    def flip(self):
         transform = QTransform()
-        if self.flipV and state:
-            self.flipState = [False, False]
-            self.rotation = self.rotation % 4
-            transform.scale(1, 1)
-        else:
-            self.flipState[0] = state
-            if state:
-                transform.scale(-1, 1)
-            else:
-                transform.scale(1, 1)
+        h = -1 if self.flipH else 1
+        w = -1 if self.flipV else 1
+        transform.scale(h, w)
         self.setTransform(transform)
         for i in self.lineGripItems:
             i.updatePosition()
             for j in i.lines:
                 j.createPath()
+                
+    @flipH.setter
+    def flipH(self, state):
+        self.flipState[0] = state
+        self.flip()
 
     @flipV.setter
     def flipV(self, state):
-        transform = QTransform()
-        if self.flipH and state:
-            self.flipState = [False, False]
-            self.rotation = self.rotation % 4
-            transform.scale(1, 1)
-        else:
-            self.flipState[1] = state
-            transform = QTransform()
-            if state:
-                transform.scale(1, -1)
-            else:
-                transform.scale(1, 1)
-        self.setTransform(transform)
-        for i in self.lineGripItems:
-            i.updatePosition()
-            for j in i.lines:
-                j.createPath()
+        self.flipState[1] = state
+        self.flip()
             
     @property
     def rotation(self):
