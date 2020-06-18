@@ -275,9 +275,9 @@ QHeaderView::section {
     background-color: white;
 }
 
-QHeaderView::section:first{
+/* QHeaderView::section:first{
     border-bottom: 1px solid black;
-}
+} */
 
 QTableView {
     border: none;

@@ -93,6 +93,7 @@ class streamTable(QTableView):
         self.model.updateEvent.connect(self.resizeHandler)
         
         self.setItemDelegateForRow(0, drawBorderDelegate(self))
+        self.borderThickness[0] = True
         
     def mousePressEvent(self, event):
         if event.button() == Qt.RightButton:
@@ -109,11 +110,12 @@ class streamTable(QTableView):
     
     def changeRowBorder(self, row):
         if self.borderThickness[row]:
-            self.borderThickness[row] = False
+            self.borderThickness.pop(row)
             self.setItemDelegateForRow(row, QStyledItemDelegate(self))
         else:
             self.borderThickness[row] = True
             self.setItemDelegateForRow(row, drawBorderDelegate(self))
+        self.verticalHeader().repaint()
     
     def labelChange(self, index):
         newName, bool = QInputDialog.getText(self, "Change Property Name", "Enter new name", 
@@ -181,3 +183,12 @@ class verticalHeader(QHeaderView):
         index = self.logicalIndexAt(event.pos())
         self.labelChangeRequested.emit(index)
         return super().mouseDoubleClickEvent(event)
+    
+    def paintSection(self, painter, option, index):
+        painter.save()
+        super(verticalHeader, self).paintSection(painter, option, index)
+        painter.restore()
+        if self.parentWidget().borderThickness[index]:
+            rect = option
+            painter.drawLine(rect.bottomLeft(), rect.bottomRight())  
+            painter.setPen(QPen(Qt.black, 1, Qt.SolidLine))       
