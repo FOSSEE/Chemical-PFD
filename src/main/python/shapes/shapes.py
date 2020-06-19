@@ -244,6 +244,8 @@ class LineGripItem(QGraphicsPathItem):
 
     @property
     def m_location(self):
+        if self.parentItem().__class__ == Line:
+            return directionsEnum[self._m_location]
         index = (self._m_location + self.parentItem().rotation)
         if index%2:
             index = (index + 2*self.parentItem().flipH)%4
@@ -466,26 +468,27 @@ class NodeItem(QGraphicsSvgItem):
     def flipV(self):
         return self.flipState[1]
     
-    def flip(self):
+    def updateTransformation(self):
         transform = QTransform()
         h = -1 if self.flipH else 1
         w = -1 if self.flipV else 1
+        transform.rotate(90*self.rotation)
         transform.scale(h, w)
         self.setTransform(transform)
+        self.setTransform(transform)
         for i in self.lineGripItems:
+            i.setTransform(transform)
             i.updatePosition()
-            for j in i.lines:
-                j.createPath()
                 
     @flipH.setter
     def flipH(self, state):
         self.flipState[0] = state
-        self.flip()
+        self.updateTransformation()
 
     @flipV.setter
     def flipV(self, state):
         self.flipState[1] = state
-        self.flip()
+        self.updateTransformation()
             
     @property
     def rotation(self):
@@ -494,14 +497,7 @@ class NodeItem(QGraphicsSvgItem):
     @rotation.setter
     def rotation(self, rotation):
         self._rotation = rotation % 4
-        transform = QTransform()
-        transform.rotate(90*rotation)
-        self.setTransform(transform)
-        for i in self.lineGripItems:
-            i.setTransform(transform)
-            i.updatePosition()
-            for j in i.lines:
-                j.createPath()
+        self.updateTransformation()
         
     def boundingRect(self):
         """Overrides QGraphicsSvgItem's boundingRect() virtual public function and
