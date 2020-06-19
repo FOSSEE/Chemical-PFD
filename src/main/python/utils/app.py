@@ -3,11 +3,13 @@ Declare fbs application so that it can be imported in other modules.
 """
 
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
-from PyQt5.QtCore import QSettings, pyqtProperty
+from PyQt5.QtCore import QSettings, pyqtProperty, QResource
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget
 from json import JSONEncoder, dumps, loads, dump, load
 from os.path import join
+
+from resources import resources
 
 app = ApplicationContext()
 settings = QSettings(QSettings.IniFormat, QSettings.UserScope ,"FOSSEE", "Chemical-PFD")

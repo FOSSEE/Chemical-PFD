@@ -38,7 +38,7 @@ QLineEdit:focus{
     border-color: #7cabf9;
 }
 TabBarPlus {
-    /* qpropery-drawBase: 0; */
+    qproperty-drawBase: 0;
     left: 5px;
     background-color: transparent;
     font-size: 15px;
@@ -49,6 +49,7 @@ TabBarPlus:focus {
 }
 
 TabBarPlus::close-button {
+    background-image: url(:/closeIcon);
     padding: 0px;
     margin: 0px;
     border-radius: 2px;
@@ -260,9 +261,10 @@ CustomTabWidget CustomView {
     padding: 5px;
     border-radius: 2px;
 }
-/* QHeaderView {
+
+QHeaderView {
     qproperty-defaultAlignment: AlignHCenter;
-} */
+}
 
 QHeaderView::section {
     padding: 4px;
