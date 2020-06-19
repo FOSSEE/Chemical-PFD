@@ -37,40 +37,39 @@ QLineEdit {
 QLineEdit:focus{
     border-color: #7cabf9;
 }
-tabBarPlus {
-    qproperty-drawBase: 0;
+TabBarPlus {
+    /* qpropery-drawBase: 0; */
     left: 5px;
     background-color: transparent;
     font-size: 15px;
 }
 
-tabBarPlus:focus {
+TabBarPlus:focus {
     border: 0px transparent black;
 }
 
-tabBarPlus::close-button {
+TabBarPlus::close-button {
     padding: 0px;
     margin: 0px;
     border-radius: 2px;
-    background-image: url("src/main/resources/base/ui/close.png");
     background-position: center center;
     background-repeat: none;
 }
 
-tabBarPlus::close-button:hover {
+TabBarPlus::close-button:hover {
     background-color: #006666;
 }
 
-tabBarPlus::close-button:pressed {
+TabBarPlus::close-button:pressed {
     background-color: #adc5ed;
 }
 
-tabBarPlus::scroller { /* the width of the scroll buttons */
+TabBarPlus::scroller { /* the width of the scroll buttons */
     width: 20px;
 }
 
-tabBarPlus::tab:top,
-tabBarPlus::tab:bottom {
+TabBarPlus::tab:top,
+TabBarPlus::tab:bottom {
     color: black;
     border: 1px solid #b6b6b6;
     border-left-color: #e6e6e6;
@@ -80,61 +79,60 @@ tabBarPlus::tab:bottom {
     width: 100px;
 }
 
-tabBarPlus::tab:top:first,
-tabBarPlus::tab:bottom:first {
+TabBarPlus::tab:top:first,
+TabBarPlus::tab:bottom:first {
     border-top-left-radius: 6px;
     border-bottom-left-radius: 6px;
 }
 
-tabBarPlus::tab:top:last,
-tabBarPlus::tab:bottom:last {
+TabBarPlus::tab:top:last,
+TabBarPlus::tab:bottom:last {
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
     border-right-width: 1px;
 }
 
-tabBarPlus::tab:top:selected,
-tabBarPlus::tab:bottom:selected {
+TabBarPlus::tab:top:selected,
+TabBarPlus::tab:bottom:selected {
     color: white;
     background-color: qlineargradient(spread:pad, x1:1, y1:0.545, x2:1, y2:0, stop:0 #00b0b0, stop:1 #00BaBa);
     border-color: #006666;
 }
 
-tabBarPlus::tab:top:!selected:hover,
-tabBarPlus::tab:bottom:!selected:hover {
+TabBarPlus::tab:top:!selected:hover,
+TabBarPlus::tab:bottom:!selected:hover {
     color: black;
 }
 
-tabBarPlus::tab:top:only-one ,
-tabBarPlus::tab:bottom:only-one {
+TabBarPlus::tab:top:only-one ,
+TabBarPlus::tab:bottom:only-one {
     border: 1px solid #1b3774;
     border-radius: 6px;
 }
-fileWindow {
+FileWindow {
     border-width: 2px;
     outline: 0;
     color: white;
     background-color: white;
 }
-fileWindow::title{
+FileWindow::title{
     color: black;
     border-width: 0px;
     text-align: center;
     background-color: white;
 }
-fileWindow::close-button {
+FileWindow::close-button {
     padding: 0px;
     margin: 0px;
     border-radius: 2px;
-    background-image: url("src/main/resources/base/ui/close.png");
     background-position: center center;
     background-repeat: none;
 }
-fileWindow::close-button:hover {
+FileWindow::close-button:hover {
     background-color: #004646;
 }
 
-fileWindow::close-button:pressed {
+FileWindow::close-button:pressed {
     background-color: #adc5ed;
 }
 
@@ -156,8 +154,6 @@ QDockWidget::float-button {
     background: transparent;
     subcontrol-origin: padding;
     subcontrol-position: right center;
-}
-QDockWidget::float-button {
     right: 4px;
 }
 
@@ -166,7 +162,6 @@ QDockWidget::float-button:hover {
 }
 
 QDockWidget::float-button:pressed {
-    /*padding: 1px -1px -1px 1px;*/
     background-color: #e0e0e0;
 }
 
@@ -210,7 +205,7 @@ QToolButton:checked {
     border-color: #004646;
 }
 
-sectionLabel{
+SectionLabel{
     border-color: #00B8B8;
     border-style: solid;
     border-width: 0px 0px 2px 0px;
@@ -222,11 +217,11 @@ sectionLabel{
     color: gray;
 }
 
-sectionLabel:first{
+SectionLabel:first{
     margin-top: 0px;
 }
 
-customView QPushButton{
+CustomView QPushButton{
     background-color: rgba(214, 54, 40, 50%);
     border: 1px dashed white;
     border-radius: 2px;
@@ -235,21 +230,21 @@ customView QPushButton{
     padding: 1px 2px 3px 3px;
     color: rgba(255, 255, 255, 50%);
 }
-customView QPushButton:Hover{
+CustomView QPushButton:Hover{
     background-color: rgba(214, 54, 40, 90%);  
 }
 
-customTabWidget QPushButton{
+CustomTabWidget QPushButton{
     background: rgba(230, 230, 227, 0%);
     padding: 1px;
     border: 0px solid #E6E6E3;
     border-radius: 10px;
 }
-customTabWidget QPushButton:hover{
+CustomTabWidget QPushButton:hover{
     background: rgba(230, 230, 227, 60%);
 }
 
-customTabWidget::pane { 
+CustomTabWidget::pane { 
     margin: 0px,1px,1px,1px;
     border: 2px solid #E6E6E3;
     border-radius: 7px;
@@ -260,24 +255,20 @@ canvas{
     bottom: -20px;
 }
 
-customTabWidget customView {
+CustomTabWidget CustomView {
     border-width: 0px;
     padding: 5px;
     border-radius: 2px;
 }
-QHeaderView {
+/* QHeaderView {
     qproperty-defaultAlignment: AlignHCenter;
-}
+} */
 
 QHeaderView::section {
     padding: 4px;
     border-style: none;
     background-color: white;
 }
-
-/* QHeaderView::section:first{
-    border-bottom: 1px solid black;
-} */
 
 QTableView {
     border: none;
