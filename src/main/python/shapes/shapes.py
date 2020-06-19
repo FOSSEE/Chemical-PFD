@@ -634,15 +634,12 @@ class NodeItem(QGraphicsSvgItem):
         """
         # create a menu and add action
         contextMenu = QMenu()
-        addLableAction = contextMenu.addAction("add Label")  # add action for text label
-        contextMenu.addAction("Rotate right", lambda : setattr(self, "rotation", self.rotation + 1))
-        contextMenu.addAction("Rotate left", lambda : setattr(self, "rotation", self.rotation - 1))
+        contextMenu.addAction("Add Label", lambda : setattr(self, "label", ItemLabel(self)))
+        contextMenu.addAction("Rotate right(E)", lambda : setattr(self, "rotation", self.rotation + 1))
+        contextMenu.addAction("Rotate left(Q)", lambda : setattr(self, "rotation", self.rotation - 1))
         contextMenu.addAction("Flip Horizontally", lambda: setattr(self, "flipH", not self.flipH))
         contextMenu.addAction("Flip Vertically", lambda: setattr(self, "flipV", not self.flipV))
         action = contextMenu.exec_(event.screenPos())
-        # check for label action and add text label as child
-        if action == addLableAction:
-            self.label = ItemLabel(self)  # text label as child
 
     def __getstate__(self):
         return {
