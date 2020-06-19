@@ -2,7 +2,7 @@ import sys
 
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtCore import QObject, Qt, pyqtSignal, QSize, QPoint
-from PyQt5.QtGui import QBrush, QColor, QImage, QPainter, QPalette, QPen
+from PyQt5.QtGui import QBrush, QColor, QImage, QPainter, QPalette, QPen, QKeySequence
 from PyQt5.QtWidgets import (QComboBox, QFileDialog, QFormLayout, QVBoxLayout,
                              QHBoxLayout, QLabel, QMainWindow, QMenu,
                              QPushButton, QWidget, QMdiArea, QSplitter, QGraphicsItem)
@@ -29,19 +29,29 @@ class appWindow(QMainWindow):
         # self.mainWidget.setObjectName("Main Widget")
         
         self.menuFile = titleMenu.addMenu('File') #File Menu
-        self.menuFile.addAction("New", self.newProject)
-        self.menuFile.addAction("Open", self.openProject)
-        self.menuFile.addAction("Save", self.saveProject)
+        newAction = self.menuFile.addAction("New", self.newProject)
+        openAction = self.menuFile.addAction("Open", self.openProject)
+        saveAction = self.menuFile.addAction("Save", self.saveProject)
+        
+        newAction.setShortcut(QKeySequence.New)
+        openAction.setShortcut(QKeySequence.Open)
+        saveAction.setShortcut(QKeySequence.Save)
         
         self.menuEdit = titleMenu.addMenu('Edit')
-        self.undo = self.menuEdit.addAction("Undo", lambda x=self: x.activeScene.painter.undoAction.trigger())
-        self.redo = self.menuEdit.addAction("Redo", lambda x=self: x.activeScene.painter.redoAction.trigger())
+        undoAction = self.undo = self.menuEdit.addAction("Undo", lambda x=self: x.activeScene.painter.undoAction.trigger())
+        redoAction = self.redo = self.menuEdit.addAction("Redo", lambda x=self: x.activeScene.painter.redoAction.trigger())
+        
+        undoAction.setShortcut(QKeySequence.Undo)
+        redoAction.setShortcut(QKeySequence.Redo)
         
         self.menuEdit.addAction("Show Undo Stack", lambda x=self: x.activeScene.painter.createUndoView(self) )
         
         self.menuGenerate = titleMenu.addMenu('Generate') #Generate menu
-        self.menuGenerate.addAction("Image", self.saveImage)
-        self.menuGenerate.addAction("Report", self.generateReport)
+        imageAction = self.menuGenerate.addAction("Image", self.saveImage)
+        reportAction = self.menuGenerate.addAction("Report", self.generateReport)
+        
+        imageAction.setShortcut(QKeySequence("Ctrl+P"))
+        reportAction.setShortcut(QKeySequence("Ctrl+R"))
         
         self.mdi = QMdiArea(self) #create area for files to be displayed
         self.mdi.setObjectName('mdi area')
@@ -185,25 +195,7 @@ class appWindow(QMainWindow):
     def keyPressEvent(self, event):
         #overload key press event for custom keyboard shortcuts
         if event.modifiers() & Qt.ControlModifier:
-            if event.key() == Qt.Key_N:
-                self.newProject()
-                
-            elif event.key() == Qt.Key_S:
-                self.saveProject()
-                
-            elif event.key() == Qt.Key_O:
-                self.openProject()
-                
-            elif event.key() == Qt.Key_W:
-                self.close()
-                
-            elif event.key() == Qt.Key_P:
-                if Qt.AltModifier:
-                    self.saveImage()
-                else:
-                    self.generateReport()
-            
-            elif event.key() == Qt.Key_A:
+            if event.key() == Qt.Key_A:
                 #todo implement selectAll
                 for item in self.mdi.activeSubWindow().tabber.currentWidget().items:
                     item.setSelected(True)

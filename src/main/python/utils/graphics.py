@@ -22,9 +22,10 @@ class customView(QGraphicsView):
         self.setAcceptDrops(True) #sets ability to accept drops
         if scene:
             #create necessary undo redo actions to accept keyboard shortcuts
-            self.addAction(scene.undoAction)
-            self.addAction(scene.redoAction)
-            self.addAction(scene.deleteAction)
+            # self.addAction(scene.undoAction)
+            # self.addAction(scene.redoAction)
+            # self.addAction(scene.deleteAction)
+            pass
     
     #following four functions are required to be overridden for drag-drop functionality
     def dragEnterEvent(self, QDragEnterEvent):
