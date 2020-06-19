@@ -77,8 +77,8 @@ class appWindow(QMainWindow):
                 graphic = getattr(shapes, object['object'])(*map(lambda x: int(x) if x.isdigit() else x, object['args']))
                 # graphic.setPen(QPen(Qt.black, 2))
                 # graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
-                currentDiagram.addItemPlus(graphic) 
                 graphic.setPos(20, 20)
+                currentDiagram.addItemPlus(graphic) 
 
     def newProject(self):
         #call to create a new file inside mdi area
