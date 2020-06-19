@@ -26,7 +26,7 @@ class addCommand(QUndoCommand):
         self.scene = scene
         self.diagramItem = addItem
         self.itemPos = addItem.pos()
-        self.setText(f"Add {objectName(self.diagramItem)}")
+        self.setText(f"Add {objectName(self.diagramItem)} at {self.itemPos.x()}, {self.itemPos.y()}")
         
     def undo(self):
         self.scene.removeItem(self.diagramItem)
