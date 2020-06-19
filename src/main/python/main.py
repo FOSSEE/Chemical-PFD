@@ -212,7 +212,16 @@ class appWindow(QMainWindow):
             else:
                 return
             event.accept()
-
+        elif event.key() == Qt.Key_Q:
+            if self.mdi.activeSubWindow() and self.mdi.activeSubWindow().tabber.currentWidget():
+                for item in self.mdi.activeSubWindow().tabber.currentWidget().painter.selectedItems():
+                    item.rotation -= 1
+                    
+        elif event.key() == Qt.Key_E:
+            if self.mdi.activeSubWindow() and self.mdi.activeSubWindow().tabber.currentWidget():
+                for item in self.mdi.activeSubWindow().tabber.currentWidget().painter.selectedItems():
+                    item.rotation += 1
+                    
         
         
 if __name__ == '__main__':      # 1. Instantiate ApplicationContext
