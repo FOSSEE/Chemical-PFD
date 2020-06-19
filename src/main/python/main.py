@@ -45,6 +45,8 @@ class appWindow(QMainWindow):
         redoAction.setShortcut(QKeySequence.Redo)
         
         self.menuEdit.addAction("Show Undo Stack", lambda x=self: x.activeScene.painter.createUndoView(self) )
+        self.menuEdit.addSeparator()
+        self.menuEdit.addAction("Add new symbols", self.addSymbolWindow)
         
         self.menuGenerate = titleMenu.addMenu('Generate') #Generate menu
         imageAction = self.menuGenerate.addAction("Image", self.saveImage)
@@ -89,7 +91,11 @@ class appWindow(QMainWindow):
                 # graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
                 graphic.setPos(20, 20)
                 currentDiagram.addItemPlus(graphic) 
-
+    
+    def addSymbolWindow(self):
+        from utils.custom import ShapeDialog
+        ShapeDialog(self).exec()
+        
     def newProject(self):
         #call to create a new file inside mdi area
         project = FileWindow(self.mdi)
