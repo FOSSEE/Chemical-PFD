@@ -4,14 +4,14 @@ from PyQt5.QtWidgets import (QFileDialog, QApplication, QHBoxLayout, QMenu,
                              QTabWidget, QWidget, QSpacerItem, QStyle, QGraphicsProxyWidget)
 
 from . import dialogs
-from .graphics import customView, customScene
+from .graphics import CustomView, CustomScene
 from .data import paperSizes, ppiList, sheetDimensionList
 from .app import memMap
 from .streamTable import streamTable, moveRect
 
 import shapes
 
-class canvas(customView):
+class canvas(CustomView):
     """
     Defines the work area for a single sheet. Contains a QGraphicScene along with necessary properties
     for context menu and dialogs.
@@ -30,7 +30,7 @@ class canvas(customView):
         # when we will draw items on this, this might be changed if QGraphicScene is subclassed.
         
         #set layout and background color
-        self.painter = customScene()
+        self.painter = CustomScene()
         self.painter.labelAdded.connect(self.updateStreamTable)  
         self.painter.setBackgroundBrush(QBrush(Qt.white)) #set white background
         self.setScene(self.painter)

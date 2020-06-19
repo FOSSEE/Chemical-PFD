@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (QComboBox, QFileDialog, QFormLayout, QVBoxLayout,
                              QPushButton, QWidget, QMdiArea, QSplitter, QGraphicsItem)
 
 from utils.canvas import canvas
-from utils.fileWindow import fileWindow
+from utils.fileWindow import FileWindow
 from utils.data import ppiList, sheetDimensionList
 from utils import dialogs
 from utils.toolbar import toolbar
@@ -92,7 +92,7 @@ class appWindow(QMainWindow):
 
     def newProject(self):
         #call to create a new file inside mdi area
-        project = fileWindow(self.mdi)
+        project = FileWindow(self.mdi)
         project.setObjectName("New Project")
         self.mdi.addSubWindow(project)
         if not project.tabList: # important when unpickling a file instead
@@ -110,7 +110,7 @@ class appWindow(QMainWindow):
             for files in name[0]:
                 with open(files,'r') as file:
                     projectData = load(file)
-                    project = fileWindow(self.mdi)
+                    project = FileWindow(self.mdi)
                     self.mdi.addSubWindow(project)
                     project.__setstate__(projectData)
                     project.resizeHandler()

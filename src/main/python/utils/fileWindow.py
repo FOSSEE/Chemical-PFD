@@ -5,14 +5,14 @@ from PyQt5.QtWidgets import (QFileDialog, QHBoxLayout,
                              QSplitter, QWidget, QStyle, QSizePolicy)
 from os import path
 from . import dialogs
-from .graphics import customView
+from .graphics import CustomView
 from .canvas import canvas
-from .tabs import customTabWidget
+from .tabs import CustomTabWidget
 from .undo import resizeCommand
 from .app import dump, loads, JSON_Typer, version
 
 
-class fileWindow(QMdiSubWindow):
+class FileWindow(QMdiSubWindow):
     """
     This defines a single file, inside the application, consisting of multiple tabs that contain
     canvases. Pre-Defined so that a file can be instantly created without defining the structure again.
@@ -21,14 +21,14 @@ class fileWindow(QMdiSubWindow):
     tabChangeEvent = pyqtSignal()
     
     def __init__(self, parent = None, title = 'New Project', size = 'A0', ppi = '72'):
-        super(fileWindow, self).__init__(parent)
+        super(FileWindow, self).__init__(parent)
         self._sideViewTab = None
         self.index = None
         
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         #Uses a custom QTabWidget that houses a custom new Tab Button, used to house the seperate 
         # diagrams inside a file
-        self.tabber = customTabWidget(self)
+        self.tabber = CustomTabWidget(self)
         self.tabber.setObjectName(title) #store title as object name for pickling
         self.tabber.tabCloseRequested.connect(self.closeTab) # Show save alert on tab close
         self.tabber.currentChanged.connect(self.changeTab) # placeholder just to detect tab change
@@ -67,7 +67,7 @@ class fileWindow(QMdiSubWindow):
     def createSideViewArea(self):
         #creates the side view widgets and sets them to invisible
         # self.splitter = QSplitter(Qt.Vertical ,self)
-        self.sideView = customView(parent = self)
+        self.sideView = CustomView(parent = self)
         self.sideView.setInteractive(False)
         self.sideViewCloseButton = QPushButton('×', self.sideView)
         self.sideViewCloseButton.setObjectName("sideViewCloseButton")

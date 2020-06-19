@@ -7,16 +7,16 @@ from .dialogs import showUndoDialog
 
 import shapes
 
-class customView(QGraphicsView):
+class CustomView(QGraphicsView):
     """
     Defines custom QGraphicsView with zoom features and drag-drop accept event, overriding wheel event
     """
     
     def __init__(self, scene = None, parent=None):
         if scene is not None: #overloaded constructor
-            super(customView, self).__init__(scene, parent)
+            super(CustomView, self).__init__(scene, parent)
         else:
-            super(customView, self).__init__(parent)
+            super(CustomView, self).__init__(parent)
         self._zoom = 1
         self.setDragMode(True) #sets pannable using mouse
         self.setAcceptDrops(True) #sets ability to accept drops
@@ -67,7 +67,7 @@ class customView(QGraphicsView):
                     self.zoom += QWheelEvent.angleDelta().y()
             QWheelEvent.accept() # accept event so that scrolling doesnt happen simultaneously
         else:
-            return super(customView, self).wheelEvent(QWheelEvent) # scroll if ctrl not pressed
+            return super(CustomView, self).wheelEvent(QWheelEvent) # scroll if ctrl not pressed
     
     @property
     def zoom(self):
@@ -81,14 +81,14 @@ class customView(QGraphicsView):
         self._zoom = value
         self.scale(self.zoom / temp, self.zoom / temp)
         
-class customScene(QGraphicsScene):
+class CustomScene(QGraphicsScene):
     """
     Extends QGraphicsScene with undo-redo functionality
     """
     labelAdded = pyqtSignal(shapes.QGraphicsItem)
     
     def __init__(self, *args, parent=None):
-        super(customScene, self).__init__(*args,  parent=parent)
+        super(CustomScene, self).__init__(*args,  parent=parent)
         
         self.undoStack = QUndoStack(self) #Used to store undo-redo moves
         self.createActions() #creates necessary actions that need to be called for undo-redo
@@ -133,7 +133,7 @@ class customScene(QGraphicsScene):
         if self.movingItem and event.button() == Qt.LeftButton:
             self.oldPos = self.movingItem.pos() #if left click is held, then store old pos
         self.clearSelection() #clears selected items
-        return super(customScene, self).mousePressEvent(event)
+        return super(CustomScene, self).mousePressEvent(event)
     
     def mouseReleaseEvent(self, event):
         # overloaded mouse release event to check if an item was moved
@@ -142,4 +142,4 @@ class customScene(QGraphicsScene):
                 #if item pos had changed, when mouse was realeased, emit itemMoved signal
                 self.itemMoved(self.movingItem, self.oldPos)
             self.movingItem = None #clear movingitem reference
-        return super(customScene, self).mouseReleaseEvent(event)
+        return super(CustomScene, self).mouseReleaseEvent(event)
