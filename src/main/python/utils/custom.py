@@ -279,7 +279,7 @@ class OutputBox(QTextEdit):
         self.setFontWeight(10)
         self.setHtml(text)
         
-if __name__ == '__main__':      # 1. Instantiate ApplicationContext
+def main():     # 1. Instantiate ApplicationContext
     #if app is launched directly
     from .app import app
     import sys

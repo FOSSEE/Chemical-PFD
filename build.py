@@ -1,9 +1,11 @@
 from fbs.cmdline import command
 from os.path import dirname
 import subprocess
-
+import sys
 import fbs.cmdline
 import fbs
+
+sys.path.append('src/main/python/')
 
 @command
 def compileResources():
@@ -11,7 +13,8 @@ def compileResources():
 
 @command
 def symbolGen():
-    exec(open('src/main/python/utils/custom.py').read())
+    from utils import custom
+    custom.main()
     
 @command
 def build():
