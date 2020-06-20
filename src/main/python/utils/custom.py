@@ -1,15 +1,17 @@
-from PyQt5.QtCore import QRectF, Qt
-from PyQt5.QtGui import (
-    QBrush, QImage, QPainter, QPainterPath, QPen, QPixmap, QTransform)
+from PyQt5.QtCore import QRectF, Qt, QSize
+from PyQt5.QtGui import (QBrush, QIcon, QImage, QPainter, QPainterPath, QPen,
+                         QPixmap, QTransform)
 from PyQt5.QtSvg import QGraphicsSvgItem
 from PyQt5.QtWidgets import (QBoxLayout, QDialog, QFileDialog,
                              QGraphicsEllipseItem, QGraphicsItem,
                              QGraphicsScene, QGraphicsView, QGridLayout,
-                             QLabel, QLineEdit, QPushButton, QInputDialog, QTextEdit)
+                             QInputDialog, QLabel, QLineEdit, QPushButton,
+                             QTextEdit)
 
 from shapes import SizeGripItem, directionsEnum
 
 from .app import fileImporter
+
 
 class ShapeDialog(QDialog):
     
@@ -78,9 +80,9 @@ class ShapeDialog(QDialog):
         self.setLayout(layout)
         
     def importSVG(self):
-        name = QFileDialog.getOpenFileName(self, 'Open SVG File', '', 'Scalable Vector Graphics (*svg)')
-        if name:
-            self.graphic = QGraphicsSvgItem(name[0])
+        self.name = QFileDialog.getOpenFileName(self, 'Open SVG File', '', 'Scalable Vector Graphics (*svg)')
+        if self.name:
+            self.graphic = QGraphicsSvgItem(self.name[0])
             self.graphic.setZValue(-1)
             self.painter.addItem(self.graphic)
     
@@ -102,15 +104,12 @@ class ShapeDialog(QDialog):
         
         graphicRect = self.graphic.boundingRect()
         
-        image = QImage(64, 64, QImage.Format_ARGB32)
-        printer = QPainter(image)
-        self.graphic.renderer().render(printer, graphicRect)
-        printer.end()
+        QIcon
         
         #save file
         name = QFileDialog.getSaveFileName(self, 'Save Icon', className, 'PNG (*.png)')
         if name:
-            image.save(name[0], "PNG")
+            QIcon(self.name[0]).pixmap(QSize(64, 64)).toImage().save(name[0])
         else:
             return
         
@@ -118,20 +117,19 @@ class ShapeDialog(QDialog):
         x, y, w, h = graphicRect.getRect()
         for i in self.grips:
             pos = i.pos()
-            entry = [abs((x-pos.x())/w), abs((y-pos.y())/h), i.location]
+            entry = [abs((x-pos.x())/w)*100, abs((y-pos.y())/h)*100, i.location]
             if isinstance(i, gripRect):
                 if i.location in ["top", "bottom"]:
-                    entry.append(h)
+                    entry.append(i.height)
                 else:
-                    entry.append(w)
+                    entry.append(i.width)
             gripList.append(entry)
 
         temp = QDialog(self)
         tempLayout = QBoxLayout(QBoxLayout.TopToBottom)
-        output = OutputBox(temp, f"""
-        class {className}(NodeItem):
+        output = OutputBox(temp, f"""class {className}(NodeItem):
             def __init__(self):
-                super({className}, self).__init__("svg/{category}/{name[0]}")
+                super({className}, self).__init__("svg/{category}/{str.split(name[0], "/")[-1][:-4]}")
             self.grips = {gripList}
         """)
         tempLayout.addWidget(output)
