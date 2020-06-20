@@ -125,13 +125,31 @@ class ShapeDialog(QDialog):
                     entry.append(i.width)
             gripList.append(entry)
 
+
+        grips = ",\n    ".join([str(i) for i in gripList]) if gripList else ""
+        if grips:
+            grips = "self.grips = [" + grips + "]\n"
         temp = QDialog(self)
         tempLayout = QBoxLayout(QBoxLayout.TopToBottom)
-        output = OutputBox(temp, f"""class {className}(NodeItem):
-            def __init__(self):
-                super({className}, self).__init__("svg/{category}/{str.split(name[0], "/")[-1][:-4]}")
-            self.grips = {gripList}
-        """)
+        output = OutputBox(temp, f"""
+<b> Class Definition:</b>
+<pre>
+class {className}(NodeItem):
+    def __init__(self):
+        super({className}, self).__init__("svg/{category}/{str.split(name[0], "/")[-1][:-4]}")
+    {grips}
+</pre>
+<b> Items.json entry:</b>
+<pre>
+"{category}": {{
+    "{itemName}": {{
+        "name": "{itemName}",
+        "icon": ".\\{category}\\{str.split(name[0], "/")[-1]}",
+        "class": "{category}",
+        "object": "{className}",
+        "args": []
+    }}
+}}</pre>""")
         tempLayout.addWidget(output)
         temp.setLayout(tempLayout)
         temp.exec()
@@ -229,6 +247,5 @@ class OutputBox(QTextEdit):
     def __init__(self, parent, text):
         super(OutputBox, self).__init__(parent)
         self.setReadOnly(True)
-        self.resize(600, 300)
-        self.text = text
-        self.setMarkdown("```python\n"+text+"\n```")
+        self.setFontWeight(10)
+        self.setHtml(text)
