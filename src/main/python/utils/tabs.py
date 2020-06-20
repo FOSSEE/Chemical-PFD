@@ -3,7 +3,7 @@ from PyQt5.QtCore import pyqtSignal, QSize, Qt
 
 class TabBarPlus(QTabBar):
     """
-    Just implemented to overload resize and layout change to emit a signal
+    Just implemented to overload resize and layout change to emit a signal and change tab names.
     """
     layoutChanged = pyqtSignal()
     nameChanged = pyqtSignal(int, str)
@@ -16,6 +16,7 @@ class TabBarPlus(QTabBar):
         self.layoutChanged.emit()
 
     def mouseDoubleClickEvent(self, event):
+        # tab name change request
         if event.button() != Qt.LeftButton:
             return super().mouseDoubleClickEvent()
         index = self.currentIndex()

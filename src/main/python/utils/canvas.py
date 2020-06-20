@@ -42,6 +42,9 @@ class canvas(CustomView):
         self.customContextMenuRequested.connect(self.sideViewContextMenu)
     
     def addStreamTable(self, pos=QPointF(0, 0), table=None):
+        """
+        build stream table at pos with table, if table is not passed, builds a blank table
+        """
         self.streamTable = table if table else streamTable(self.labelItems, canvas=self)
         
         self.streamTableRect = moveRect()
@@ -53,10 +56,16 @@ class canvas(CustomView):
         self.streamTableRect.setPos(pos)
         
     def updateStreamTable(self, item):
+        """
+        updates stream table with any new line labels added
+        """
         if self.streamTable:
             self.streamTable.model.insertColumn(item = item)
         
     def sideViewContextMenu(self, pos):
+        """
+        shows the context menu for the side view
+        """
         self.parentFileWindow.sideViewContextMenu(self.mapTo(self.parentFileWindow, pos))
         
     def resizeView(self, w, h):
@@ -69,11 +78,6 @@ class canvas(CustomView):
         frameWidth = self.frameWidth()
         #update view size
         self.setSceneRect(0, 0, width - frameWidth*2, height)
-            
-    def resizeEvent(self, event):
-        #overloaded function to also view size on window update
-        # self.adjustView()
-        pass
    
     def setCanvasSize(self, size):
         """
@@ -152,6 +156,7 @@ class canvas(CustomView):
         self.landscape = dict['landscape']
         self.setObjectName(dict['ObjectName'])
         
+        #load symbols from the file, while building the memory map as well.
         for item in dict['symbols']:
             graphic = getattr(shapes, item['_classname_'])()
             graphic.__setstate__(dict = item)
@@ -168,6 +173,7 @@ class canvas(CustomView):
             graphic.rotation = item['rotation']
             graphic.flipH, graphic.flipV = item['flipstate']
         
+        #load lines from the file, while using and building the memory map.
         for item in dict['lines']:
             line = shapes.Line(QPointF(*item['startPoint']), QPointF(*item['endPoint']))
             memMap[item['id']] = line
@@ -192,14 +198,11 @@ class canvas(CustomView):
             line.updateLine()
             line.addGrabber()
             
+        # add streamtable if it existed in the scene.
         if dict['streamTable']:
             table = streamTable(self.labelItems, self)
             self.addStreamTable(QPointF(*dict['streamTable'][1]), table)
             table.__setstate__(dict['streamTable'][0])
             
-        memMap.clear()
-        self.painter.advance()
-        
-        
-
- 
+        memMap.clear() #clear out memory map as we now have no use for it. Hopefully garbage collected
+        self.painter.advance() #request collision detection

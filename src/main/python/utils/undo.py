@@ -91,6 +91,7 @@ class moveCommand(QUndoCommand):
     
 class resizeCommand(QUndoCommand):
     """
+    Defines the resize event for the custom scene.
     """
     def __init__(self, new, canvas, widget, parent = None):
         super(resizeCommand, self).__init__(parent)

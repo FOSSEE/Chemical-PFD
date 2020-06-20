@@ -39,6 +39,7 @@ class FileWindow(QMdiSubWindow):
         layout = QHBoxLayout(self.mainWidget)
         self.createSideViewArea() #create the side view objects
         
+        # set size policies for window
         left = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         left.setHorizontalStretch(1)
         self.tabber.setSizePolicy(left)
@@ -47,8 +48,8 @@ class FileWindow(QMdiSubWindow):
         right.setHorizontalStretch(1)
         self.sideView.setSizePolicy(right)
         
+        #build widget layout
         layout.addWidget(self.tabber)
-        # layout.addWidget(self.splitter)
         layout.addWidget(self.sideView)
         self.mainWidget.setLayout(layout)
         self.setWidget(self.mainWidget)
@@ -66,7 +67,6 @@ class FileWindow(QMdiSubWindow):
     
     def createSideViewArea(self):
         #creates the side view widgets and sets them to invisible
-        # self.splitter = QSplitter(Qt.Vertical ,self)
         self.sideView = CustomView(parent = self)
         self.sideView.setInteractive(False)
         self.sideViewCloseButton = QPushButton('×', self.sideView)
@@ -75,7 +75,6 @@ class FileWindow(QMdiSubWindow):
         self.sideViewCloseButton.setFixedSize(20, 20)
         self.moveSideViewCloseButton()
         self.sideViewCloseButton.clicked.connect(lambda: setattr(self, 'sideViewTab', None))
-        # self.splitter.setVisible(False)
         self.sideView.setVisible(False)
         self.sideView.setContextMenuPolicy(Qt.CustomContextMenu)
         self.sideView.customContextMenuRequested.connect(self.sideViewContextMenu)
@@ -127,13 +126,11 @@ class FileWindow(QMdiSubWindow):
     def sideViewToggle(self):
         #Function checks if current side view tab is set, and toggles view as required
         if self.sideViewTab:
-            # self.splitter.setVisible(True)
             self.sideView.setVisible(True)
             self.sideView.setScene(self.tabber.currentWidget().painter)
             self.resizeHandler()
             return True
-        else:           
-            # self.splitter.setVisible(False)
+        else:
             self.sideView.setVisible(False)  
             self.resizeHandler()
             return False
@@ -163,6 +160,7 @@ class FileWindow(QMdiSubWindow):
         menu.exec_(self.sideView.mapToGlobal(point))
 
     def sideViewSwitchCMenu(self, index):
+        # helper function to swtich side view tab
         self.sideViewTab = self.tabber.widget(index)
         
     def sideViewSwitchTab(self):
@@ -234,8 +232,7 @@ class FileWindow(QMdiSubWindow):
         else:
             event.ignore()
 
-    #following 2 methods are defined for correct pickling of the scene. may be changed to json or xml later so as
-    # to not have a binary file.
+    #following 2 methods are defined for correct serialization of the scene.
     def __getstate__(self) -> dict:
         return {
             "_classname_": self.__class__.__name__,

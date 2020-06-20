@@ -25,8 +25,30 @@ class appWindow(QMainWindow):
         super(appWindow, self).__init__(parent)
         
         #create the menu bar
+        self.createMenuBar()
+        
+        self.mdi = QMdiArea(self) #create area for files to be displayed
+        self.mdi.setObjectName('mdi area')
+        
+        #create toolbar and add the toolbar plus mdi to layout
+        self.createToolbar()
+        
+        #set flags so that window doesnt look weird
+        self.mdi.setOption(QMdiArea.DontMaximizeSubWindowOnActivation, True) 
+        self.mdi.setTabsClosable(True)
+        self.mdi.setTabsMovable(True)
+        self.mdi.setDocumentMode(False)
+        
+        #declare main window layout
+        self.setCentralWidget(self.mdi)
+        # self.resize(1280, 720) #set collapse dim
+        self.mdi.subWindowActivated.connect(self.tabSwitched)
+        self.readSettings()
+    
+    def createMenuBar(self):
+        # Fetches a reference to the menu bar in the main window, and adds actions to it.
+
         titleMenu = self.menuBar() #fetch reference to current menu bar
-        # self.mainWidget.setObjectName("Main Widget")
         
         self.menuFile = titleMenu.addMenu('File') #File Menu
         newAction = self.menuFile.addAction("New", self.newProject)
@@ -54,25 +76,7 @@ class appWindow(QMainWindow):
         
         imageAction.setShortcut(QKeySequence("Ctrl+P"))
         reportAction.setShortcut(QKeySequence("Ctrl+R"))
-        
-        self.mdi = QMdiArea(self) #create area for files to be displayed
-        self.mdi.setObjectName('mdi area')
-        
-        #create toolbar and add the toolbar plus mdi to layout
-        self.createToolbar()
-        
-        #set flags so that window doesnt look weird
-        self.mdi.setOption(QMdiArea.DontMaximizeSubWindowOnActivation, True) 
-        self.mdi.setTabsClosable(True)
-        self.mdi.setTabsMovable(True)
-        self.mdi.setDocumentMode(False)
-        
-        #declare main window layout
-        self.setCentralWidget(self.mdi)
-        # self.resize(1280, 720) #set collapse dim
-        self.mdi.subWindowActivated.connect(self.tabSwitched)
-        self.readSettings()
-                
+            
     def createToolbar(self):
         #place holder for toolbar with fixed width, layout may change
         self.toolbar = toolbar(self)
@@ -83,16 +87,16 @@ class appWindow(QMainWindow):
         self.toolbar.populateToolbar()
         
     def toolButtonClicked(self, object):
+        # To add the corresponding symbol for the clicked button to active scene.
         if self.mdi.currentSubWindow():
             currentDiagram = self.mdi.currentSubWindow().tabber.currentWidget().painter
             if currentDiagram:
                 graphic = getattr(shapes, object['object'])(*map(lambda x: int(x) if x.isdigit() else x, object['args']))
-                # graphic.setPen(QPen(Qt.black, 2))
-                # graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
-                graphic.setPos(20, 20)
+                graphic.setPos(50, 50)
                 currentDiagram.addItemPlus(graphic) 
     
     def addSymbolWindow(self):
+        # Opens the add symbol window when requested
         from utils.custom import ShapeDialog
         ShapeDialog(self).exec()
         
@@ -103,7 +107,6 @@ class appWindow(QMainWindow):
         self.mdi.addSubWindow(project)
         if not project.tabList: # important when unpickling a file instead
             project.newDiagram() #create a new tab in the new file
-        # project.resizeHandler()
         project.fileCloseEvent.connect(self.fileClosed) #closed file signal to switch to sub window view
         if self.count > 1: #switch to tab view if needed
             self.mdi.setViewMode(QMdiArea.TabbedView)
@@ -118,6 +121,7 @@ class appWindow(QMainWindow):
                     projectData = load(file)
                     project = FileWindow(self.mdi)
                     self.mdi.addSubWindow(project)
+                    #create blank window and set its state
                     project.__setstate__(projectData)
                     project.resizeHandler()
                     project.fileCloseEvent.connect(self.fileClosed)
@@ -127,7 +131,7 @@ class appWindow(QMainWindow):
             self.mdi.setViewMode(QMdiArea.TabbedView)
             
     def saveProject(self):
-        #pickle all files in mdi area
+        #serialize all files in mdi area
         for j, i in enumerate(self.activeFiles): #get list of all windows with atleast one tab
             if i.tabCount:
                 name = QFileDialog.getSaveFileName(self, 'Save File', f'New Diagram {j}', 'Process Flow Diagram (*.pfd)')
@@ -170,6 +174,7 @@ class appWindow(QMainWindow):
             self.mdi.setViewMode(QMdiArea.SubWindowView)
     
     def writeSettings(self):
+        # write window state on window close
         settings.beginGroup("MainWindow")
         settings.setValue("maximized", self.isMaximized())
         if not self.isMaximized():
@@ -178,6 +183,7 @@ class appWindow(QMainWindow):
         settings.endGroup()
     
     def readSettings(self):
+        # read window state when app launches
         settings.beginGroup("MainWindow")
         self.resize(settings.value("size", QSize(1280, 720)))
         self.move(settings.value("pos", QPoint(320, 124)))
@@ -185,6 +191,7 @@ class appWindow(QMainWindow):
             self.showMaximized()
         settings.endGroup()
       
+    #useful one liner properties for getting data
     @property   
     def activeFiles(self):
         return [i for i in self.mdi.subWindowList() if i.tabCount]
@@ -219,11 +226,9 @@ class appWindow(QMainWindow):
             if self.mdi.activeSubWindow() and self.mdi.activeSubWindow().tabber.currentWidget():
                 for item in self.mdi.activeSubWindow().tabber.currentWidget().painter.selectedItems():
                     item.rotation += 1
-                    
-        
-        
+                        
 if __name__ == '__main__':      # 1. Instantiate ApplicationContext
     main = appWindow()
     main.show()
-    exit_code = app.app.exec_()      # 2. Invoke appctxt.app.exec_()
+    exit_code = app.app.exec_()      # 2. Invoke app.app.exec_()
     sys.exit(exit_code)

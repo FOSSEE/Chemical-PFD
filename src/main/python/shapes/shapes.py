@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import (QGraphicsColorizeEffect, QGraphicsEllipseItem,
 from .line import Line, findIndex
 from utils.app import fileImporter
 
+# enum for all directions for line grip items
 directionsEnum = [
     "top",
     "right",
@@ -19,6 +20,7 @@ directionsEnum = [
     "left"
 ]
 
+# orientation enum for size grip items
 orientationEnum = [
     Qt.Horizontal,
     Qt.Vertical
@@ -469,6 +471,7 @@ class NodeItem(QGraphicsSvgItem):
         return self.flipState[1]
     
     def updateTransformation(self):
+        # update transformation on flipstate or rotation change
         transform = QTransform()
         h = -1 if self.flipH else 1
         w = -1 if self.flipV else 1

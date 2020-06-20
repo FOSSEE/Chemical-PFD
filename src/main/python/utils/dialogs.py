@@ -110,6 +110,7 @@ def saveEvent(parent = None):
     return True
 
 def showUndoDialog(undoView, parent):
+    # helper function to show a dialog box containing the undo view
     dialogBox = QDialog(parent)
     dialogBox.resize(400, 400)
     layout = QHBoxLayout(dialogBox)

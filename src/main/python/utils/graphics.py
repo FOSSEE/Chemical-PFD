@@ -20,12 +20,6 @@ class CustomView(QGraphicsView):
         self._zoom = 1
         self.setDragMode(True) #sets pannable using mouse
         self.setAcceptDrops(True) #sets ability to accept drops
-        if scene:
-            #create necessary undo redo actions to accept keyboard shortcuts
-            # self.addAction(scene.undoAction)
-            # self.addAction(scene.redoAction)
-            # self.addAction(scene.deleteAction)
-            pass
     
     #following four functions are required to be overridden for drag-drop functionality
     def dragEnterEvent(self, QDragEnterEvent):
@@ -48,8 +42,6 @@ class CustomView(QGraphicsView):
             #QDropEvent.mimeData().text() defines intended drop item, the pos values define position
             obj = QDropEvent.mimeData().text().split('/')
             graphic = getattr(shapes, obj[0])(*map(lambda x: int(x) if x.isdigit() else x, obj[1:]))
-            # graphic.setPen(QPen(Qt.black, 2))
-            # graphic.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
             graphic.setPos(QDropEvent.pos().x(), QDropEvent.pos().y())
             self.scene().addItemPlus(graphic)
             QDropEvent.acceptProposedAction()

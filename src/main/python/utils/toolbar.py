@@ -9,8 +9,6 @@ from .data import toolbarItems
 from .app import fileImporter, app
 from .layout import flowLayout
 
-# resourceManager = ApplicationContext() #Used to load images, mainly toolbar icons
-
 class toolbar(QDockWidget):
     """
     Defines the right side toolbar, using QDockWidget. 
