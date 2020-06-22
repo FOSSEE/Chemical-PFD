@@ -1,0 +1,5 @@
+<RCC>
+  <qresource>
+    <file alias="closeIcon">close.png</file>
+  </qresource>
+</RCC>

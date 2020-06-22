@@ -4,14 +4,14 @@ from PyQt5.QtWidgets import (QFileDialog, QApplication, QHBoxLayout, QMenu,
                              QTabWidget, QWidget, QSpacerItem, QStyle, QGraphicsProxyWidget)
 
 from . import dialogs
-from .graphics import customView, customScene
+from .graphics import CustomView, CustomScene
 from .data import paperSizes, ppiList, sheetDimensionList
-from .app import shapeGrips, lines
+from .app import memMap
 from .streamTable import streamTable, moveRect
 
 import shapes
 
-class canvas(customView):
+class canvas(CustomView):
     """
     Defines the work area for a single sheet. Contains a QGraphicScene along with necessary properties
     for context menu and dialogs.
@@ -30,7 +30,7 @@ class canvas(customView):
         # when we will draw items on this, this might be changed if QGraphicScene is subclassed.
         
         #set layout and background color
-        self.painter = customScene()
+        self.painter = CustomScene()
         self.painter.labelAdded.connect(self.updateStreamTable)  
         self.painter.setBackgroundBrush(QBrush(Qt.white)) #set white background
         self.setScene(self.painter)
@@ -42,6 +42,9 @@ class canvas(customView):
         self.customContextMenuRequested.connect(self.sideViewContextMenu)
     
     def addStreamTable(self, pos=QPointF(0, 0), table=None):
+        """
+        build stream table at pos with table, if table is not passed, builds a blank table
+        """
         self.streamTable = table if table else streamTable(self.labelItems, canvas=self)
         
         self.streamTableRect = moveRect()
@@ -53,10 +56,16 @@ class canvas(customView):
         self.streamTableRect.setPos(pos)
         
     def updateStreamTable(self, item):
+        """
+        updates stream table with any new line labels added
+        """
         if self.streamTable:
             self.streamTable.model.insertColumn(item = item)
         
     def sideViewContextMenu(self, pos):
+        """
+        shows the context menu for the side view
+        """
         self.parentFileWindow.sideViewContextMenu(self.mapTo(self.parentFileWindow, pos))
         
     def resizeView(self, w, h):
@@ -69,11 +78,6 @@ class canvas(customView):
         frameWidth = self.frameWidth()
         #update view size
         self.setSceneRect(0, 0, width - frameWidth*2, height)
-            
-    def resizeEvent(self, event):
-        #overloaded function to also view size on window update
-        # self.adjustView()
-        pass
    
     def setCanvasSize(self, size):
         """
@@ -142,7 +146,8 @@ class canvas(customView):
             "ObjectName": self.objectName(),
             "symbols": [i for i in self.painter.items() if isinstance(i, shapes.NodeItem)],
             "lines": sorted([i for i in self.painter.items() if isinstance(i, shapes.Line)], key = lambda x: 1 if x.refLine else 0),
-            "landscape": self.landscape
+            "landscape": self.landscape,
+            "streamTable": [self.streamTable, (self.streamTableRect.pos().x(), self.streamTableRect.pos().y())] if self.streamTable else False
         }
     
     def __setstate__(self, dict):
@@ -151,6 +156,7 @@ class canvas(customView):
         self.landscape = dict['landscape']
         self.setObjectName(dict['ObjectName'])
         
+        #load symbols from the file, while building the memory map as well.
         for item in dict['symbols']:
             graphic = getattr(shapes, item['_classname_'])()
             graphic.__setstate__(dict = item)
@@ -159,27 +165,30 @@ class canvas(customView):
             graphic.updateLineGripItem()
             graphic.updateSizeGripItem()
             for gripitem in item['lineGripItems']:
-                shapeGrips[gripitem[0]] = (graphic, gripitem[1])
+                memMap[gripitem[0]] = (graphic, gripitem[1])
             if item['label']:
                 graphicLabel = shapes.ItemLabel(pos = QPointF(*item['label']['pos']), parent = graphic)
                 graphicLabel.__setstate__(item['label'])
                 self.painter.addItem(graphicLabel)
+            graphic.rotation = item['rotation']
+            graphic.flipH, graphic.flipV = item['flipstate']
         
+        #load lines from the file, while using and building the memory map.
         for item in dict['lines']:
             line = shapes.Line(QPointF(*item['startPoint']), QPointF(*item['endPoint']))
-            lines[item['id']] = line
+            memMap[item['id']] = line
             line.__setstate__(dict = item)
             self.painter.addItem(line)
-            graphic, index = shapeGrips[item['startGripItem']]
+            graphic, index = memMap[item['startGripItem']]
             line.startGripItem = graphic.lineGripItems[index]
-            graphic.lineGripItems[index].line = line
+            graphic.lineGripItems[index].lines.append(line)
             if item['endGripItem']:                
-                graphic, index = shapeGrips[item['endGripItem']]
+                graphic, index = memMap[item['endGripItem']]
                 line.endGripItem = graphic.lineGripItems[index]
-                graphic.lineGripItems[index].line = line
+                graphic.lineGripItems[index].lines.append(line)
             else:
-                line.refLine = lines[item['refLine']]
-                lines[item['refLine']].midLines.append(line)
+                line.refLine = memMap[item['refLine']]
+                memMap[item['refLine']].midLines.append(line)
                 line.refIndex = item['refIndex']
             for label in item['label']:
                 labelItem = shapes.LineLabel(QPointF(*label['pos']), line)
@@ -189,10 +198,11 @@ class canvas(customView):
             line.updateLine()
             line.addGrabber()
             
-        shapeGrips.clear()
-        lines.clear()
-        self.painter.advance()
-        
-        
-
- 
+        # add streamtable if it existed in the scene.
+        if dict['streamTable']:
+            table = streamTable(self.labelItems, self)
+            self.addStreamTable(QPointF(*dict['streamTable'][1]), table)
+            table.__setstate__(dict['streamTable'][0])
+            
+        memMap.clear() #clear out memory map as we now have no use for it. Hopefully garbage collected
+        self.painter.advance() #request collision detection

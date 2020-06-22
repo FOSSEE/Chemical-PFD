@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import QTabBar, QPushButton, QTabWidget, QInputDialog
 from PyQt5.QtCore import pyqtSignal, QSize, Qt
 
-class tabBarPlus(QTabBar):
+class TabBarPlus(QTabBar):
     """
-    Just implemented to overload resize and layout change to emit a signal
+    Just implemented to overload resize and layout change to emit a signal and change tab names.
     """
     layoutChanged = pyqtSignal()
     nameChanged = pyqtSignal(int, str)
@@ -16,6 +16,7 @@ class tabBarPlus(QTabBar):
         self.layoutChanged.emit()
 
     def mouseDoubleClickEvent(self, event):
+        # tab name change request
         if event.button() != Qt.LeftButton:
             return super().mouseDoubleClickEvent()
         index = self.currentIndex()
@@ -26,17 +27,17 @@ class tabBarPlus(QTabBar):
             self.nameChanged.emit(index, newName)
             
         
-class customTabWidget(QTabWidget):
+class CustomTabWidget(QTabWidget):
     """
     QTabWidget with a new tab button, also catches layoutChange signal by
-    the tabBarPlus to dynamically move the button to the correct location
+    the TabBarPlus to dynamically move the button to the correct location
     """
     plusClicked = pyqtSignal()
     def __init__(self, parent=None):
-        super(customTabWidget, self).__init__(parent)
+        super(CustomTabWidget, self).__init__(parent)
 
-        self.tab = tabBarPlus()
-        self.setTabBar(self.tab) #set tabBar to our custom tabBarPlus
+        self.tab = TabBarPlus()
+        self.setTabBar(self.tab) #set tabBar to our custom TabBarPlus
         
         self.plusButton = QPushButton('+', self) #create the new tab button
         #style the new tab button

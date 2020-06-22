@@ -26,7 +26,7 @@ class addCommand(QUndoCommand):
         self.scene = scene
         self.diagramItem = addItem
         self.itemPos = addItem.pos()
-        self.setText(f"Add {objectName(self.diagramItem)}")
+        self.setText(f"Add {objectName(self.diagramItem)} at {self.itemPos.x()}, {self.itemPos.y()}")
         
     def undo(self):
         self.scene.removeItem(self.diagramItem)
@@ -91,6 +91,7 @@ class moveCommand(QUndoCommand):
     
 class resizeCommand(QUndoCommand):
     """
+    Defines the resize event for the custom scene.
     """
     def __init__(self, new, canvas, widget, parent = None):
         super(resizeCommand, self).__init__(parent)

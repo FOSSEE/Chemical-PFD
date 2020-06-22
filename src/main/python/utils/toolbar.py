@@ -9,8 +9,6 @@ from .data import toolbarItems
 from .app import fileImporter, app
 from .layout import flowLayout
 
-# resourceManager = ApplicationContext() #Used to load images, mainly toolbar icons
-
 class toolbar(QDockWidget):
     """
     Defines the right side toolbar, using QDockWidget. 
@@ -107,7 +105,7 @@ class toolbar(QDockWidget):
         #helper functions to create required buttons
         for itemClass in itemClasses:
             self.toolbarButtonDict[itemClass] = {}
-            label = sectionLabel(itemClass)
+            label = SectionLabel(itemClass)
             self.toolbarLabelDict[itemClass] = label
             for item in toolbarItems[itemClass].keys():
                 obj = toolbarItems[itemClass][item]
@@ -165,7 +163,7 @@ class toolbarButton(QToolButton):
         #defines button size
         return QSize(55, 55)
 
-class sectionLabel(QLabel):
+class SectionLabel(QLabel):
     
     def __init__(self, *args):
-        super(sectionLabel, self).__init__(*args)
+        super(SectionLabel, self).__init__(*args)

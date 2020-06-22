@@ -1,13 +1,15 @@
 """
-Declare fbs application so that it can be imported in other modules.
+Declare fbs application and various contextual variables so that it can be imported in other modules.
 """
 
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
-from PyQt5.QtCore import QSettings, pyqtProperty
+from PyQt5.QtCore import QSettings, pyqtProperty, QResource
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget
 from json import JSONEncoder, dumps, loads, dump, load
 from os.path import join
+
+from resources import resources #application resources defined in resources.qrc
 
 app = ApplicationContext()
 settings = QSettings(QSettings.IniFormat, QSettings.UserScope ,"FOSSEE", "Chemical-PFD")
@@ -17,11 +19,14 @@ def fileImporter(*file):
     # Helper function to fetch files from src/main/resources
     return app.get_resource(join(*file))
 
+#set application stylesheet
 with open(fileImporter("app.qss"), "r") as stylesheet:
     app.app.setStyleSheet(stylesheet.read())
 
 class JSON_Encoder:
-    
+    """
+    Defines serialization methods for differnt data types for json module
+    """
     def _encode(obj):
         if isinstance(obj, dict):
             ## We'll need to iterate not just the value that default() usually gets passed
@@ -48,7 +53,9 @@ class JSON_Encoder:
             return obj
 
 class JSON_Typer(JSONEncoder):
-    
+    """
+    derived class for redirecting encode calls
+    """
     def default(self, o):
         return o.__getstate__()
     
@@ -58,8 +65,4 @@ class JSON_Typer(JSONEncoder):
     def encode(self, obj):
         return super(JSON_Typer, self).encode(self._encode(obj))
 
-
-importer = pyqtProperty(str, fileImporter)
-
-shapeGrips = {}
-lines = {}
+memMap = {} #memory map for id references for loading projects

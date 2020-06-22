@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import (QGraphicsColorizeEffect, QGraphicsEllipseItem,
 from .line import Line, findIndex
 from utils.app import fileImporter
 
+# enum for all directions for line grip items
 directionsEnum = [
     "top",
     "right",
@@ -19,6 +20,7 @@ directionsEnum = [
     "left"
 ]
 
+# orientation enum for size grip items
 orientationEnum = [
     Qt.Horizontal,
     Qt.Vertical
@@ -244,7 +246,14 @@ class LineGripItem(QGraphicsPathItem):
 
     @property
     def m_location(self):
-        return directionsEnum[(self._m_location + self.parentItem().rotation)%4]
+        if self.parentItem().__class__ == Line:
+            return directionsEnum[self._m_location]
+        index = (self._m_location + self.parentItem().rotation)
+        if index%2:
+            index = (index + 2*self.parentItem().flipH)%4
+        else:
+            index = (index + 2*self.parentItem().flipV)%4
+        return directionsEnum[index]
     
     @m_location.setter
     def m_location(self, location):
@@ -267,7 +276,7 @@ class LineGripItem(QGraphicsPathItem):
         if self.size:
             painter.save()
             pen = self.pen()
-            pen.setWidth(-1)
+            pen.setWidth(1)
             painter.setPen(pen)
             painter.drawPath(self.path())
             painter.restore()
@@ -451,7 +460,39 @@ class NodeItem(QGraphicsSvgItem):
         self.sizeGripItems = []
         self.label = None
         self._rotation = 0
+        self.flipState = [False, False]
+    
+    @property
+    def flipH(self):
+        return self.flipState[0]
+    
+    @property
+    def flipV(self):
+        return self.flipState[1]
+    
+    def updateTransformation(self):
+        # update transformation on flipstate or rotation change
+        transform = QTransform()
+        h = -1 if self.flipH else 1
+        w = -1 if self.flipV else 1
+        transform.rotate(90*self.rotation)
+        transform.scale(h, w)
+        self.setTransform(transform)
+        self.setTransform(transform)
+        for i in self.lineGripItems:
+            i.setTransform(transform)
+            i.updatePosition()
+                
+    @flipH.setter
+    def flipH(self, state):
+        self.flipState[0] = state
+        self.updateTransformation()
 
+    @flipV.setter
+    def flipV(self, state):
+        self.flipState[1] = state
+        self.updateTransformation()
+            
     @property
     def rotation(self):
         return self._rotation
@@ -459,14 +500,7 @@ class NodeItem(QGraphicsSvgItem):
     @rotation.setter
     def rotation(self, rotation):
         self._rotation = rotation % 4
-        transform = QTransform()
-        transform.rotate(90*rotation)
-        self.setTransform(transform)
-        for i in self.lineGripItems:
-            i.setTransform(transform)
-            i.updatePosition()
-            for j in i.lines:
-                j.createPath()
+        self.updateTransformation()
         
     def boundingRect(self):
         """Overrides QGraphicsSvgItem's boundingRect() virtual public function and
@@ -603,11 +637,12 @@ class NodeItem(QGraphicsSvgItem):
         """
         # create a menu and add action
         contextMenu = QMenu()
-        addLableAction = contextMenu.addAction("add Label")  # add action for text label
+        contextMenu.addAction("Add Label", lambda : setattr(self, "label", ItemLabel(self)))
+        contextMenu.addAction("Rotate right(E)", lambda : setattr(self, "rotation", self.rotation + 1))
+        contextMenu.addAction("Rotate left(Q)", lambda : setattr(self, "rotation", self.rotation - 1))
+        contextMenu.addAction("Flip Horizontally", lambda: setattr(self, "flipH", not self.flipH))
+        contextMenu.addAction("Flip Vertically", lambda: setattr(self, "flipV", not self.flipV))
         action = contextMenu.exec_(event.screenPos())
-        # check for label action and add text label as child
-        if action == addLableAction:
-            self.label = ItemLabel(self)  # text label as child
 
     def __getstate__(self):
         return {
@@ -616,7 +651,9 @@ class NodeItem(QGraphicsSvgItem):
             "height": self.height,
             "pos": (self.pos().x(), self.pos().y()),
             "lineGripItems": [(hex(id(i)), i.m_index) for i in self.lineGripItems],
-            "label": self.label
+            "label": self.label,
+            "rotation": self.rotation,
+            "flipstate": self.flipState
         }
 
     def __setstate__(self, dict):

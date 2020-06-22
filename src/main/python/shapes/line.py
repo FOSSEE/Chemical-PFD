@@ -292,13 +292,16 @@ class LineLabel(QGraphicsTextItem):
             "text": self.toPlainText(),
             "index": self.index,
             "gap": self.gap,
-            "pos": (self.pos().x(), self.pos().y())
+            "pos": (self.pos().x(), self.pos().y()),
+            "values": self.values
         }
 
     def __setstate__(self, dict):
         self.setPlainText(dict['text'])
         self.index = dict['index']
         self.gap = dict['gap']
+        for key, value in dict['values'].items():
+            self.values[key] = value
 
 
 def findIndex(line, pos):
@@ -1008,8 +1011,9 @@ class Line(QGraphicsPathItem):
         action = contextMenu.exec_(event.screenPos())
         # check for label action and add text label as child
         if action == addLableAction:
-            print(event.scenePos(), event.pos())
-            self.label.append(LineLabel(event.scenePos(), self))  # text label as child
+            label = LineLabel(event.scenePos(), self)
+            self.label.append(label)  # text label as child
+            self.scene().labelAdded.emit(label)
 
     def __getstate__(self):
         return {
@@ -1022,8 +1026,14 @@ class Line(QGraphicsPathItem):
             "refLine": hex(id(self.refLine)) if self.refLine else 0,
             "refIndex": self.refIndex,
             "label": [i for i in self.label],
-            "id": hex(id(self))
+            "id": hex(id(self)),
+            "startGap": self.startGap,
+            "endGap": self.endGap
         }
 
     def __setstate__(self, dict):
         self.points = [QPointF(x, y) for x, y in dict["points"]]
+        self.startPoint = QPointF(*dict['startPoint'])
+        self.endPoint = QPointF(*dict['endPoint'])
+        self.startGap = dict['startGap']
+        self.endGap = dict['endGap']
