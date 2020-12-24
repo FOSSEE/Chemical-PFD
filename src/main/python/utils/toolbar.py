@@ -110,7 +110,6 @@ class toolbar(QDockWidget):
             for item in toolbarItems[itemClass].keys():
                 obj = toolbarItems[itemClass][item]
                 button = toolbarButton(self, obj)
-                button.clicked.connect(lambda : self.toolbuttonClicked.emit(obj))
                 self.toolbarButtonDict[itemClass][item] = button
             
     @property

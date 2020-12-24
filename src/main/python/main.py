@@ -136,8 +136,8 @@ class appWindow(QMainWindow):
             if i.tabCount:
                 name = QFileDialog.getSaveFileName(self, 'Save File', f'New Diagram {j}', 'Process Flow Diagram (*.pfd)')
                 i.saveProject(name)
-        else:
-            return False
+            else:
+                return False
         return True
     
     def saveImage(self):
