@@ -34,6 +34,7 @@ class canvas(CustomView):
         self.painter.labelAdded.connect(self.updateStreamTable)  
         self.painter.setBackgroundBrush(QBrush(Qt.white)) #set white background
         self.setScene(self.painter)
+        self.addAction(self.painter.deleteAction)
         
         #set initial paper size for the scene
         self.painter.setSceneRect(0, 0, *paperSizes[self._canvasSize][self._ppi])
