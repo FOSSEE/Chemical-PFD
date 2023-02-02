@@ -105,6 +105,12 @@ class CustomScene(QGraphicsScene):
         # (slot) used to delete all selected items, and add undo action for each of them
         if self.selectedItems():
             for item in self.selectedItems():
+                self.count = 0
+                if(issubclass(item.__class__,shapes.NodeItem)):
+                    for i in item.lineGripItems:
+                        for j in i.lines:
+                            self.count+=1
+                            self.undoStack.push(deleteCommand(j, self))
                 self.undoStack.push(deleteCommand(item, self))
             
     def itemMoved(self, movedItem, lastPos):
@@ -135,3 +141,9 @@ class CustomScene(QGraphicsScene):
                 self.itemMoved(self.movingItem, self.oldPos)
             self.movingItem = None #clear movingitem reference
         return super(CustomScene, self).mouseReleaseEvent(event)
+    def reInsertLines(self):
+        currentIndex = self.undoStack.index()
+        index = self.count+1     
+        if(self.count!=0):
+            self.count-=1
+            self.undoStack.command(currentIndex-index).undo()

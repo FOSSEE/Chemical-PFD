@@ -54,6 +54,7 @@ class deleteCommand(QUndoCommand):
         self.scene.addItem(self.diagramItem)
         self.scene.update()
         self.scene.advance()
+        self.scene.reInsertLines()
         
     def redo(self):
         self.scene.removeItem(self.diagramItem)
