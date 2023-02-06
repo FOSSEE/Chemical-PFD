@@ -83,8 +83,15 @@ class deleteCommand(QUndoCommand):
         return startIndex,endIndex
     
     def reconnectLines(self):
-        self.startGrip.lineGripItems[self.indexLGS].lines.append(self.diagramItem)
-        self.endGrip.lineGripItems[self.indexLGE].lines.append(self.diagramItem)
+        try:
+            self.startGrip.lineGripItems[self.indexLGS].lines.append(self.diagramItem)
+        except:
+            pass
+        try:
+            self.endGrip.lineGripItems[self.indexLGE].lines.append(self.diagramItem)
+        except:
+            pass
+        
 class moveCommand(QUndoCommand):
     """
     QUndoCommand for move item event
