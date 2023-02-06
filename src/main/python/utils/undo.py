@@ -66,6 +66,8 @@ class deleteCommand(QUndoCommand):
     def redo(self):
         self.scene.removeItem(self.diagramItem)
         self.scene.advance()
+        if(issubclass(self.diagramItem.__class__,shapes.Line)):
+            self.reconnectLines()
     
     def findLGIndex(self):
         startIndex = None
