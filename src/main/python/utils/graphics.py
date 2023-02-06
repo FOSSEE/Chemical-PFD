@@ -146,4 +146,11 @@ class CustomScene(QGraphicsScene):
         index = self.count+1     
         if(self.count!=0):
             self.count-=1
+            currentLine = self.undoStack.command(currentIndex-index).diagramItem
+            startGrip = self.undoStack.command(currentIndex-index).startGrip
+            endGrip = self.undoStack.command(currentIndex-index).endGrip
+            index_LineGripStart = self.undoStack.command(currentIndex-index).indexLGS
+            index_LineGripEnd = self.undoStack.command(currentIndex-index).indexLGE
+            startGrip.lineGripItems[index_LineGripStart].lines.append(currentLine)
+            endGrip.lineGripItems[index_LineGripEnd].lines.append(currentLine)
             self.undoStack.command(currentIndex-index).undo()

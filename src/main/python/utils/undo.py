@@ -3,6 +3,7 @@ Contains custom undo commands that can be pushed to undo stack
 """
 from PyQt5.QtWidgets import QUndoCommand
 from re import compile
+import shapes
 
 def repl(x):
     return f"{x[0][0]} {x[0][1].lower()}"
@@ -43,11 +44,15 @@ class deleteCommand(QUndoCommand):
     """
     QUndoCommand for delete item event
     """
-    def __init__(self, item, scene, parent = None):
+    def __init__(self, item, scene,parent = None):
         super(deleteCommand, self).__init__(parent)
         self.scene = scene
         item.setSelected(False)
         self.diagramItem = item
+        if(issubclass(self.diagramItem.__class__,shapes.Line)):
+            self.startGrip = self.diagramItem.startGripItem.parentItem()
+            self.endGrip = self.diagramItem.endGripItem.parentItem()
+            self.indexLGS,self.indexLGE = self.findLGIndex()
         self.setText(f"Delete {objectName(self.diagramItem)} at {self.diagramItem.pos().x()}, {self.diagramItem.y()}")
         
     def undo(self):
@@ -55,11 +60,29 @@ class deleteCommand(QUndoCommand):
         self.scene.update()
         self.scene.advance()
         self.scene.reInsertLines()
+        if(issubclass(self.diagramItem.__class__,shapes.Line)):
+            self.reconnectLines()
         
     def redo(self):
         self.scene.removeItem(self.diagramItem)
         self.scene.advance()
-        
+    
+    def findLGIndex(self):
+        startIndex = None
+        endIndex = None
+        for indexLG,i in enumerate(self.startGrip.lineGripItems):
+            for j in i.lines:
+                if(j == self.diagramItem):
+                    startIndex = indexLG
+        for indexLG,i in enumerate(self.endGrip.lineGripItems):
+            for j in i.lines:
+                if(j == self.diagramItem):
+                    endIndex = indexLG
+        return startIndex,endIndex
+    
+    def reconnectLines(self):
+        self.startGrip.lineGripItems[self.indexLGS].lines.append(self.diagramItem)
+        self.endGrip.lineGripItems[self.indexLGE].lines.append(self.diagramItem)
 class moveCommand(QUndoCommand):
     """
     QUndoCommand for move item event
