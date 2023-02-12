@@ -148,14 +148,14 @@ class CustomScene(QGraphicsScene):
     
     def reInsertLines(self):
         currentIndex = self.undoStack.index()
-        index = self.count+1     
-        if(self.count!=0):
-            self.count-=1
-            currentLine = self.undoStack.command(currentIndex-index).diagramItem
-            startGrip = self.undoStack.command(currentIndex-index).startGrip
-            endGrip = self.undoStack.command(currentIndex-index).endGrip
-            index_LineGripStart = self.undoStack.command(currentIndex-index).indexLGS
-            index_LineGripEnd = self.undoStack.command(currentIndex-index).indexLGE
+        i = 2   
+        while i != self.count+2:
+            currentLine = self.undoStack.command(currentIndex-i).diagramItem
+            startGrip = self.undoStack.command(currentIndex-i).startGrip
+            endGrip = self.undoStack.command(currentIndex-i).endGrip
+            index_LineGripStart = self.undoStack.command(currentIndex-i).indexLGS
+            index_LineGripEnd = self.undoStack.command(currentIndex-i).indexLGE
             startGrip.lineGripItems[index_LineGripStart].lines.append(currentLine)
             endGrip.lineGripItems[index_LineGripEnd].lines.append(currentLine)
-            self.undoStack.command(currentIndex-index).undo()
+            self.undoStack.setIndex(currentIndex-i)
+            i+=1
