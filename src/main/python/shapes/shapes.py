@@ -396,12 +396,13 @@ class LineGripItem(QGraphicsPathItem):
                     self.tempLine.endGap = gap
                     self.tempLine.setStartGripItem(self)
                     self.tempLine.setEndGripItem(item)
-                    # update line with end point so it sets final path
-                    self.tempLine.updateLine(endPoint=endPoint)
-                    self.lines.append(self.tempLine)
-                    item.lines.append(self.tempLine)
-                    tag = 1
-                    break
+                    if self.tempLine.startGripItem.parentItem() != self.tempLine.endGripItem.parentItem():
+                        # update line with end point so it sets final path
+                        self.tempLine.updateLine(endPoint=endPoint)
+                        self.lines.append(self.tempLine)
+                        item.lines.append(self.tempLine)
+                        tag = 1
+                        break
                 # end point on line
                 elif type(item) == Line and item != self.tempLine:
                     self.tempLine.setStartGripItem(self)
