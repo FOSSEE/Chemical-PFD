@@ -115,7 +115,8 @@ class CustomScene(QGraphicsScene):
                         for j in i.lines:
                             self.count+=1
                             self.undoStack.push(deleteCommand(j, self))
-                self.undoStack.push(deleteCommand(itemToDelete, self))
+                if itemToDelete.__class__ != shapes.line.Grabber:
+                    self.undoStack.push(deleteCommand(itemToDelete, self))
             
     def itemMoved(self, movedItem, lastPos):
         #item move event, checks if item is moved
@@ -148,14 +149,19 @@ class CustomScene(QGraphicsScene):
     
     def reInsertLines(self):
         currentIndex = self.undoStack.index()
-        i = 2   
-        while i != self.count+2:
-            currentLine = self.undoStack.command(currentIndex-i).diagramItem
-            startGrip = self.undoStack.command(currentIndex-i).startGrip
-            endGrip = self.undoStack.command(currentIndex-i).endGrip
-            index_LineGripStart = self.undoStack.command(currentIndex-i).indexLGS
-            index_LineGripEnd = self.undoStack.command(currentIndex-i).indexLGE
-            startGrip.lineGripItems[index_LineGripStart].lines.append(currentLine)
-            endGrip.lineGripItems[index_LineGripEnd].lines.append(currentLine)
+        i = 2
+        skipper = 0   
+        while i != self.count+2+skipper:
+            currentCommand = self.undoStack.command(currentIndex-i)
+            if not self.undoStack.text(currentIndex-i).__contains__('Move'):
+                currentLine = currentCommand.diagramItem
+                startGrip = currentCommand.startGripItem
+                endGrip = currentCommand.endGripItem
+                index_LineGripStart = currentCommand.indexLGS
+                index_LineGripEnd = currentCommand.indexLGE
+                startGrip.lineGripItems[index_LineGripStart].lines.append(currentLine)
+                endGrip.lineGripItems[index_LineGripEnd].lines.append(currentLine)
+            else:
+                skipper+=1
             self.undoStack.setIndex(currentIndex-i)
             i+=1
