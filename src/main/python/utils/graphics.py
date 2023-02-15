@@ -40,7 +40,7 @@ class CustomView(QGraphicsView):
         #defines item drop, fetches text, creates corresponding QGraphicItem and adds it to scene
         if QDropEvent.mimeData().hasText():
             #QDropEvent.mimeData().text() defines intended drop item, the pos values define position
-            obj = QDropEvent.mimeData().text().split('/')
+            obj = QDropEvent.mimeData().text().replace(',', '').split('/')
             graphic = getattr(shapes, obj[0])(*map(lambda x: int(x) if x.isdigit() else x, obj[1:]))
             graphic.setPos(QDropEvent.pos().x(), QDropEvent.pos().y())
             self.scene().addItemPlus(graphic)
