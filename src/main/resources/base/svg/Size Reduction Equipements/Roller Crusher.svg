@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="19.230001mm"
+   height="19.27684mm"
+   viewBox="0 0 19.230001 19.27684"
+   version="1.1"
+   id="svg977"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   sodipodi:docname="Roller Crusher.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview979"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="6.186083"
+     inkscape:cx="34.189648"
+     inkscape:cy="36.210313"
+     inkscape:window-width="1920"
+     inkscape:window-height="1046"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs974">
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5731"
+       id="linearGradient5733"
+       x1="633.49561"
+       y1="290.28485"
+       x2="637.10376"
+       y2="290.28485"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.1550398,0,0,1.0815102,-615.20631,-158.29333)" />
+    <linearGradient
+       id="linearGradient5731"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop5729" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5731"
+       id="linearGradient5737"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.1550398,0,0,1.0815102,-610.82045,-158.28236)"
+       x1="633.49561"
+       y1="290.28485"
+       x2="637.10376"
+       y2="290.28485" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-122.63422,-146.95047)">
+    <g
+       id="g1058">
+      <g
+         id="g1115"
+         transform="translate(11.464385,-0.12309134)">
+        <path
+           sodipodi:nodetypes="ccc"
+           inkscape:connector-curvature="0"
+           id="path5725"
+           d="m 112.06476,152.26864 8.75308,8.4691 8.68626,-8.45242"
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+        <ellipse
+           ry="1.9872512"
+           rx="2.0837719"
+           cy="155.65271"
+           cx="118.59014"
+           id="path5727"
+           style="fill:#ffffff;stroke:url(#linearGradient5733);stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none" />
+        <ellipse
+           style="fill:#ffffff;stroke:url(#linearGradient5737);stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none"
+           id="ellipse5735"
+           cx="122.97607"
+           cy="155.66367"
+           rx="2.0837719"
+           ry="1.9872512" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path5741"
+           d="m 120.80637,147.07356 v 5.67949"
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path5743"
+           d="m 120.81784,160.73774 v 5.61266"
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      </g>
+      <rect
+         style="fill:none;stroke:none;stroke-width:0.855302"
+         id="rect853"
+         width="19.230001"
+         height="19.23"
+         x="122.63422"
+         y="146.97389" />
+    </g>
+  </g>
+</svg>
