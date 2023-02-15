@@ -942,3 +942,102 @@ class SeparatorsForLiquidsDecanter(NodeItem):
             [100, 50, "right", 100],
             [50, 0, "bottom", 100]
         ]
+
+class GateValve(NodeItem):
+    def __init__(self):
+        super(GateValve, self).__init__("svg/Valves/Gate Valve")
+        self.grips = [
+            [0, 50, "left"],
+            [100, 50, "right"]
+        ]
+
+class CentrifugalPump(NodeItem):
+    def __init__(self):
+        super(CentrifugalPump, self).__init__("svg/Pumps/Centrifugal Pump")
+        self.grips = [
+            [100, 97.2, "right"],
+            [0, 58.78, "left"]
+        ]
+
+
+class OneCellFiredHeaterFurnace(NodeItem):
+    def __init__(self):
+        super(OneCellFiredHeaterFurnace, self).__init__("svg/Furnaces and Boilers/One Cell Fired Heater, Furnace")
+        self.grips = [
+            [50, 100, "top"],
+            [0, 25, "left", 50],
+            [25, 87.5, "left", 25],
+            [100, 25, "right", 50],
+            [75, 87.5, "right", 25],
+            [50, 0, "bottom", 100]
+        ]
+
+
+class TwoCellFiredHeaterFurnace(NodeItem):
+    def __init__(self):
+        super(TwoCellFiredHeaterFurnace, self).__init__("svg/Furnaces and Boilers/Two Cell Fired Heater, Furnace")
+        self.grips = [
+            [50, 100, "top"],
+            [0, 33.33, "left", 66.66],
+            [33.33, 91.66, "left", 16.66],
+            [100, 33.33, "right", 66.66],
+            [66.66, 91.66, "right", 16.66],
+            [16.67, 0, "bottom", 33.33],
+            [83.33, 0, "bottom", 33.33]
+        ]
+
+
+class ReducerExpander(NodeItem):
+    def __init__(self):
+        super(ReducerExpander, self).__init__("svg/Fittings/Reducer, Expander")
+        self.grips = [
+            [100, 50, "right"],
+            [0, 50, "left"]
+        ]
+
+
+class Filter(NodeItem):
+    def __init__(self):
+        super(Filter, self).__init__("svg/Fittings/Filter")
+        self.grips = [
+            [0, 50, "left"],
+            [100, 50, "right"]
+        ]
+
+
+class ContinuousDryer(NodeItem):
+    def __init__(self):
+        super(ContinuousDryer, self).__init__("svg/Dryers/Continuous Dryer")
+        self.grips = [
+            [8.13, 35.2, "top"],
+            [98.9, 28, "bottom"],
+            [50, 100, "top", 60.13]
+        ]
+
+
+class JawCrusher(NodeItem):
+    def __init__(self):
+        super(JawCrusher, self).__init__("svg/Size Reduction Equipements/Jaw Crusher")
+        self.grips = [
+            [79.65, 100, "top"],
+            [0, 0, "bottom"]
+        ]
+
+
+class RollerCrusher(NodeItem):
+    def __init__(self):
+        super(RollerCrusher, self).__init__("svg/Size Reduction Equipements/Roller Crusher")
+        self.grips = [
+            [50, 100, "top"],
+            [50, 0, "bottom"]
+        ]
+
+
+class GeneralSymbol(NodeItem):
+    def __init__(self):
+        super(GeneralSymbol, self).__init__("svg/Feeders/General Symbol")
+        self.grips = [
+            [20, 100, "top"],
+            [80, 0, "bottom"]
+        ]
+

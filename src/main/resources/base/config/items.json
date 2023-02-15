@@ -57,6 +57,20 @@
             "class": "Furnaces and Boilers",
             "object": "SolidFuelFurnace",
             "args": []
+        },
+        "One Cell Fired Heater, Furnace": {
+            "name": "One Cell Fired Heater, Furnace",
+            "icon": ".\\Furnaces and Boilers\\One Cell Fired Heater, Furnace.png",
+            "class": "Furnaces and Boilers",
+            "object": "OneCellFiredHeater,Furnace",
+            "args": []
+        },
+        "Two Cell Fired Heater, Furnace": {
+            "name": "Two Cell Fired Heater, Furnace",
+            "icon": ".\\Furnaces and Boilers\\Two Cell Fired Heater, Furnace.png",
+            "class": "Furnaces and Boilers",
+            "object": "TwoCellFiredHeater,Furnace",
+            "args": []
         }
     },
     "Heating or Cooling Arrangements": {
@@ -116,6 +130,22 @@
             "icon": ".\\Piping\\Outflow Line.png",
             "class": "Piping",
             "object": "OutflowLine",
+            "args": []
+        }
+    },
+    "Fittings": {
+        "Reducer, Expander": {
+            "name": "Reducer, Expander",
+            "icon": ".\\Fittings\\Reducer, Expander.png",
+            "class": "Fittings",
+            "object": "ReducerExpander",
+            "args": []
+        },
+        "Filter": {
+            "name": "Filter",
+            "icon": ".\\Fittings\\Filter.png",
+            "class": "Filter",
+            "object": "Filter",
             "args": []
         }
     },
@@ -198,6 +228,13 @@
             "class": "Pumps",
             "object": "ReciprocatingPump",
             "args": []
+        },
+        "Centrifugal Pump": {
+            "name": "Centrifugal Pump",
+            "icon": ".\\Pumps\\Centrifugal Pump.png",
+            "class": "Pumps",
+            "object": "CentrifugalPump",
+            "args": []
         }
     },
     "Separators": {
@@ -222,6 +259,51 @@
             "icon": ".\\Storage Vessels Tanks\\Floating Roof Tank.png",
             "class": "Storage Vessels Tanks",
             "object": "FloatingRoofTank",
+            "args": []
+        }
+    },
+    "Valves": {
+        "Gate Valve": {
+            "name": "Gate Valve",
+            "icon": ".\\Valves\\Gate Valve.png",
+            "class": "Valves",
+            "object": "GateValve",
+            "args": []
+        }
+
+    },
+     "Dryers": {
+        "Continuos Dryer": {
+            "name": "Continuos Dryer",
+            "icon": ".\\Dryers\\Continuous Dryer.png",
+            "class": "Dryers",
+            "object": "ContinuousDryer",
+            "args": []
+        }
+
+    },
+     "Size Reduction Equipements": {
+        "Jaw Crusher": {
+            "name": "Jaw Crusher",
+            "icon": ".\\Size Reduction Equipements\\Jaw Crusher.png",
+            "class": "Size Reduction Equipements",
+            "object": "JawCrusher",
+            "args": []
+        },
+        "Roller Crusher": {
+            "name": "Roller Crusher",
+            "icon": ".\\Size Reduction Equipements\\Roller Crusher.png",
+            "class": "Size Reduction Equipements",
+            "object": "RollerCrusher",
+            "args": []
+        }
+    },
+    "Feeders": {
+        "General Symbol": {
+            "name": "General Symbol",
+            "icon": ".\\Feeders\\General Symbol.png",
+            "class": "Feeders",
+            "object": "GeneralSymbol",
             "args": []
         }
     }
