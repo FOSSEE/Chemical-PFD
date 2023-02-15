@@ -3,6 +3,7 @@ Contains custom undo commands that can be pushed to undo stack
 """
 from PyQt5.QtWidgets import QUndoCommand
 from re import compile
+import shapes
 
 def repl(x):
     return f"{x[0][0]} {x[0][1].lower()}"
@@ -26,39 +27,94 @@ class addCommand(QUndoCommand):
         self.scene = scene
         self.diagramItem = addItem
         self.itemPos = addItem.pos()
+        if(issubclass(self.diagramItem.__class__,shapes.Line) and addItem != None):
+            self.startGripItem = addItem.startGripItem.parentItem()
+            self.endGripItem = addItem.endGripItem.parentItem()
+            self.indexLGS,self.indexLGE = self.findLGIndex()
         self.setText(f"Add {objectName(self.diagramItem)} at {self.itemPos.x()}, {self.itemPos.y()}")
         
     def undo(self):
-        self.scene.removeItem(self.diagramItem)
-        self.scene.update()
-        self.scene.advance()
+        if self.diagramItem in self.scene.items():
+            self.scene.removeItem(self.diagramItem)
+            self.scene.update()
+            self.scene.advance()
         
     def redo(self):
-        self.scene.addItem(self.diagramItem)
-        self.diagramItem.setPos(self.itemPos)
-        self.scene.clearSelection()
-        self.scene.advance()
-        
+        if self.diagramItem not in self.scene.items():
+            self.scene.addItem(self.diagramItem)
+            self.diagramItem.setPos(self.itemPos)
+            self.scene.clearSelection()
+            self.scene.advance()
+            if(issubclass(self.diagramItem.__class__,shapes.Line)):
+                self.reconnectLines()
+
+    def findLGIndex(self):
+        startIndex = None
+        endIndex = None
+        for indexLG,i in enumerate(self.startGripItem.lineGripItems):
+            for j in i.lines:
+                if j == self.diagramItem:
+                    startIndex = indexLG
+        for indexLG,i in enumerate(self.endGripItem.lineGripItems):
+            for j in i.lines:
+                if j == self.diagramItem:
+                    endIndex = indexLG
+        return startIndex,endIndex
+    
+    def reconnectLines(self):
+        if self.diagramItem not  in self.startGripItem.lineGripItems[self.indexLGS].lines:
+            self.startGripItem.lineGripItems[self.indexLGS].lines.append(self.diagramItem)
+        if self.diagramItem not  in self.endGripItem.lineGripItems[self.indexLGE].lines:
+            self.endGripItem.lineGripItems[self.indexLGE].lines.append(self.diagramItem)
+
 class deleteCommand(QUndoCommand):
     """
     QUndoCommand for delete item event
     """
-    def __init__(self, item, scene, parent = None):
+    def __init__(self, item, scene,parent = None):
         super(deleteCommand, self).__init__(parent)
         self.scene = scene
         item.setSelected(False)
         self.diagramItem = item
+        if(issubclass(self.diagramItem.__class__,shapes.Line)):
+            self.startGripItem = item.startGripItem.parentItem()
+            self.endGripItem = item.endGripItem.parentItem()
+            self.indexLGS,self.indexLGE = self.findLGIndex()
         self.setText(f"Delete {objectName(self.diagramItem)} at {self.diagramItem.pos().x()}, {self.diagramItem.y()}")
         
     def undo(self):
-        self.scene.addItem(self.diagramItem)
-        self.scene.update()
-        self.scene.advance()
-        
+        if self.diagramItem not in self.scene.items():
+            self.scene.addItem(self.diagramItem)
+            self.scene.update()
+            self.scene.advance()
+            self.scene.reInsertLines()
+            if(issubclass(self.diagramItem.__class__,shapes.Line)):
+                self.reconnectLines()
+            
     def redo(self):
-        self.scene.removeItem(self.diagramItem)
-        self.scene.advance()
-        
+        if self.diagramItem in self.scene.items():
+            self.scene.removeItem(self.diagramItem)
+            self.scene.advance()
+    
+    def findLGIndex(self):
+        startIndex = None
+        endIndex = None
+        for indexLG,i in enumerate(self.startGripItem.lineGripItems):
+            for j in i.lines:
+                if j == self.diagramItem:
+                    startIndex = indexLG
+        for indexLG,i in enumerate(self.endGripItem.lineGripItems):
+            for j in i.lines:
+                if j == self.diagramItem:
+                    endIndex = indexLG
+        return startIndex,endIndex
+    
+    def reconnectLines(self):
+        if self.diagramItem not  in self.startGripItem.lineGripItems[self.indexLGS].lines:
+            self.startGripItem.lineGripItems[self.indexLGS].lines.append(self.diagramItem)
+        if self.diagramItem not  in self.endGripItem.lineGripItems[self.indexLGE].lines:
+            self.endGripItem.lineGripItems[self.indexLGE].lines.append(self.diagramItem)
+
 class moveCommand(QUndoCommand):
     """
     QUndoCommand for move item event

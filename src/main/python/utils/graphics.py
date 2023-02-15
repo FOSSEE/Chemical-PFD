@@ -105,7 +105,18 @@ class CustomScene(QGraphicsScene):
         # (slot) used to delete all selected items, and add undo action for each of them
         if self.selectedItems():
             for item in self.selectedItems():
-                self.undoStack.push(deleteCommand(item, self))
+                if(issubclass(item.__class__,shapes.LineGripItem) or issubclass(item.__class__,shapes.SizeGripItem) ):
+                    itemToDelete = item.parentItem()
+                else:
+                    itemToDelete = item 
+                self.count = 0
+                if(issubclass(itemToDelete.__class__,shapes.NodeItem)):
+                    for i in itemToDelete.lineGripItems:
+                        for j in i.lines:
+                            self.count+=1
+                            self.undoStack.push(deleteCommand(j, self))
+                if itemToDelete.__class__ != shapes.line.Grabber:
+                    self.undoStack.push(deleteCommand(itemToDelete, self))
             
     def itemMoved(self, movedItem, lastPos):
         #item move event, checks if item is moved
@@ -135,3 +146,22 @@ class CustomScene(QGraphicsScene):
                 self.itemMoved(self.movingItem, self.oldPos)
             self.movingItem = None #clear movingitem reference
         return super(CustomScene, self).mouseReleaseEvent(event)
+    
+    def reInsertLines(self):
+        currentIndex = self.undoStack.index()
+        i = 2
+        skipper = 0   
+        while i != self.count+2+skipper:
+            currentCommand = self.undoStack.command(currentIndex-i)
+            if not self.undoStack.text(currentIndex-i).__contains__('Move'):
+                currentLine = currentCommand.diagramItem
+                startGrip = currentCommand.startGripItem
+                endGrip = currentCommand.endGripItem
+                index_LineGripStart = currentCommand.indexLGS
+                index_LineGripEnd = currentCommand.indexLGE
+                startGrip.lineGripItems[index_LineGripStart].lines.append(currentLine)
+                endGrip.lineGripItems[index_LineGripEnd].lines.append(currentLine)
+            else:
+                skipper+=1
+            self.undoStack.setIndex(currentIndex-i)
+            i+=1
