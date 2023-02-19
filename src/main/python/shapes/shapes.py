@@ -121,22 +121,32 @@ class SizeGripItem(QGraphicsPathItem):
         else:
             return orientationEnum[self._direction]
 
-    def updatePath(self):
+    def updatePath(self,m_index):
         """updates path of size grip item
         """
         width = height = 0
         if self.direction is Qt.Horizontal:
-            height = self.parentItem().boundingRect().height()
+            height = self.parentItem().boundingRect().height()+30
+            
         else:
-            width = self.parentItem().boundingRect().width()
+            width = self.parentItem().boundingRect().width()+35
         path = QPainterPath()
-        path.addRect(QRectF(-width / 2, -height / 2, width, height))
+        if(m_index == 0):
+            tempRect = QRectF((-width / 2),( -height / 2)-15, width, height)
+        if(m_index == 1):
+            tempRect = QRectF((-width / 2)-17.5,( -height / 2), width, height)
+        if(m_index == 2):
+            tempRect = QRectF((-width / 2),( -height / 2)+15, width, height)
+        if(m_index == 3):
+            tempRect = QRectF((-width / 2)+17.5,( -height / 2), width, height)
+        #print(tempRect)
+        path.addRect(tempRect)
         self.setPath(path)
 
     def updatePosition(self):
         """updates position of grip items
         """
-        self.updatePath()
+        self.updatePath(self.m_index)
         pos = self.point(self.m_index)
         self.setEnabled(False)
         self.setPos(pos)
@@ -206,7 +216,7 @@ class SizeGripItem(QGraphicsPathItem):
 
     def show(self):
         # make self visible
-        self.setPen(QPen(QColor("black"), 2))
+        self.setPen(QPen(QColor(128, 128, 128,200), 2))
 
     def hide(self):
         # hide self by setting pen to transparent
@@ -427,7 +437,7 @@ class LineGripItem(QGraphicsPathItem):
         """ shows line grip item
         """
         self.setPen(QPen(QColor("black"), 2))
-        self.setBrush(QColor("cyan"))
+        self.setBrush(QColor(140,199,198,255))
 
     def hide(self):
         """ hides line grip item
@@ -813,9 +823,9 @@ class OilGasOrPulverizedFuelFurnace(NodeItem):
         self.grips = [
             [58.27673386073162, 100, "top"],
             [0, 19.692723451106, "left"],
-            [17.2777337415748, 33.3944873323144, "left", 66.7889746646288],
-            [100, 33.3944873323144, "right", 66.7889746646288],
-            [57.9723659874, 0, "bottom", 81.389264491796]
+            [17.2777337415748-5, 33.3944873323144, "left", 66.7889746646288],
+            [100+5, 33.3944873323144, "right", 66.7889746646288],
+            [57.9723659874, 0-10, "bottom", 81.389264491796]
         ]
 
 
@@ -824,9 +834,9 @@ class SolidFuelFurnace(NodeItem):
         super(SolidFuelFurnace, self).__init__("svg/Furnaces and Boilers/Solid Fuel Furnace")
         self.grips = [
             [50, 100, "top"],
-            [0, 33.39352642259468, "left", 66.78705284518936],
-            [100, 33.39352642259468, "right", 66.78705284518936],
-            [50, 0, "bottom", 100]
+            [0-5, 33.39352642259468, "left", 66.78705284518936],
+            [100+5, 33.39352642259468, "right", 66.78705284518936],
+            [50, 0-10, "bottom", 100]
         ]
 
 
@@ -865,10 +875,10 @@ class HorizontalVessel(NodeItem):
     def __init__(self):
         super(HorizontalVessel, self).__init__("svg/Process Vessels/Horizontal Vessel")
         self.grips = [
-            [50, 100, "top", 87.08554680344],
+            [50, 100+10, "top", 87.08554680344],
             [0, 50, "left"],
             [100, 50, "right"],
-            [50, 0, "bottom", 87.08554680344]
+            [50, 0-10, "bottom", 87.08554680344]
         ]
 
 
@@ -877,8 +887,8 @@ class PackedVessel(NodeItem):
         super(PackedVessel, self).__init__("svg/Process Vessels/Packed Vessel")
         self.grips = [
             [50, 100, "top"],
-            [0, 50, "left", 86.703566201060],
-            [100, 50, "right", 86.703566201060],
+            [0-10, 50, "left", 86.703566201060],
+            [100+10, 50, "right", 86.703566201060],
             [50, 0, "bottom"]
         ]
 
@@ -895,8 +905,8 @@ class VerticalVessel(NodeItem):
         super(VerticalVessel, self).__init__("svg/Process Vessels/Vertical Vessel")
         self.grips = [
             [50, 100, "top"],
-            [0, 50, "left", 86.703566201060],
-            [100, 50, "right", 86.703566201060],
+            [0-10, 50, "left", 86.703566201060],
+            [100+10, 50, "right", 86.703566201060],
             [50, 0, "bottom"]
         ]
 
@@ -917,9 +927,9 @@ class FixedRoofTank(NodeItem):
         super(FixedRoofTank, self).__init__("svg/Storage Vessels Tanks/Fixed Roof Tank")
         self.grips = [
             [50, 100, "top"],
-            [0, 50, "left", 100],
-            [100, 50, "right", 100],
-            [50, 0, "bottom", 100]
+            [0-6, 50, "left", 100],
+            [100+7, 50, "right", 100],
+            [50, 0-10, "bottom", 100]
         ]
 
 
@@ -927,9 +937,9 @@ class FloatingRoofTank(NodeItem):
     def __init__(self):
         super(FloatingRoofTank, self).__init__("svg/Storage Vessels Tanks/Floating Roof Tank")
         self.grips = [
-            [0, 50, "left", 100],
-            [100, 50, "right", 100],
-            [50, 0, "bottom", 100]
+            [0-7, 50, "left", 100],
+            [100+7, 50, "right", 100],
+            [50, 0-10, "bottom", 100]
         ]
 
 
@@ -937,10 +947,10 @@ class SeparatorsForLiquidsDecanter(NodeItem):
     def __init__(self):
         super(SeparatorsForLiquidsDecanter, self).__init__("svg/Separators/Separators for Liquids, Decanter")
         self.grips = [
-            [50, 100, "top", 100],
-            [0, 50, "left", 100],
-            [100, 50, "right", 100],
-            [50, 0, "bottom", 100]
+            [50, 100+10, "top", 100],
+            [0-10, 50, "left", 100],
+            [100+10, 50, "right", 100],
+            [50, 0-10, "bottom", 100]
         ]
 
 class GateValve(NodeItem):
@@ -965,11 +975,11 @@ class OneCellFiredHeaterFurnace(NodeItem):
         super(OneCellFiredHeaterFurnace, self).__init__("svg/Furnaces and Boilers/One Cell Fired Heater, Furnace")
         self.grips = [
             [50, 100, "top"],
-            [0, 25, "left", 50],
+            [0-7, 25, "left", 50],
             [25, 87.5, "left", 25],
-            [100, 25, "right", 50],
+            [100+7, 25, "right", 50],
             [75, 87.5, "right", 25],
-            [50, 0, "bottom", 100]
+            [50, 0-10, "bottom", 100]
         ]
 
 
@@ -978,12 +988,12 @@ class TwoCellFiredHeaterFurnace(NodeItem):
         super(TwoCellFiredHeaterFurnace, self).__init__("svg/Furnaces and Boilers/Two Cell Fired Heater, Furnace")
         self.grips = [
             [50, 100, "top"],
-            [0, 33.33, "left", 66.66],
+            [0-5, 33.33, "left", 66.66],
             [33.33, 91.66, "left", 16.66],
-            [100, 33.33, "right", 66.66],
+            [100+5, 33.33, "right", 66.66],
             [66.66, 91.66, "right", 16.66],
-            [16.67, 0, "bottom", 33.33],
-            [83.33, 0, "bottom", 33.33]
+            [16.67, 0-10, "bottom", 33.33],
+            [83.33, 0-10, "bottom", 33.33]
         ]
 
 
@@ -1011,7 +1021,7 @@ class ContinuousDryer(NodeItem):
         self.grips = [
             [8.13, 35.2, "top"],
             [98.9, 28, "bottom"],
-            [50, 100, "top", 60.13]
+            [50, 100+10, "top", 60.13]
         ]
 
 

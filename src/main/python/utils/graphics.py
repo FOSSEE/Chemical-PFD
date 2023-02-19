@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt, QPointF, pyqtSignal
-from PyQt5.QtGui import QPen, QKeySequence
+from PyQt5.QtGui import QPen, QKeySequence, QTransform, QCursor
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsProxyWidget, QGraphicsItem, QUndoStack, QAction, QUndoView
 
 from .undo import *
@@ -147,6 +147,13 @@ class CustomScene(QGraphicsScene):
             self.movingItem = None #clear movingitem reference
         return super(CustomScene, self).mouseReleaseEvent(event)
     
+    def mouseMoveEvent(self, mouseEvent):
+        item = self.itemAt(mouseEvent.scenePos().x(), mouseEvent.scenePos().y(),
+                                   QTransform())
+        if isinstance(item,shapes.SizeGripItem):
+            item.parentItem().showGripItem()
+        super(CustomScene,self).mouseMoveEvent(mouseEvent)
+
     def reInsertLines(self):
         currentIndex = self.undoStack.index()
         i = 2
