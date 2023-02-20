@@ -138,17 +138,17 @@ class SizeGripItem(QGraphicsPathItem):
         """
         width = height = 0
         if self.direction is Qt.Horizontal:
-            height = self.parentItem().boundingRect().height()+30
+            height = self.parentItem().boundingRect().height()+40
             
         else:
             width = self.parentItem().boundingRect().width()+35
         path = QPainterPath()
         if(m_index == 0):
-            tempRect = QRectF((-width / 2),( -height / 2)-15, width, height)
+            tempRect = QRectF((-width / 2),( -height / 2)-20, width, height)
         if(m_index == 1):
             tempRect = QRectF((-width / 2)-17.5,( -height / 2), width, height)
         if(m_index == 2):
-            tempRect = QRectF((-width / 2),( -height / 2)+15, width, height)
+            tempRect = QRectF((-width / 2),( -height / 2)+20, width, height)
         if(m_index == 3):
             tempRect = QRectF((-width / 2)+17.5,( -height / 2), width, height)
         #print(tempRect)
@@ -228,7 +228,7 @@ class SizeGripItem(QGraphicsPathItem):
 
     def show(self):
         # make self visible
-        self.setPen(QPen(QColor(128, 128, 128,200), 2))
+        self.setPen(QPen(QColor(128, 128, 128,150), 4))
 
     def hide(self):
         # hide self by setting pen to transparent

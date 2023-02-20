@@ -115,8 +115,7 @@ class CustomScene(QGraphicsScene):
                         for j in i.lines:
                             self.count+=1
                             self.undoStack.push(deleteCommand(j, self))
-                if itemToDelete.__class__ != shapes.line.Grabber:
-                    self.undoStack.push(deleteCommand(itemToDelete, self))
+                self.undoStack.push(deleteCommand(itemToDelete, self))
             
     def itemMoved(self, movedItem, lastPos):
         #item move event, checks if item is moved
