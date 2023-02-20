@@ -26,6 +26,18 @@ orientationEnum = [
     Qt.Vertical
 ]
 
+#For extending Lines for repositioned Rectangular Line Grips
+rLGPlus = {}
+f = open('./shapes/rLGPlus.txt','r')
+dataRead = f.readlines()[1:]
+for line in dataRead:
+
+    if not line.__contains__(',') :
+        rLGPlus[line.strip()] = []
+    else:
+        grips = line.strip().split(',')
+        rLGPlus[list(rLGPlus.keys())[-1]].append(grips)
+
 class ItemLabel(QGraphicsTextItem):
     """Extends PyQt5's QGraphicsPathItem to create text label for svg item
     """
@@ -409,6 +421,32 @@ class LineGripItem(QGraphicsPathItem):
                     if self.tempLine.startGripItem.parentItem() != self.tempLine.endGripItem.parentItem():
                         # update line with end point so it sets final path
                         self.tempLine.updateLine(endPoint=endPoint)
+                        #Adjusting line for repositioned retangular grips
+                        if self.parentItem().__class__.__name__ in list(rLGPlus.keys()):
+                                for tgrip in rLGPlus[self.parentItem().__class__.__name__]:
+                                    if(float(tgrip[3]) == 0):
+                                        if self.m_location == tgrip[0]:
+                                            tempx,tempy = int(tgrip[1]),int(tgrip[2])
+                                            self.tempLine.startPoint.setX(self.tempLine.startPoint.x()+tempx)
+                                            self.tempLine.startPoint.setY(self.tempLine.startPoint.y()+tempy)
+                                    else:
+                                        if self.m_location == tgrip[0] and self.size == float(tgrip[3]):
+                                            tempx,tempy = int(tgrip[1]),int(tgrip[2])
+                                            self.tempLine.startPoint.setX(self.tempLine.startPoint.x()+tempx)
+                                            self.tempLine.startPoint.setY(self.tempLine.startPoint.y()+tempy)
+                        if item.parentItem().__class__.__name__ in list(rLGPlus.keys()):
+                                for tgrip in rLGPlus[item.parentItem().__class__.__name__]:
+                                    if(float(tgrip[3]) == 0):
+                                        if item.m_location == tgrip[0]:
+                                            tempx,tempy = int(tgrip[1]),int(tgrip[2])
+                                            self.tempLine.endPoint.setX(self.tempLine.endPoint.x()+tempx)
+                                            self.tempLine.endPoint.setY(self.tempLine.endPoint.y()+tempy)
+                                    else:
+                                        if item.m_location == tgrip[0] and item.size == float(tgrip[3]):
+                                            tempx,tempy = int(tgrip[1]),int(tgrip[2])
+                                            self.tempLine.endPoint.setX(self.tempLine.endPoint.x()+tempx)
+                                            self.tempLine.endPoint.setY(self.tempLine.endPoint.y()+tempy)
+                                        
                         self.lines.append(self.tempLine)
                         item.lines.append(self.tempLine)
                         tag = 1
