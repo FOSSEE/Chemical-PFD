@@ -808,31 +808,6 @@ class Line(QGraphicsPathItem):
     def updatePath(self):
         """ update path when svg item moves
         """
-        #Adjusting line for repositioned retangular grips
-        if self.startGripItem.parentItem().__class__.__name__ in list(rLGPlus.keys()):
-            for tgrip in rLGPlus[self.startGripItem.parentItem().__class__.__name__]:
-                if(float(tgrip[3]) == 0):
-                    if self.startGripItem.m_location == tgrip[0]:
-                        tempx,tempy = int(tgrip[1]),int(tgrip[2])
-                        self.startPoint.setX(self.startPoint.x()+tempx)
-                        self.startPoint.setY(self.startPoint.y()+tempy)
-                else:
-                    if self.startGripItem.m_location == tgrip[0] and self.startGripItem.size == float(tgrip[3]):
-                        tempx,tempy = int(tgrip[1]),int(tgrip[2])
-                        self.startPoint.setX(self.startPoint.x()+tempx)
-                        self.startPoint.setY(self.startPoint.y()+tempy)
-        if self.endGripItem.parentItem().__class__.__name__ in list(rLGPlus.keys()):
-            for tgrip in rLGPlus[self.endGripItem.parentItem().__class__.__name__]:
-                if(float(tgrip[3]) == 0):
-                    if self.endGripItem.m_location == tgrip[0]:
-                        tempx,tempy = int(tgrip[1]),int(tgrip[2])
-                        self.endPoint.setX(self.endPoint.x()+tempx)
-                        self.endPoint.setY(self.endPoint.y()+tempy)
-                else:
-                    if self.endGripItem.m_location == tgrip[0] and self.endGripItems.size == float(tgrip[3]):
-                        tempx,tempy = int(tgrip[1]),int(tgrip[2])
-                        self.endPoint.setX(self.endPoint.x()+tempx)
-                        self.endPoint.setY(self.endPoint.y()+tempy)
         path = QPainterPath(self.startPoint)
         self.updatePoints()
 
@@ -973,6 +948,19 @@ class Line(QGraphicsPathItem):
                 startPoint.setY(
                     startPoint.y() - self.startGap * item.boundingRect().height())
             self.startPoint = startPoint
+            #Adjusting line for repositioned retangular grips
+            if self.startGripItem.parentItem().__class__.__name__ in list(rLGPlus.keys()):
+                for tgrip in rLGPlus[self.startGripItem.parentItem().__class__.__name__]:
+                    if(float(tgrip[3]) == 0):
+                        if self.startGripItem.m_location == tgrip[0]:
+                            tempx,tempy = int(tgrip[1]),int(tgrip[2])
+                            self.startPoint.setX(self.startPoint.x()+tempx)
+                            self.startPoint.setY(self.startPoint.y()+tempy)
+                    else:
+                        if self.startGripItem.m_location == tgrip[0] and self.startGripItem.size == float(tgrip[3]):
+                            tempx,tempy = int(tgrip[1]),int(tgrip[2])
+                            self.startPoint.setX(self.startPoint.x()+tempx)
+                            self.startPoint.setY(self.startPoint.y()+tempy)
         # end point on line
         if self.endGripItem:
             item = self.endGripItem
@@ -985,6 +973,19 @@ class Line(QGraphicsPathItem):
                 endPoint.setY(
                     endPoint.y() - self.endGap * item.boundingRect().height())
             self.endPoint = endPoint
+            #Adjusting line for repositioned retangular grips
+            if self.endGripItem.parentItem().__class__.__name__ in list(rLGPlus.keys()):
+                for tgrip in rLGPlus[self.endGripItem.parentItem().__class__.__name__]:
+                    if(float(tgrip[3]) == 0):
+                        if self.endGripItem.m_location == tgrip[0]:
+                            tempx,tempy = int(tgrip[1]),int(tgrip[2])
+                            self.endPoint.setX(self.endPoint.x()+tempx)
+                            self.endPoint.setY(self.endPoint.y()+tempy)
+                    else:
+                        if self.endGripItem.m_location == tgrip[0] and self.endGripItem.size == float(tgrip[3]):
+                            tempx,tempy = int(tgrip[1]),int(tgrip[2])
+                            self.endPoint.setX(self.endPoint.x()+tempx)
+                            self.endPoint.setY(self.endPoint.y()+tempy)
             self.updatePath()
         # end point on other line
         elif self.refLine:

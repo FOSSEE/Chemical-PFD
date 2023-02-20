@@ -474,7 +474,7 @@ class LineGripItem(QGraphicsPathItem):
     def show(self):
         """ shows line grip item
         """
-        self.setPen(QPen(QColor("black"), 2))
+        self.setPen(QPen(QColor(0,0,0,150), 1.5))
         self.setBrush(QColor(140,199,198,255))
 
     def hide(self):
