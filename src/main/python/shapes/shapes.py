@@ -113,7 +113,7 @@ class SizeGripItem(QGraphicsPathItem):
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
         self.setAcceptHoverEvents(True)
-        self.setPen(QPen(QColor("black"), 0))
+        self.setPen(QPen(Qt.NoPen))
         self.setZValue(2)
         # property direction
         self._direction = (orientationEnum.index(direction) + self.parentItem().rotation) % 4
@@ -246,7 +246,7 @@ class SizeGripItem(QGraphicsPathItem):
     def hide(self):
         # hide self by setting pen to transparent
         if not self.parentItem().isSelected():
-            self.setPen(QPen(Qt.transparent))
+            self.setPen(QPen(Qt.NoPen))
             self.setBrush(Qt.transparent)
 
 
@@ -396,12 +396,13 @@ class LineGripItem(QGraphicsPathItem):
         # hide grip of previous hovered item
         if self.previousHoveredItem and item != self.previousHoveredItem and \
                 item not in self.previousHoveredItem.lineGripItems:
-            self.previousHoveredItem.hideGripItem()
+            self.previousHoveredItem.hideLineGripItem()
+            self.previousHoveredItem.hideSizeGripItem()
         super().mouseMoveEvent(mouseEvent)
         # show grip of current hoverde item
         if isinstance(item, NodeItem):
             self.previousHoveredItem = item
-            item.showGripItem()
+            item.showLineGripItem()
 
     def mouseReleaseEvent(self, mouseEvent):
         """Handle all mouse release for this item"""
@@ -523,6 +524,7 @@ class NodeItem(QGraphicsSvgItem):
         self.label = None
         self._rotation = 0
         self.flipState = [False, False]
+        self.activateGrip = False
     
     @property
     def flipH(self):
@@ -643,9 +645,11 @@ class NodeItem(QGraphicsSvgItem):
         if change == QGraphicsItem.ItemSelectedHasChanged:
             # show grips if selected
             if value is True:
-                self.showGripItem()
+                self.showLineGripItem()
+                self.showSizeGripItem()
             else:
-                self.hideGripItem()
+                self.hideLineGripItem()
+                self.hideSizeGripItem()
             return
         # check if transform changed
         if change == QGraphicsItem.ItemTransformHasChanged:
@@ -683,28 +687,46 @@ class NodeItem(QGraphicsSvgItem):
     def hoverEnterEvent(self, event):
         """defines shape highlighting on Mouse Over
         """
-        self.showGripItem()
+        self.showLineGripItem()
         super(NodeItem, self).hoverEnterEvent(event)
 
     def hoverLeaveEvent(self, event):
         """defines shape highlighting on Mouse Leave
         """
-        self.hideGripItem()
+        self.hideLineGripItem()
+        self.hideSizeGripItem()
         super(NodeItem, self).hoverLeaveEvent(event)
+    
+    def mouseDoubleClickEvent(self, event):
+        self.activateGrip = not self.activateGrip
+        if self.activateGrip == False:
+            self.hideSizeGripItem()
+        else:
+            self.showSizeGripItem()
+        super(NodeItem,self).mouseDoubleClickEvent(event)
 
-    def showGripItem(self):
-        """shows grip items of svg item
+    def showLineGripItem(self):
+        """shows line grip items of svg item
         """
         for item in self.lineGripItems:
             item.show()
-        for item in self.sizeGripItems:
-            item.show()
 
-    def hideGripItem(self):
-        """hide grip items of svg item
+    def hideLineGripItem(self):
+        """hide line grip items of svg item
         """
         for item in self.lineGripItems:
             item.hide()
+    
+    def showSizeGripItem(self):
+        """shows size grip items of svg item
+        """
+        for item in self.sizeGripItems:
+            item.show()
+
+    def hideSizeGripItem(self):
+        """hide size grip items of svg item
+        """
+        self.activateGrip = False
         for item in self.sizeGripItems:
             item.hide()
 

@@ -149,7 +149,7 @@ class CustomScene(QGraphicsScene):
         item = self.itemAt(mouseEvent.scenePos().x(), mouseEvent.scenePos().y(),
                                    QTransform())
         if isinstance(item,shapes.SizeGripItem):
-            item.parentItem().showGripItem()
+            item.parentItem().showLineGripItem()
         super(CustomScene,self).mouseMoveEvent(mouseEvent)
 
     def reInsertLines(self):
