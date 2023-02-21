@@ -44,6 +44,7 @@ class CustomView(QGraphicsView):
             graphic = getattr(shapes, obj[0])(*map(lambda x: int(x) if x.isdigit() else x, obj[1:]))
             graphic.setPos(QDropEvent.pos().x(), QDropEvent.pos().y())
             self.scene().addItemPlus(graphic)
+            graphic.setParent(self)
             QDropEvent.acceptProposedAction()
      
     def wheelEvent(self, QWheelEvent):

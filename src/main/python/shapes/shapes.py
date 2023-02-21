@@ -625,6 +625,7 @@ class NodeItem(QGraphicsSvgItem):
     def itemChange(self, change, value):
         """Overloads and extends QGraphicsSvgItem to also update grip items
         """
+        newPos = value
         # check if item selected is changed
         if change == QGraphicsItem.ItemSelectedHasChanged:
             # show grips if selected
@@ -642,7 +643,21 @@ class NodeItem(QGraphicsSvgItem):
             # update grips
             self.updateLineGripItem()
             self.updateSizeGripItem()
-            return
+            
+            #restrict movable area of Node Item
+            
+            if self.parent() is not None:
+                rect = self.parent().sceneRect() 
+                width = self.boundingRect().width()
+                height = self.boundingRect().height()
+                eWH1 = QPointF(newPos.x()+width,newPos.y()+height)
+                eWH2 = QPointF(newPos.x()-width,newPos.y()-height)
+                if not rect.__contains__(eWH1) or not rect.__contains__(eWH2) :
+                    newPos.setX(min(rect.right()-width+40, max(newPos.x(), rect.left()+90)))
+                    newPos.setY(min(rect.bottom()-height, max(newPos.y(), rect.top()+70)))
+                    self.setPos(newPos)
+            return super(NodeItem,self).itemChange(change, newPos)
+        
         # check if item is add on scene
         if change == QGraphicsItem.ItemSceneHasChanged and self.scene():
             # add grips and update them
