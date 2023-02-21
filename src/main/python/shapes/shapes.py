@@ -136,22 +136,36 @@ class SizeGripItem(QGraphicsPathItem):
     def updatePath(self,m_index):
         """updates path of size grip item
         """
-        width = height = 0
-        if self.direction is Qt.Horizontal:
-            height = self.parentItem().boundingRect().height()+20
-        else:
-            width = self.parentItem().boundingRect().width()+20
+        bx = self.parentItem().boundingRect().x()
+        by = self.parentItem().boundingRect().y()
+        height = self.parentItem().boundingRect().height()
+        width = self.parentItem().boundingRect().width()
+
         path = QPainterPath()
-        if(m_index == 0):
-            tempRect = QRectF((-width / 2),( -height / 2)-10, width, height)
-        if(m_index == 1):
-            tempRect = QRectF((-width / 2)-10,( -height / 2), width, height)
-        if(m_index == 2):
-            tempRect = QRectF((-width / 2),( -height / 2)+10, width, height)
-        if(m_index == 3):
-            tempRect = QRectF((-width / 2)+10,( -height / 2), width, height)
-        #print(tempRect)
-        path.addRect(tempRect)
+        if(m_index == 0):#top
+            by = by+10
+            path.moveTo(bx+(width/2)-10,by)
+            path.lineTo(bx+(width/2)+10,by)
+            path.lineTo(bx+(width/2),by-20)
+            path.lineTo(bx+(width/2)-10,by)
+        if(m_index == 1):#left
+            bx = bx+10
+            path.moveTo(bx,by+(height/2)-10)
+            path.lineTo(bx,by+(height/2)+10)
+            path.lineTo(bx-20,by+(height/2))
+            path.lineTo(bx,by+(height/2)-10)
+        if(m_index == 2):#bottom
+            by = by-10
+            path.moveTo(bx+(width/2)-10,by+height)
+            path.lineTo (bx+(width/2)+10,by+height)
+            path.lineTo (bx+(width/2),by+height+20)
+            path.lineTo (bx+(width/2)-10,by+height)
+        if(m_index == 3):#right
+            bx = bx-10
+            path.moveTo(bx+width,by+(height/2)-10)
+            path.lineTo(bx+width,by+(height/2)+10)
+            path.lineTo(bx+width+20,by+(height/2))
+            path.lineTo(bx+width,by+(height/2)-10)
         self.setPath(path)
 
     def updatePosition(self):
@@ -227,7 +241,7 @@ class SizeGripItem(QGraphicsPathItem):
 
     def show(self):
         # make self visible
-        self.setPen(QPen(QColor(128, 128, 128,150), 4))
+        self.setPen(QPen(QColor(128, 128, 128,150), 2))
 
     def hide(self):
         # hide self by setting pen to transparent
