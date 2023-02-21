@@ -138,19 +138,18 @@ class SizeGripItem(QGraphicsPathItem):
         """
         width = height = 0
         if self.direction is Qt.Horizontal:
-            height = self.parentItem().boundingRect().height()+40
-            
+            height = self.parentItem().boundingRect().height()+20
         else:
-            width = self.parentItem().boundingRect().width()+35
+            width = self.parentItem().boundingRect().width()+20
         path = QPainterPath()
         if(m_index == 0):
-            tempRect = QRectF((-width / 2),( -height / 2)-20, width, height+10)
+            tempRect = QRectF((-width / 2),( -height / 2)-10, width, height)
         if(m_index == 1):
-            tempRect = QRectF((-width / 2)-17.5,( -height / 2), width+8.75, height)
+            tempRect = QRectF((-width / 2)-10,( -height / 2), width, height)
         if(m_index == 2):
-            tempRect = QRectF((-width / 2),( -height / 2)+20, width, height-10)
+            tempRect = QRectF((-width / 2),( -height / 2)+10, width, height)
         if(m_index == 3):
-            tempRect = QRectF((-width / 2)+17.5,( -height / 2), width-8.75, height)
+            tempRect = QRectF((-width / 2)+10,( -height / 2), width, height)
         #print(tempRect)
         path.addRect(tempRect)
         self.setPath(path)
@@ -228,7 +227,7 @@ class SizeGripItem(QGraphicsPathItem):
 
     def show(self):
         # make self visible
-        self.setPen(QPen(QColor(128, 128, 128,150), 2))
+        self.setPen(QPen(QColor(128, 128, 128,150), 4))
 
     def hide(self):
         # hide self by setting pen to transparent
@@ -350,7 +349,7 @@ class LineGripItem(QGraphicsPathItem):
             return
         # initialize a line and add on scene
         # restrict circle grip to one line
-        if self.size is None and len(self.lines) > 0:
+        if self.size is None and len(self.lines) < 0:
             pass
         else:
             startPoint = self.parentItem().mapToScene(self.pos()) # first point of line
