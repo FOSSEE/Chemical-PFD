@@ -124,6 +124,7 @@ class SizeGripItem(QGraphicsPathItem):
     def updatePath(self):
         """updates path of size grip item
         """
+<<<<<<< Updated upstream
         width = height = 0
         if self.direction is Qt.Horizontal:
             height = self.parentItem().boundingRect().height()
@@ -131,6 +132,39 @@ class SizeGripItem(QGraphicsPathItem):
             width = self.parentItem().boundingRect().width()
         path = QPainterPath()
         path.addRect(QRectF(-width / 2, -height / 2, width, height))
+=======
+        bx = self.parentItem().boundingRect().x()
+        by = self.parentItem().boundingRect().y()
+        height = self.parentItem().boundingRect().height()
+        width = self.parentItem().boundingRect().width()
+
+        path = QPainterPath()
+        if(m_index == 0):#top
+            by = by+10
+            path.moveTo(bx+(width/2)-10,by)
+            path.lineTo(bx+(width/2)+10,by)
+            path.lineTo(bx+(width/2),by-20)
+            path.lineTo(bx+(width/2)-10,by)
+        if(m_index == 1):#left
+            bx = bx+10
+            path.moveTo(bx,by+(height/2)-10)
+            path.lineTo(bx,by+(height/2)+10)
+            path.lineTo(bx-20,by+(height/2))
+            path.lineTo(bx,by+(height/2)-10)
+        if(m_index == 2):#bottom
+            by = by-10
+            path.moveTo(bx+(width/2)-10,by+height)
+            path.lineTo (bx+(width/2)+10,by+height)
+            path.lineTo (bx+(width/2),by+height+20)
+            path.lineTo (bx+(width/2)-10,by+height)
+        if(m_index == 3):#right
+            bx = bx-10
+            path.moveTo(bx+width,by+(height/2)-10)
+            path.lineTo(bx+width,by+(height/2)+10)
+            path.lineTo(bx+width+20,by+(height/2))
+            path.lineTo(bx+width,by+(height/2)-10)
+        #self.setBrush(QBrush(QColor("59,68,75,150")))
+>>>>>>> Stashed changes
         self.setPath(path)
 
     def updatePosition(self):
@@ -206,7 +240,12 @@ class SizeGripItem(QGraphicsPathItem):
 
     def show(self):
         # make self visible
+<<<<<<< Updated upstream
         self.setPen(QPen(QColor("black"), 2))
+=======
+        self.setPen(QPen(QColor(128, 128, 128,150),2))
+        #self.setBrush(QBrush(QColor("59,68,75,150")))
+>>>>>>> Stashed changes
 
     def hide(self):
         # hide self by setting pen to transparent
