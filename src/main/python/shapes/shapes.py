@@ -109,7 +109,7 @@ class SizeGripItem(QGraphicsPathItem):
     def __init__(self, index, direction=Qt.Horizontal, parent=None):
         super(SizeGripItem, self).__init__(parent=parent)
         # set graphical setting
-        self.setFlag(QGraphicsItem.ItemIsSelectable, True)
+        #self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
         self.setAcceptHoverEvents(True)
