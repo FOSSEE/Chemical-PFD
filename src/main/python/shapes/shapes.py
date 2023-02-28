@@ -242,12 +242,13 @@ class SizeGripItem(QGraphicsPathItem):
     def show(self):
         # make self visible
         self.setPen(QPen(QColor(128, 128, 128,150), 2))
+        super(SizeGripItem,self).show()
 
     def hide(self):
         # hide self by setting pen to transparent
-        if not self.parentItem().isSelected():
-            self.setPen(QPen(Qt.NoPen))
-            self.setBrush(Qt.transparent)
+        self.setPen(QPen(Qt.NoPen))
+        self.setBrush(Qt.transparent)
+        super(SizeGripItem,self).hide()
 
 
 class LineGripItem(QGraphicsPathItem):
@@ -397,7 +398,7 @@ class LineGripItem(QGraphicsPathItem):
         if self.previousHoveredItem and item != self.previousHoveredItem and \
                 item not in self.previousHoveredItem.lineGripItems:
             self.previousHoveredItem.hideLineGripItem()
-            self.previousHoveredItem.hideSizeGripItem()
+            #self.previousHoveredItem.hideSizeGripItem()
         super().mouseMoveEvent(mouseEvent)
         # show grip of current hoverde item
         if isinstance(item, NodeItem):
@@ -649,7 +650,8 @@ class NodeItem(QGraphicsSvgItem):
                 self.showSizeGripItem()
             else:
                 self.hideLineGripItem()
-                self.hideSizeGripItem()
+                if not self.activateGrip:
+                    self.hideSizeGripItem()
             return
         # check if transform changed
         if change == QGraphicsItem.ItemTransformHasChanged:
@@ -694,13 +696,14 @@ class NodeItem(QGraphicsSvgItem):
         """defines shape highlighting on Mouse Leave
         """
         self.hideLineGripItem()
-        self.hideSizeGripItem()
+        #self.hideSizeGripItem()
         super(NodeItem, self).hoverLeaveEvent(event)
     
     def mouseDoubleClickEvent(self, event):
         self.activateGrip = not self.activateGrip
         if self.activateGrip == False:
             self.hideSizeGripItem()
+            self.parent().update()
         else:
             self.showSizeGripItem()
         super(NodeItem,self).mouseDoubleClickEvent(event)
