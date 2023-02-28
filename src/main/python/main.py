@@ -104,12 +104,12 @@ class appWindow(QMainWindow):
         #call to create a new file inside mdi area
         project = FileWindow(self.mdi)
         project.setObjectName("New Project")
+        project.setWindowFlags(Qt.FramelessWindowHint)
         self.mdi.addSubWindow(project)
         if not project.tabList: # important when unpickling a file instead
             project.newDiagram() #create a new tab in the new file
         project.fileCloseEvent.connect(self.fileClosed) #closed file signal to switch to sub window view
-        if self.count > 0: #switch to tab view if needed
-            self.mdi.setViewMode(QMdiArea.TabbedView)
+        self.mdi.setViewMode(QMdiArea.TabbedView)
         project.show()
                 
     def openProject(self):
@@ -126,9 +126,7 @@ class appWindow(QMainWindow):
                     project.resizeHandler()
                     project.fileCloseEvent.connect(self.fileClosed)
                     project.show()
-        if self.count > 1:
-            # self.tabSpace.setVisible(True)
-            self.mdi.setViewMode(QMdiArea.TabbedView)
+        self.mdi.setViewMode(QMdiArea.TabbedView)
             
     def saveProject(self):
         #serialize all files in mdi area
@@ -169,9 +167,10 @@ class appWindow(QMainWindow):
         self.writeSettings()  
     
     def fileClosed(self, index):
+        pass
         #checks if the file tab menu needs to be removed
-        if self.count <= 1 :
-            self.mdi.setViewMode(QMdiArea.SubWindowView)
+        # if self.count <= 1 :
+        #     self.mdi.setViewMode(QMdiArea.SubWindowView)
     
     def writeSettings(self):
         # write window state on window close
