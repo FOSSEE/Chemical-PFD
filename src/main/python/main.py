@@ -108,7 +108,7 @@ class appWindow(QMainWindow):
         if not project.tabList: # important when unpickling a file instead
             project.newDiagram() #create a new tab in the new file
         project.fileCloseEvent.connect(self.fileClosed) #closed file signal to switch to sub window view
-        if self.count > 1: #switch to tab view if needed
+        if self.count > 0: #switch to tab view if needed
             self.mdi.setViewMode(QMdiArea.TabbedView)
         project.show()
                 
@@ -170,7 +170,7 @@ class appWindow(QMainWindow):
     
     def fileClosed(self, index):
         #checks if the file tab menu needs to be removed
-        if self.count <= 2 :
+        if self.count <= 1 :
             self.mdi.setViewMode(QMdiArea.SubWindowView)
     
     def writeSettings(self):

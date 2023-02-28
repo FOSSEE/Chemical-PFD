@@ -31,6 +31,7 @@ class toolbar(QDockWidget):
         self.setWindowFlags(Qt.FramelessWindowHint)
         
         self.searchBox = QLineEdit(self.widget) #search box to search through componenets
+        self.searchBox.setStyleSheet("QLineEdit {background-color: white;color: black}") #set color of searchBox
         
         #connect signal to filter slot, add searchbar to toolbar
         self.searchBox.textChanged.connect(self.searchQuery)
