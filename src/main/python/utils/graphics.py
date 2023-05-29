@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt, QPointF, pyqtSignal
-from PyQt5.QtGui import QPen, QKeySequence
+from PyQt5.QtGui import QPen, QKeySequence, QTransform, QCursor
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsProxyWidget, QGraphicsItem, QUndoStack, QAction, QUndoView
 
 from .undo import *
@@ -44,6 +44,7 @@ class CustomView(QGraphicsView):
             graphic = getattr(shapes, obj[0])(*map(lambda x: int(x) if x.isdigit() else x, obj[1:]))
             graphic.setPos(QDropEvent.pos().x(), QDropEvent.pos().y())
             self.scene().addItemPlus(graphic)
+            graphic.setParent(self)
             QDropEvent.acceptProposedAction()
      
     def wheelEvent(self, QWheelEvent):
@@ -105,17 +106,14 @@ class CustomScene(QGraphicsScene):
         # (slot) used to delete all selected items, and add undo action for each of them
         if self.selectedItems():
             for item in self.selectedItems():
-                if(issubclass(item.__class__,shapes.LineGripItem) or issubclass(item.__class__,shapes.SizeGripItem) ):
-                    itemToDelete = item.parentItem()
-                else:
-                    itemToDelete = item 
-                self.count = 0
-                if(issubclass(itemToDelete.__class__,shapes.NodeItem)):
-                    for i in itemToDelete.lineGripItems:
-                        for j in i.lines:
-                            self.count+=1
-                            self.undoStack.push(deleteCommand(j, self))
-                if itemToDelete.__class__ != shapes.line.Grabber:
+                if issubclass(item.__class__,shapes.NodeItem) or isinstance(item,shapes.Line):
+                    itemToDelete = item
+                    self.count = 0
+                    if(issubclass(itemToDelete.__class__,shapes.NodeItem)):
+                        for i in itemToDelete.lineGripItems:
+                            for j in i.lines:
+                                self.count+=1
+                                self.undoStack.push(deleteCommand(j, self))
                     self.undoStack.push(deleteCommand(itemToDelete, self))
             
     def itemMoved(self, movedItem, lastPos):
@@ -147,6 +145,13 @@ class CustomScene(QGraphicsScene):
             self.movingItem = None #clear movingitem reference
         return super(CustomScene, self).mouseReleaseEvent(event)
     
+    def mouseMoveEvent(self, mouseEvent):
+        item = self.itemAt(mouseEvent.scenePos().x(), mouseEvent.scenePos().y(),
+                                   QTransform())
+        if isinstance(item,shapes.SizeGripItem):
+            item.parentItem().showLineGripItem()
+        super(CustomScene,self).mouseMoveEvent(mouseEvent)
+
     def reInsertLines(self):
         currentIndex = self.undoStack.index()
         i = 2

@@ -37,6 +37,11 @@ QLineEdit {
 QLineEdit:focus{
     border-color: #7cabf9;
 }
+
+QTabBar::tab:selected {
+    background: #dcdcdc;
+}
+
 TabBarPlus {
     qproperty-drawBase: 0;
     left: 5px;

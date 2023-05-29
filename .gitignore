@@ -5,3 +5,4 @@ src/main/python/experimental/*
 .vscode/*.jsons
 .idea/*
 target/*
+src/main/python/PFD-Tool.exe

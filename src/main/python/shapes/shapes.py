@@ -26,6 +26,18 @@ orientationEnum = [
     Qt.Vertical
 ]
 
+#For extending Lines for repositioned Rectangular Line Grips
+rLGPlus = {}
+f = open('./shapes/rLGPlus.txt','r')
+dataRead = f.readlines()[1:]
+for line in dataRead:
+
+    if not line.__contains__(',') :
+        rLGPlus[line.strip()] = []
+    else:
+        grips = line.strip().split(',')
+        rLGPlus[list(rLGPlus.keys())[-1]].append(grips)
+
 class ItemLabel(QGraphicsTextItem):
     """Extends PyQt5's QGraphicsPathItem to create text label for svg item
     """
@@ -97,11 +109,11 @@ class SizeGripItem(QGraphicsPathItem):
     def __init__(self, index, direction=Qt.Horizontal, parent=None):
         super(SizeGripItem, self).__init__(parent=parent)
         # set graphical setting
-        self.setFlag(QGraphicsItem.ItemIsSelectable, True)
+        #self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
         self.setAcceptHoverEvents(True)
-        self.setPen(QPen(QColor("black"), 0))
+        self.setPen(QPen(Qt.NoPen))
         self.setZValue(2)
         # property direction
         self._direction = (orientationEnum.index(direction) + self.parentItem().rotation) % 4
@@ -121,22 +133,45 @@ class SizeGripItem(QGraphicsPathItem):
         else:
             return orientationEnum[self._direction]
 
-    def updatePath(self):
+    def updatePath(self,m_index):
         """updates path of size grip item
         """
-        width = height = 0
-        if self.direction is Qt.Horizontal:
-            height = self.parentItem().boundingRect().height()
-        else:
-            width = self.parentItem().boundingRect().width()
+        bx = self.parentItem().boundingRect().x()
+        by = self.parentItem().boundingRect().y()
+        height = self.parentItem().boundingRect().height()
+        width = self.parentItem().boundingRect().width()
+
         path = QPainterPath()
-        path.addRect(QRectF(-width / 2, -height / 2, width, height))
+        if(m_index == 0):#top
+            by = by+10
+            path.moveTo(bx+(width/2)-10,by)
+            path.lineTo(bx+(width/2)+10,by)
+            path.lineTo(bx+(width/2),by-20)
+            path.lineTo(bx+(width/2)-10,by)
+        if(m_index == 1):#left
+            bx = bx+10
+            path.moveTo(bx,by+(height/2)-10)
+            path.lineTo(bx,by+(height/2)+10)
+            path.lineTo(bx-20,by+(height/2))
+            path.lineTo(bx,by+(height/2)-10)
+        if(m_index == 2):#bottom
+            by = by-10
+            path.moveTo(bx+(width/2)-10,by+height)
+            path.lineTo (bx+(width/2)+10,by+height)
+            path.lineTo (bx+(width/2),by+height+20)
+            path.lineTo (bx+(width/2)-10,by+height)
+        if(m_index == 3):#right
+            bx = bx-10
+            path.moveTo(bx+width,by+(height/2)-10)
+            path.lineTo(bx+width,by+(height/2)+10)
+            path.lineTo(bx+width+20,by+(height/2))
+            path.lineTo(bx+width,by+(height/2)-10)
         self.setPath(path)
 
     def updatePosition(self):
         """updates position of grip items
         """
-        self.updatePath()
+        self.updatePath(self.m_index)
         pos = self.point(self.m_index)
         self.setEnabled(False)
         self.setPos(pos)
@@ -206,13 +241,14 @@ class SizeGripItem(QGraphicsPathItem):
 
     def show(self):
         # make self visible
-        self.setPen(QPen(QColor("black"), 2))
+        self.setPen(QPen(QColor(128, 128, 128,150), 2))
+        super(SizeGripItem,self).show()
 
     def hide(self):
         # hide self by setting pen to transparent
-        if not self.parentItem().isSelected():
-            self.setPen(QPen(Qt.transparent))
-            self.setBrush(Qt.transparent)
+        self.setPen(QPen(Qt.NoPen))
+        self.setBrush(Qt.transparent)
+        super(SizeGripItem,self).hide()
 
 
 class LineGripItem(QGraphicsPathItem):
@@ -328,7 +364,7 @@ class LineGripItem(QGraphicsPathItem):
             return
         # initialize a line and add on scene
         # restrict circle grip to one line
-        if self.size is None and len(self.lines) > 0:
+        if self.size is None and len(self.lines) < 0:
             pass
         else:
             startPoint = self.parentItem().mapToScene(self.pos()) # first point of line
@@ -361,12 +397,13 @@ class LineGripItem(QGraphicsPathItem):
         # hide grip of previous hovered item
         if self.previousHoveredItem and item != self.previousHoveredItem and \
                 item not in self.previousHoveredItem.lineGripItems:
-            self.previousHoveredItem.hideGripItem()
+            self.previousHoveredItem.hideLineGripItem()
+            #self.previousHoveredItem.hideSizeGripItem()
         super().mouseMoveEvent(mouseEvent)
         # show grip of current hoverde item
         if isinstance(item, NodeItem):
             self.previousHoveredItem = item
-            item.showGripItem()
+            item.showLineGripItem()
 
     def mouseReleaseEvent(self, mouseEvent):
         """Handle all mouse release for this item"""
@@ -399,6 +436,32 @@ class LineGripItem(QGraphicsPathItem):
                     if self.tempLine.startGripItem.parentItem() != self.tempLine.endGripItem.parentItem():
                         # update line with end point so it sets final path
                         self.tempLine.updateLine(endPoint=endPoint)
+                        #Adjusting line for repositioned retangular grips
+                        if self.parentItem().__class__.__name__ in list(rLGPlus.keys()):
+                                for tgrip in rLGPlus[self.parentItem().__class__.__name__]:
+                                    if(float(tgrip[3]) == 0):
+                                        if self.m_location == tgrip[0]:
+                                            tempx,tempy = int(tgrip[1]),int(tgrip[2])
+                                            self.tempLine.startPoint.setX(self.tempLine.startPoint.x()+tempx)
+                                            self.tempLine.startPoint.setY(self.tempLine.startPoint.y()+tempy)
+                                    else:
+                                        if self.m_location == tgrip[0] and self.size == float(tgrip[3]):
+                                            tempx,tempy = int(tgrip[1]),int(tgrip[2])
+                                            self.tempLine.startPoint.setX(self.tempLine.startPoint.x()+tempx)
+                                            self.tempLine.startPoint.setY(self.tempLine.startPoint.y()+tempy)
+                        if item.parentItem().__class__.__name__ in list(rLGPlus.keys()):
+                                for tgrip in rLGPlus[item.parentItem().__class__.__name__]:
+                                    if(float(tgrip[3]) == 0):
+                                        if item.m_location == tgrip[0]:
+                                            tempx,tempy = int(tgrip[1]),int(tgrip[2])
+                                            self.tempLine.endPoint.setX(self.tempLine.endPoint.x()+tempx)
+                                            self.tempLine.endPoint.setY(self.tempLine.endPoint.y()+tempy)
+                                    else:
+                                        if item.m_location == tgrip[0] and item.size == float(tgrip[3]):
+                                            tempx,tempy = int(tgrip[1]),int(tgrip[2])
+                                            self.tempLine.endPoint.setX(self.tempLine.endPoint.x()+tempx)
+                                            self.tempLine.endPoint.setY(self.tempLine.endPoint.y()+tempy)
+                                        
                         self.lines.append(self.tempLine)
                         item.lines.append(self.tempLine)
                         tag = 1
@@ -426,8 +489,8 @@ class LineGripItem(QGraphicsPathItem):
     def show(self):
         """ shows line grip item
         """
-        self.setPen(QPen(QColor("black"), 2))
-        self.setBrush(QColor("cyan"))
+        self.setPen(QPen(QColor(0,0,0,150), 1.5))
+        self.setBrush(QColor(140,199,198,255))
 
     def hide(self):
         """ hides line grip item
@@ -462,6 +525,7 @@ class NodeItem(QGraphicsSvgItem):
         self.label = None
         self._rotation = 0
         self.flipState = [False, False]
+        self.activateGrip = False
     
     @property
     def flipH(self):
@@ -577,13 +641,17 @@ class NodeItem(QGraphicsSvgItem):
     def itemChange(self, change, value):
         """Overloads and extends QGraphicsSvgItem to also update grip items
         """
+        newPos = value
         # check if item selected is changed
         if change == QGraphicsItem.ItemSelectedHasChanged:
             # show grips if selected
             if value is True:
-                self.showGripItem()
+                self.showLineGripItem()
+                self.showSizeGripItem()
             else:
-                self.hideGripItem()
+                self.hideLineGripItem()
+                if not self.activateGrip:
+                    self.hideSizeGripItem()
             return
         # check if transform changed
         if change == QGraphicsItem.ItemTransformHasChanged:
@@ -594,7 +662,21 @@ class NodeItem(QGraphicsSvgItem):
             # update grips
             self.updateLineGripItem()
             self.updateSizeGripItem()
-            return
+            
+            #restrict movable area of Node Item
+            
+            if self.parent() is not None:
+                rect = self.parent().sceneRect() 
+                width = self.boundingRect().width()
+                height = self.boundingRect().height()
+                eWH1 = QPointF(newPos.x()+width,newPos.y()+height)
+                eWH2 = QPointF(newPos.x()-width,newPos.y()-height)
+                if not rect.__contains__(eWH1) or not rect.__contains__(eWH2) :
+                    newPos.setX(min(rect.right()-width+40, max(newPos.x(), rect.left()+90)))
+                    newPos.setY(min(rect.bottom()-height, max(newPos.y(), rect.top()+70)))
+                    self.setPos(newPos)
+            return super(NodeItem,self).itemChange(change, newPos)
+        
         # check if item is add on scene
         if change == QGraphicsItem.ItemSceneHasChanged and self.scene():
             # add grips and update them
@@ -607,28 +689,47 @@ class NodeItem(QGraphicsSvgItem):
     def hoverEnterEvent(self, event):
         """defines shape highlighting on Mouse Over
         """
-        self.showGripItem()
+        self.showLineGripItem()
         super(NodeItem, self).hoverEnterEvent(event)
 
     def hoverLeaveEvent(self, event):
         """defines shape highlighting on Mouse Leave
         """
-        self.hideGripItem()
+        self.hideLineGripItem()
+        #self.hideSizeGripItem()
         super(NodeItem, self).hoverLeaveEvent(event)
+    
+    def mouseDoubleClickEvent(self, event):
+        self.activateGrip = not self.activateGrip
+        if self.activateGrip == False:
+            self.hideSizeGripItem()
+            self.parent().update()
+        else:
+            self.showSizeGripItem()
+        super(NodeItem,self).mouseDoubleClickEvent(event)
 
-    def showGripItem(self):
-        """shows grip items of svg item
+    def showLineGripItem(self):
+        """shows line grip items of svg item
         """
         for item in self.lineGripItems:
             item.show()
-        for item in self.sizeGripItems:
-            item.show()
 
-    def hideGripItem(self):
-        """hide grip items of svg item
+    def hideLineGripItem(self):
+        """hide line grip items of svg item
         """
         for item in self.lineGripItems:
             item.hide()
+    
+    def showSizeGripItem(self):
+        """shows size grip items of svg item
+        """
+        for item in self.sizeGripItems:
+            item.show()
+
+    def hideSizeGripItem(self):
+        """hide size grip items of svg item
+        """
+        self.activateGrip = False
         for item in self.sizeGripItems:
             item.hide()
 
@@ -813,9 +914,9 @@ class OilGasOrPulverizedFuelFurnace(NodeItem):
         self.grips = [
             [58.27673386073162, 100, "top"],
             [0, 19.692723451106, "left"],
-            [17.2777337415748, 33.3944873323144, "left", 66.7889746646288],
-            [100, 33.3944873323144, "right", 66.7889746646288],
-            [57.9723659874, 0, "bottom", 81.389264491796]
+            [17.2777337415748-5, 33.3944873323144, "left", 66.7889746646288],
+            [100+5, 33.3944873323144, "right", 66.7889746646288],
+            [57.9723659874, 0-10, "bottom", 81.389264491796]
         ]
 
 
@@ -824,9 +925,9 @@ class SolidFuelFurnace(NodeItem):
         super(SolidFuelFurnace, self).__init__("svg/Furnaces and Boilers/Solid Fuel Furnace")
         self.grips = [
             [50, 100, "top"],
-            [0, 33.39352642259468, "left", 66.78705284518936],
-            [100, 33.39352642259468, "right", 66.78705284518936],
-            [50, 0, "bottom", 100]
+            [0-5, 33.39352642259468, "left", 66.78705284518936],
+            [100+5, 33.39352642259468, "right", 66.78705284518936],
+            [50, 0-10, "bottom", 100]
         ]
 
 
@@ -865,10 +966,10 @@ class HorizontalVessel(NodeItem):
     def __init__(self):
         super(HorizontalVessel, self).__init__("svg/Process Vessels/Horizontal Vessel")
         self.grips = [
-            [50, 100, "top", 87.08554680344],
+            [50, 100+10, "top", 87.08554680344],
             [0, 50, "left"],
             [100, 50, "right"],
-            [50, 0, "bottom", 87.08554680344]
+            [50, 0-10, "bottom", 87.08554680344]
         ]
 
 
@@ -877,8 +978,8 @@ class PackedVessel(NodeItem):
         super(PackedVessel, self).__init__("svg/Process Vessels/Packed Vessel")
         self.grips = [
             [50, 100, "top"],
-            [0, 50, "left", 86.703566201060],
-            [100, 50, "right", 86.703566201060],
+            [0-10, 50, "left", 86.703566201060],
+            [100+10, 50, "right", 86.703566201060],
             [50, 0, "bottom"]
         ]
 
@@ -895,8 +996,8 @@ class VerticalVessel(NodeItem):
         super(VerticalVessel, self).__init__("svg/Process Vessels/Vertical Vessel")
         self.grips = [
             [50, 100, "top"],
-            [0, 50, "left", 86.703566201060],
-            [100, 50, "right", 86.703566201060],
+            [0-10, 50, "left", 86.703566201060],
+            [100+10, 50, "right", 86.703566201060],
             [50, 0, "bottom"]
         ]
 
@@ -917,9 +1018,9 @@ class FixedRoofTank(NodeItem):
         super(FixedRoofTank, self).__init__("svg/Storage Vessels Tanks/Fixed Roof Tank")
         self.grips = [
             [50, 100, "top"],
-            [0, 50, "left", 100],
-            [100, 50, "right", 100],
-            [50, 0, "bottom", 100]
+            [0-6, 50, "left", 100],
+            [100+7, 50, "right", 100],
+            [50, 0-10, "bottom", 100]
         ]
 
 
@@ -927,9 +1028,9 @@ class FloatingRoofTank(NodeItem):
     def __init__(self):
         super(FloatingRoofTank, self).__init__("svg/Storage Vessels Tanks/Floating Roof Tank")
         self.grips = [
-            [0, 50, "left", 100],
-            [100, 50, "right", 100],
-            [50, 0, "bottom", 100]
+            [0-7, 50, "left", 100],
+            [100+7, 50, "right", 100],
+            [50, 0-10, "bottom", 100]
         ]
 
 
@@ -937,10 +1038,10 @@ class SeparatorsForLiquidsDecanter(NodeItem):
     def __init__(self):
         super(SeparatorsForLiquidsDecanter, self).__init__("svg/Separators/Separators for Liquids, Decanter")
         self.grips = [
-            [50, 100, "top", 100],
-            [0, 50, "left", 100],
-            [100, 50, "right", 100],
-            [50, 0, "bottom", 100]
+            [50, 100+10, "top", 100],
+            [0-10, 50, "left", 100],
+            [100+10, 50, "right", 100],
+            [50, 0-10, "bottom", 100]
         ]
 
 class GateValve(NodeItem):
@@ -965,11 +1066,11 @@ class OneCellFiredHeaterFurnace(NodeItem):
         super(OneCellFiredHeaterFurnace, self).__init__("svg/Furnaces and Boilers/One Cell Fired Heater, Furnace")
         self.grips = [
             [50, 100, "top"],
-            [0, 25, "left", 50],
+            [0-7, 25, "left", 50],
             [25, 87.5, "left", 25],
-            [100, 25, "right", 50],
+            [100+7, 25, "right", 50],
             [75, 87.5, "right", 25],
-            [50, 0, "bottom", 100]
+            [50, 0-10, "bottom", 100]
         ]
 
 
@@ -978,12 +1079,12 @@ class TwoCellFiredHeaterFurnace(NodeItem):
         super(TwoCellFiredHeaterFurnace, self).__init__("svg/Furnaces and Boilers/Two Cell Fired Heater, Furnace")
         self.grips = [
             [50, 100, "top"],
-            [0, 33.33, "left", 66.66],
+            [0-5, 33.33, "left", 66.66],
             [33.33, 91.66, "left", 16.66],
-            [100, 33.33, "right", 66.66],
+            [100+5, 33.33, "right", 66.66],
             [66.66, 91.66, "right", 16.66],
-            [16.67, 0, "bottom", 33.33],
-            [83.33, 0, "bottom", 33.33]
+            [16.67, 0-10, "bottom", 33.33],
+            [83.33, 0-10, "bottom", 33.33]
         ]
 
 
@@ -1011,7 +1112,7 @@ class ContinuousDryer(NodeItem):
         self.grips = [
             [8.13, 35.2, "top"],
             [98.9, 28, "bottom"],
-            [50, 100, "top", 60.13]
+            [50, 100+10, "top", 60.13]
         ]
 
 

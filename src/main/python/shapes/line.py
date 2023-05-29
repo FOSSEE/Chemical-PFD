@@ -5,6 +5,18 @@ from PyQt5.QtCore import Qt, QPointF, QRectF, QLineF, pyqtSignal
 
 from collections import defaultdict
 
+#For extending Lines for repositioned Rectangular Line Grips
+rLGPlus = {}
+f = open('./shapes/rLGPlus.txt','r')
+dataRead = f.readlines()[1:]
+for line in dataRead:
+
+    if not line.__contains__(',') :
+        rLGPlus[line.strip()] = []
+    else:
+        grips = line.strip().split(',')
+        rLGPlus[list(rLGPlus.keys())[-1]].append(grips)
+
 class Grabber(QGraphicsPathItem):
     """
     Extends QGraphicsPathItem to create grabber for line for moving a particular segment
@@ -936,6 +948,19 @@ class Line(QGraphicsPathItem):
                 startPoint.setY(
                     startPoint.y() - self.startGap * item.boundingRect().height())
             self.startPoint = startPoint
+            #Adjusting line for repositioned retangular grips
+            if self.startGripItem.parentItem().__class__.__name__ in list(rLGPlus.keys()):
+                for tgrip in rLGPlus[self.startGripItem.parentItem().__class__.__name__]:
+                    if(float(tgrip[3]) == 0):
+                        if self.startGripItem.m_location == tgrip[0]:
+                            tempx,tempy = int(tgrip[1]),int(tgrip[2])
+                            self.startPoint.setX(self.startPoint.x()+tempx)
+                            self.startPoint.setY(self.startPoint.y()+tempy)
+                    else:
+                        if self.startGripItem.m_location == tgrip[0] and self.startGripItem.size == float(tgrip[3]):
+                            tempx,tempy = int(tgrip[1]),int(tgrip[2])
+                            self.startPoint.setX(self.startPoint.x()+tempx)
+                            self.startPoint.setY(self.startPoint.y()+tempy)
         # end point on line
         if self.endGripItem:
             item = self.endGripItem
@@ -948,6 +973,19 @@ class Line(QGraphicsPathItem):
                 endPoint.setY(
                     endPoint.y() - self.endGap * item.boundingRect().height())
             self.endPoint = endPoint
+            #Adjusting line for repositioned retangular grips
+            if self.endGripItem.parentItem().__class__.__name__ in list(rLGPlus.keys()):
+                for tgrip in rLGPlus[self.endGripItem.parentItem().__class__.__name__]:
+                    if(float(tgrip[3]) == 0):
+                        if self.endGripItem.m_location == tgrip[0]:
+                            tempx,tempy = int(tgrip[1]),int(tgrip[2])
+                            self.endPoint.setX(self.endPoint.x()+tempx)
+                            self.endPoint.setY(self.endPoint.y()+tempy)
+                    else:
+                        if self.endGripItem.m_location == tgrip[0] and self.endGripItem.size == float(tgrip[3]):
+                            tempx,tempy = int(tgrip[1]),int(tgrip[2])
+                            self.endPoint.setX(self.endPoint.x()+tempx)
+                            self.endPoint.setY(self.endPoint.y()+tempy)
             self.updatePath()
         # end point on other line
         elif self.refLine:
