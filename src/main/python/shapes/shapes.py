@@ -931,6 +931,17 @@ class SolidFuelFurnace(NodeItem):
         ]
 
 
+class Exchanger905(NodeItem):
+    def __init__(self):
+        super(Exchanger905, self).__init__("svg/Heating or Cooling Arrangements/905Exchanger")
+        self.grips = [
+            [15.85, 13.5, "bottom", 11.21],
+            [60.5, 13.5, "bottom", 55.33],
+            [15.85, 88.88, "top", 11.21],
+            [60.5, 88.88, "top", 55.33]
+        ]
+
+
 class Exchanger(NodeItem):
     def __init__(self):
         super(Exchanger, self).__init__("svg/Heating or Cooling Arrangements/Exchanger")
