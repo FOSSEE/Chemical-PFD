@@ -139,8 +139,18 @@ class appWindow(QMainWindow):
         return True
     
     def saveImage(self):
-        #place holder for future implementaion
-        pass
+        #save the scene as png or jpg
+        if self.mdi.currentSubWindow():
+            currentDiagram = self.mdi.currentSubWindow().tabber.currentWidget().painter
+            if currentDiagram:
+                name = QFileDialog.getSaveFileName(self, 'Save File', 'New Image', 'PNG (*.png);;JPEG (*.jpg)')
+                if name[0]:
+                    image = QImage(currentDiagram.sceneRect().size().toSize(), QImage.Format_ARGB32)
+                    image.fill(Qt.transparent)
+                    painter = QPainter(image)
+                    currentDiagram.render(painter)
+                    image.save(name[0])
+                    painter.end()
     
     def generateReport(self):
         #place holder for future implementaion        
