@@ -1095,11 +1095,11 @@ class OneCellFiredHeaterFurnace(NodeItem):
         super(OneCellFiredHeaterFurnace, self).__init__("svg/Furnaces and Boilers/One Cell Fired Heater, Furnace")
         self.grips = [
             [50, 100, "top"],
-            [0-7, 25, "left", 50],
+            [0, 28, "left", 45],
             [25, 87.5, "left", 25],
-            [100+7, 25, "right", 50],
+            [100, 28, "right", 45],
             [75, 87.5, "right", 25],
-            [50, 0-10, "bottom", 100]
+            [50, 0-5, "bottom", 100]
         ]
 
 
