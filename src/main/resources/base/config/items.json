@@ -85,7 +85,7 @@
             "name": "Kettle Reboiler",
             "icon": "./Heating or Cooling Arrangements/907Kettle Reboiler.png",
             "class": "Heating or Cooling Arrangements",
-            "object": "KettleReboiler",
+            "object": "KettleReboiler907",
             "args": []
         },
         "Exchanger": {

@@ -941,6 +941,15 @@ class Exchanger905(NodeItem):
             [60.5, 88.88, "top", 55.33]
         ]
 
+class KettleReboiler907(NodeItem):
+    def __init__(self):
+        super(KettleReboiler907, self).__init__("svg/Heating or Cooling Arrangements/907Kettle Reboiler")
+        self.grips = [
+            [18, 20.33, "bottom", 18],
+            [70, 20.33, "bottom", 40.33],
+            [18, 75, "top", 18],
+            [70, 96, "top", 40.33]
+        ]
 
 class Exchanger(NodeItem):
     def __init__(self):
