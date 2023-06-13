@@ -767,7 +767,7 @@ class NodeItem(QGraphicsSvgItem):
 
 class InflowLine(NodeItem):
     def __init__(self):
-        super(InflowLine, self).__init__("svg/piping/Inflow Line")
+        super(InflowLine, self).__init__("svg/Piping/Inflow Line")
         self.grips = [
             [100, 50, "right"]
         ]
