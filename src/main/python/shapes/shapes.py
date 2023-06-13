@@ -981,6 +981,15 @@ class ImmersionCoil(NodeItem):
             [88.232463407718, 100, "top"]
         ]
 
+class KettleReboiler(NodeItem):
+    def __init__(self):
+        super(KettleReboiler, self).__init__("svg/Heating or Cooling Arrangements/Kettle Reboiler")
+        self.grips = [
+            [100, 26.3, "right"],
+            [0, 26.3, "left"],
+            [50, 100, "top"],
+            [50, 0, "bottom"]
+        ]
 
 class HorizontalVessel(NodeItem):
     def __init__(self):
