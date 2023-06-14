@@ -1,4 +1,6 @@
+from PyQt5.QtCore import Qt, QRectF, QPointF
 from PyQt5.QtCore import Qt, QPointF, pyqtSignal
+from PyQt5.QtWidgets import QGraphicsScene, QApplication
 from PyQt5.QtGui import QPen, QKeySequence, QTransform, QCursor
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsProxyWidget, QGraphicsItem, QUndoStack, QAction, QUndoView
 
@@ -124,8 +126,53 @@ class CustomScene(QGraphicsScene):
     def addItemPlus(self, item):
         # extended add item method, so that a corresponding undo action is also pushed
         self.undoStack.push(addCommand(item, self))
-        
+
     def mousePressEvent(self, event):
+        bdsp = event.buttonDownScenePos(Qt.LeftButton)  # Get click position
+        point = QPointF(bdsp.x(), bdsp.y())  # Create a QPointF from click position
+        itemList = self.items(point)  # Get items at the specified point
+        if itemList:
+            item = itemList[0]  # Select the first item in the list
+            if event.button() == Qt.LeftButton:
+                modifiers = QApplication.keyboardModifiers()
+                if modifiers == Qt.ControlModifier:
+                    # Ctrl key is pressed, add item to the moving items list
+                    if item not in self.movingItems:
+                        self.movingItems.append(item)
+                        self.oldPositions[item] = item.pos()
+                else:
+                    # Ctrl key is not pressed, clear the moving items list and selection
+                    self.movingItems.clear()
+                    self.clearSelection()
+                    item.setSelected(True)
+
+        return super(CustomScene, self).mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            for item in self.movingItems:
+                if self.oldPositions[item] != item.pos():
+                    # Item position has changed, emit itemMoved signal
+                    self.itemMoved.emit(item, self.oldPositions[item])
+            self.movingItems.clear()  # Clear the moving items list
+            self.oldPositions.clear()  # Clear the old positions dictionary
+
+        return super(CustomScene, self).mouseReleaseEvent(event)
+
+    def mouseMoveEvent(self, mouseEvent):
+        if self.movingItems:
+            # Move all selected items together
+            for item in self.movingItems:
+                newPos = item.pos() + mouseEvent.scenePos() - mouseEvent.lastScenePos()
+                item.setPos(newPos)
+
+        item = self.itemAt(mouseEvent.scenePos().x(), mouseEvent.scenePos().y(), QTransform())
+        if isinstance(item, shapes.SizeGripItem):
+            item.parentItem().showLineGripItem()
+
+        return super(CustomScene, self).mouseMoveEvent(mouseEvent)
+
+    """def mousePressEvent(self, event):
         # overloaded mouse press event to check if an item was moved
         bdsp = event.buttonDownScenePos(Qt.LeftButton) #get click pos
         point = QPointF(bdsp.x(), bdsp.y()) #create a Qpoint from click pos
@@ -150,7 +197,7 @@ class CustomScene(QGraphicsScene):
                                    QTransform())
         if isinstance(item,shapes.SizeGripItem):
             item.parentItem().showLineGripItem()
-        super(CustomScene,self).mouseMoveEvent(mouseEvent)
+        super(CustomScene,self).mouseMoveEvent(mouseEvent)"""
 
     def reInsertLines(self):
         currentIndex = self.undoStack.index()
