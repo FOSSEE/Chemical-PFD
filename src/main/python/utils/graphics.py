@@ -1,3 +1,4 @@
+from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QRectF, QPointF
 from PyQt5.QtCore import Qt, QPointF, pyqtSignal
 from PyQt5.QtWidgets import QGraphicsScene, QApplication
@@ -81,10 +82,12 @@ class CustomScene(QGraphicsScene):
     Extends QGraphicsScene with undo-redo functionality
     """
     labelAdded = pyqtSignal(shapes.QGraphicsItem)
-    
+    itemMoved = QtCore.pyqtSignal(QtWidgets.QGraphicsItem, QtCore.QPointF)
+
     def __init__(self, *args, parent=None):
         super(CustomScene, self).__init__(*args,  parent=parent)
-        
+        self.movingItems = []  # List to store selected items for moving
+        self.oldPositions = {}  # Dictionary to store old positions of moved items
         self.undoStack = QUndoStack(self) #Used to store undo-redo moves
         self.createActions() #creates necessary actions that need to be called for undo-redo
 
@@ -148,16 +151,18 @@ class CustomScene(QGraphicsScene):
 
         return super(CustomScene, self).mousePressEvent(event)
 
-    def mouseReleaseEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            for item in self.movingItems:
-                if self.oldPositions[item] != item.pos():
-                    # Item position has changed, emit itemMoved signal
-                    self.itemMoved.emit(item, self.oldPositions[item])
-            self.movingItems.clear()  # Clear the moving items list
-            self.oldPositions.clear()  # Clear the old positions dictionary
 
-        return super(CustomScene, self).mouseReleaseEvent(event)
+def mouseReleaseEvent(self, event):
+    if event.button() == QtCore.Qt.LeftButton:
+        for item in self.movingItems:
+            if self.oldPositions[item] != item.pos():
+                # Item position has changed, invoke the callback function
+                self.itemMovedCallback(item, self.oldPositions[item])
+        self.movingItems.clear()  # Clear the moving items list
+        self.oldPositions.clear()  # Clear the old positions dictionary
+
+    return super(CustomScene, self).mouseReleaseEvent(event)
+
 
     def mouseMoveEvent(self, mouseEvent):
         if self.movingItems:
