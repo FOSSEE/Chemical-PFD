@@ -157,7 +157,7 @@ class CustomScene(QGraphicsScene):
             for item in self.movingItems:
                 if self.oldPositions[item] != item.pos():
                     # Item position has changed, invoke the callback function
-                    self.itemMovedCallback(item, self.oldPositions[item])
+                    self.itemMoved(item, self.oldPositions[item])
             self.movingItems.clear()  # Clear the moving items list
             self.oldPositions.clear()  # Clear the old positions dictionary
 
