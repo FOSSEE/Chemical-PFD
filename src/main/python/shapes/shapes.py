@@ -767,7 +767,7 @@ class NodeItem(QGraphicsSvgItem):
 
 class InflowLine(NodeItem):
     def __init__(self):
-        super(InflowLine, self).__init__("svg/piping/Inflow Line")
+        super(InflowLine, self).__init__("svg/Piping/Inflow Line")
         self.grips = [
             [100, 50, "right"]
         ]
@@ -931,14 +931,34 @@ class SolidFuelFurnace(NodeItem):
         ]
 
 
+class Exchanger905(NodeItem):
+    def __init__(self):
+        super(Exchanger905, self).__init__("svg/Heating or Cooling Arrangements/905Exchanger")
+        self.grips = [
+            [15.85, 13.5, "bottom", 11.21],
+            [60.5, 13.5, "bottom", 55.33],
+            [15.85, 88.88, "top", 11.21],
+            [60.5, 88.88, "top", 55.33]
+        ]
+
+class KettleReboiler907(NodeItem):
+    def __init__(self):
+        super(KettleReboiler907, self).__init__("svg/Heating or Cooling Arrangements/907Kettle Reboiler")
+        self.grips = [
+            [18, 20.33, "bottom", 18],
+            [70, 20.33, "bottom", 40.33],
+            [18, 75, "top", 18],
+            [70, 96, "top", 40.33]
+        ]
+
 class Exchanger(NodeItem):
     def __init__(self):
         super(Exchanger, self).__init__("svg/Heating or Cooling Arrangements/Exchanger")
         self.grips = [
             [100, 31.74474612706027, "right"],
             [100, 62.70549343934227, "right"],
-            [33.68240920045628, 100, "top"],
-            [33.68240920045628, 0, "bottom"]
+            [35.66, 100, "top"],
+            [36.66, 0, "bottom"]
         ]
 
 
@@ -961,6 +981,15 @@ class ImmersionCoil(NodeItem):
             [88.232463407718, 100, "top"]
         ]
 
+class KettleReboiler(NodeItem):
+    def __init__(self):
+        super(KettleReboiler, self).__init__("svg/Heating or Cooling Arrangements/Kettle Reboiler")
+        self.grips = [
+            [100, 26.3, "right"],
+            [0, 26.3, "left"],
+            [50, 100, "top"],
+            [50, 0, "bottom"]
+        ]
 
 class HorizontalVessel(NodeItem):
     def __init__(self):
@@ -1066,11 +1095,11 @@ class OneCellFiredHeaterFurnace(NodeItem):
         super(OneCellFiredHeaterFurnace, self).__init__("svg/Furnaces and Boilers/One Cell Fired Heater, Furnace")
         self.grips = [
             [50, 100, "top"],
-            [0-7, 25, "left", 50],
+            [0, 28, "left", 45],
             [25, 87.5, "left", 25],
-            [100+7, 25, "right", 50],
+            [100, 28, "right", 45],
             [75, 87.5, "right", 25],
-            [50, 0-10, "bottom", 100]
+            [50, 0-5, "bottom", 100]
         ]
 
 

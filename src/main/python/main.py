@@ -26,7 +26,10 @@ class appWindow(QMainWindow):
         
         #create the menu bar
         self.createMenuBar()
-        
+
+        #used for file name
+        self.counterr = 0
+
         self.mdi = QMdiArea(self) #create area for files to be displayed
         self.mdi.setObjectName('mdi area')
         
@@ -139,8 +142,19 @@ class appWindow(QMainWindow):
         return True
     
     def saveImage(self):
-        #place holder for future implementaion
-        pass
+        #save the scene as png or jpg
+        if self.mdi.currentSubWindow():
+            currentDiagram = self.mdi.currentSubWindow().tabber.currentWidget().painter
+            if currentDiagram:
+                name = QFileDialog.getSaveFileName(self, 'Save File', f'New Image {self.counterr}', 'PNG (*.png);;JPEG (*.jpg)')
+                if name[0]:
+                    image = QImage(currentDiagram.sceneRect().size().toSize(), QImage.Format_ARGB32)
+                    image.fill(Qt.transparent)
+                    painter = QPainter(image)
+                    currentDiagram.render(painter)
+                    image.save(name[0])
+                    self.counterr += 1
+                    painter.end()
     
     def generateReport(self):
         #place holder for future implementaion        
