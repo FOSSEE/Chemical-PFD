@@ -130,7 +130,7 @@ class CustomScene(QGraphicsScene):
         # extended add item method, so that a corresponding undo action is also pushed
         self.undoStack.push(addCommand(item, self))
 
-    def mousePressEvent(self, event):
+    """def mousePressEvent(self, event):
         bdsp = event.buttonDownScenePos(Qt.LeftButton)  # Get click position
         point = QPointF(bdsp.x(), bdsp.y())  # Create a QPointF from click position
         itemList = self.items(point)  # Get items at the specified point
@@ -175,11 +175,11 @@ class CustomScene(QGraphicsScene):
         if isinstance(item, shapes.SizeGripItem):
             item.parentItem().showLineGripItem()
 
-        return super(CustomScene, self).mouseMoveEvent(mouseEvent)
+        return super(CustomScene, self).mouseMoveEvent(mouseEvent)"""
 
     # The above is the mouse events for moving multiple images at once.
 
-    """def mousePressEvent(self, event):
+    def mousePressEvent(self, event):
         bdsp = event.buttonDownScenePos(Qt.LeftButton)  # get click pos
         point = QPointF(bdsp.x(), bdsp.y())  # create a QPointF from click pos
         itemList = self.items(point)  # get items at said point
@@ -210,7 +210,7 @@ class CustomScene(QGraphicsScene):
                     self.itemMoved(item, self.initialPositions[item])
             self.movingItems = []
             self.initialPositions = {}
-        return super(CustomScene, self).mouseReleaseEvent(event)"""
+        return super(CustomScene, self).mouseReleaseEvent(event)
 
     # The above mouse events are for moving items on top of each other.
 
