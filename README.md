@@ -2,6 +2,7 @@
 Repository for a Process Flow Diagram Software 
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[![CodeFactor](https://www.codefactor.io/repository/github/frg-fossee/chemical-pfd/badge/master)](https://www.codefactor.io/repository/github/frg-fossee/chemical-pfd/overview/master)
 ![Python](https://img.shields.io/badge/python-v3.6-blue.svg)
 ![version](https://img.shields.io/badge/version-0.0.1-blue)
 [![python-mixedCase-style](https://img.shields.io/badge/code%20style-mixed-brightgreen.svg?style=flat)](https://wiki.c2.com/?CamelCase)
