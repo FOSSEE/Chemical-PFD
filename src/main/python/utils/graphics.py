@@ -3,12 +3,14 @@ from PyQt5.QtCore import Qt, QRectF, QPointF
 from PyQt5.QtCore import Qt, QPointF, pyqtSignal
 from PyQt5.QtWidgets import QGraphicsScene, QApplication
 from PyQt5.QtGui import QPen, QKeySequence, QTransform, QCursor
-from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsProxyWidget, QGraphicsItem, QUndoStack, QAction, QUndoView
+from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsProxyWidget, QGraphicsItem, QUndoStack, QAction, QUndoView, QScrollBar
 
 from .undo import *
 from .dialogs import showUndoDialog
 
 import shapes
+
+
 
 class CustomView(QGraphicsView):
     """
@@ -45,7 +47,9 @@ class CustomView(QGraphicsView):
             #QDropEvent.mimeData().text() defines intended drop item, the pos values define position
             obj = QDropEvent.mimeData().text().replace(',', '').split('/')
             graphic = getattr(shapes, obj[0])(*map(lambda x: int(x) if x.isdigit() else x, obj[1:]))
-            graphic.setPos(QDropEvent.pos().x(), QDropEvent.pos().y())
+            mappedFromGlobal = self.viewport().mapFromGlobal(QCursor.pos())
+            graphic.setPos(mappedFromGlobal.x() + self.horizontalScrollBar().value() , mappedFromGlobal.y() + self.verticalScrollBar().value())
+            # graphic.setPos(QDropEvent.pos().x(), QDropEvent.pos().y())
             self.scene().addItemPlus(graphic)
             graphic.setParent(self)
             QDropEvent.acceptProposedAction()
@@ -160,7 +164,7 @@ class CustomScene(QGraphicsScene):
                     self.itemMoved(item, self.oldPositions[item])
             self.movingItems.clear()  # Clear the moving items list
             self.oldPositions.clear()  # Clear the old positions dictionary
-
+        
         return super(CustomScene, self).mouseReleaseEvent(event)
 
 
