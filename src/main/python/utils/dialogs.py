@@ -100,7 +100,7 @@ class sideViewSwitchDialog(QDialog):
 def saveEvent(parent = None):
     #utility function to generate a Qt alert window requesting the user to save the file, returns user intention on window close
     alert = QMessageBox.question(parent, parent.objectName(), "All unsaved progress will be LOST!",
-                                    QMessageBox.StandardButtons(QMessageBox.Save|QMessageBox.Ignore|QMessageBox.Cancel), QMessageBox.Save)
+                                    QMessageBox.StandardButtons(QMessageBox.Save|QMessageBox.Discard|QMessageBox.Cancel), QMessageBox.Save)
     if alert == QMessageBox.Cancel:
         return False
     else:
