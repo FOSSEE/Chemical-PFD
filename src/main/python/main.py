@@ -1,5 +1,5 @@
 import sys
-
+import os
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtCore import QObject, Qt, pyqtSignal, QSize, QPoint
 from PyQt5.QtGui import QBrush, QColor, QImage, QPainter, QPalette, QPen, QKeySequence
@@ -117,7 +117,10 @@ class appWindow(QMainWindow):
                 
     def openProject(self):
         #show the open file dialog to open a saved file, then unpickle it.
-        name = QFileDialog.getOpenFileNames(self, 'Open File(s)', '', 'Process Flow Diagram (*pfd)')
+        document_path = os.path.join(os.path.expanduser('~/Documents'),'PFDs')
+        if(not os.path.exists(document_path)):
+           document_path = os.path.expanduser('~/Documents')
+        name = QFileDialog.getOpenFileNames(self, 'Open File(s)', f'{document_path}', 'Process Flow Diagram (*pfd)')
         if name:
             for files in name[0]:
                 with open(files,'r') as file:
@@ -133,9 +136,12 @@ class appWindow(QMainWindow):
             
     def saveProject(self):
         #serialize all files in mdi area
+        document_path = os.path.join(os.path.expanduser('~/Documents'),'PFDs')
+        if(not os.path.exists(document_path)):
+           os.mkdir(document_path)
         for j, i in enumerate(self.activeFiles): #get list of all windows with atleast one tab
             if i.tabCount:
-                name = QFileDialog.getSaveFileName(self, 'Save File', f'New Diagram {j}', 'Process Flow Diagram (*.pfd)')
+                name = QFileDialog.getSaveFileName(self, 'Save File', f'{document_path}/Flow_Diagram_{j}.pfd', 'Process Flow Diagram (*.pfd)')
                 i.saveProject(name)
             else:
                 return False

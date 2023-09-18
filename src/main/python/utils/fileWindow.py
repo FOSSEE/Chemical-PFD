@@ -3,7 +3,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QFileDialog, QHBoxLayout,
                              QMdiSubWindow, QMenu, QPushButton, QSizePolicy,
                              QSplitter, QWidget, QStyle, QSizePolicy)
-from os import path
+from os import path, mkdir
 from . import dialogs
 from .graphics import CustomView
 from .canvas import canvas
@@ -84,22 +84,27 @@ class FileWindow(QMdiSubWindow):
         # resize Handler to handle resize cases.
         parentRect = self.mdiArea().size()
         current = self.tabber.currentWidget()
-        width, height = current.dimensions
+        width, height = 0,0
+        if(current):
+            width,height=current.dimensions
         
         if self.sideViewTab:
             width2, height2 = self.sideViewTab.dimensions
             width = min(parentRect.width(), width + width2)
             height = min(parentRect.height(), height + height2)
         else:
-            width = min(parentRect.width(), width + 100)
-            height = min(parentRect.height(), height + 150)
+            # width = min(parentRect.width(), width + 100)
+            width = parentRect.width()
+            # height = min(parentRect.height(), height + 150)
+            height = parentRect.height()
         
         if len(self.parent().parent().subWindowList()) > 1:
             height -= 20
         
         # set element dimensions
         self.setFixedSize(width, height)
-        current.adjustView()
+        if(current):
+            current.adjustView()
          
     def contextMenu(self, point):
         #function to display the right click menu at point of right click
@@ -213,7 +218,10 @@ class FileWindow(QMdiSubWindow):
         
     def saveProject(self, name = None):
         # called by dialog.saveEvent, saves the current file
-        name = QFileDialog.getSaveFileName(self, 'Save File', f'New Diagram', 'Process Flow Diagram (*.pfd)') if not name else name
+        document_path = path.join(path.expanduser('~/Documents'),'PFDs')
+        if(not path.exists(document_path)):
+           mkdir(document_path)
+        name = QFileDialog.getSaveFileName(self, 'Save File', f'{document_path}/Flow_Diagram.pfd', 'Process Flow Diagram (*.pfd)') if not name else name
         if name[0]:
             self.setObjectName(path.basename(name[0]).split(".")[0])
             self.setWindowTitle(self.objectName())
