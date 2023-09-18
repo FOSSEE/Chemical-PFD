@@ -100,11 +100,11 @@ class ShapeDialog(QDialog):
             return
         
         itemName = self.symbolName.text()
-        if itemName is '':
+        if itemName == '':
             return
         
         className = self.symbolClass.text()
-        if className is '':
+        if className == '':
             return
 
         category = self.symbolCategory.text()
