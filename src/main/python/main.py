@@ -148,7 +148,7 @@ class appWindow(QMainWindow):
             currentDiagram = self.mdi.currentSubWindow().tabber.currentWidget().painter
             if currentDiagram:
                 fileName = self.mdi.activeSubWindow().tabber.currentWidget().objectName()
-                defaultPath = os.path.expanduser("~/Downloads")
+                defaultPath = os.path.expanduser("~/Documents")
                 name = QFileDialog.getSaveFileName(self, 'Save File', os.path.join(defaultPath, fileName), 'PNG (*.png);;JPEG (*.jpg)')
                 if name[0]:
                     image = QImage(currentDiagram.sceneRect().size().toSize(), QImage.Format_ARGB32)
