@@ -147,21 +147,25 @@ class appWindow(QMainWindow):
             else:
                 return False
         return True
-    
+
     def saveImage(self):
-        #save the scene as png or jpg
         if self.mdi.currentSubWindow():
             currentDiagram = self.mdi.currentSubWindow().tabber.currentWidget().painter
             if currentDiagram:
                 fileName = self.mdi.activeSubWindow().tabber.currentWidget().objectName()
-                defaultPath = os.path.expanduser("~/Documents")
-                name = QFileDialog.getSaveFileName(self, 'Save File', os.path.join(defaultPath, fileName), 'PNG (*.png);;JPEG (*.jpg)')
-                if name[0]:
+                fileName += ".png"
+                defaultPath = os.path.expanduser("~/Pictures")
+                options = QFileDialog.Options()
+                options |= QFileDialog.DontUseNativeDialog
+                name, _ = QFileDialog.getSaveFileName(self, 'Save File', os.path.join(defaultPath, fileName),
+                                                      "Images (*.png *.jpg)", options=options)
+                if name:
+                    fileExtension = os.path.splitext(name)[1]
                     image = QImage(currentDiagram.sceneRect().size().toSize(), QImage.Format_ARGB32)
                     image.fill(Qt.transparent)
                     painter = QPainter(image)
                     currentDiagram.render(painter)
-                    image.save(name[0])
+                    image.save(name)
                     self.counterr += 1
                     painter.end()
     
