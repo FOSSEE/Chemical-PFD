@@ -153,7 +153,7 @@ class appWindow(QMainWindow):
             currentDiagram = self.mdi.currentSubWindow().tabber.currentWidget().painter
             if currentDiagram:
                 fileName = self.mdi.activeSubWindow().tabber.currentWidget().objectName()
-                defaultPath = os.path.expanduser("~/Downloads")
+                defaultPath = os.path.expanduser("~/Pictures")
 
                 msg_box = QMessageBox()
                 msg_box.setText("Choose the file format:")
@@ -178,7 +178,14 @@ class appWindow(QMainWindow):
                     image.fill(Qt.transparent)
                     painter = QPainter(image)
                     currentDiagram.render(painter)
-                    image.save(name)
+
+                    # Calculate the bounding box of the non-empty area in the scene
+                    bounding_box = currentDiagram.itemsBoundingRect().toRect()
+
+                    # Crop the image to the bounding box
+                    cropped_image = image.copy(bounding_box)
+
+                    cropped_image.save(name)
                     self.counterr += 1
                     painter.end()
     
