@@ -4,7 +4,7 @@ import os
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtCore import QObject, Qt, pyqtSignal, QSize, QPoint
 from PyQt5.QtGui import QBrush, QColor, QImage, QPainter, QPalette, QPen, QKeySequence
-from PyQt5.QtWidgets import (QComboBox, QFileDialog, QFormLayout, QVBoxLayout,
+from PyQt5.QtWidgets import (QComboBox, QMessageBox, QFileDialog, QFormLayout, QVBoxLayout,
                              QHBoxLayout, QLabel, QMainWindow, QMenu,
                              QPushButton, QWidget, QMdiArea, QSplitter, QGraphicsItem)
 
@@ -153,14 +153,27 @@ class appWindow(QMainWindow):
             currentDiagram = self.mdi.currentSubWindow().tabber.currentWidget().painter
             if currentDiagram:
                 fileName = self.mdi.activeSubWindow().tabber.currentWidget().objectName()
-                fileName += ".png"
-                defaultPath = os.path.expanduser("~/Pictures")
+                defaultPath = os.path.expanduser("~/Downloads")
+
+                msg_box = QMessageBox()
+                msg_box.setText("Choose the file format:")
+                msg_box.addButton("PNG", QMessageBox.YesRole)
+                msg_box.addButton("JPEG", QMessageBox.NoRole)
+
+                choice = msg_box.exec_()
+
+                if choice == 0:  # User chose "PNG"
+                    fileExtension = ".png"
+                else:  # User chose "JPEG"
+                    fileExtension = ".jpg"
+
                 options = QFileDialog.Options()
-                options |= QFileDialog.DontUseNativeDialog
-                name, _ = QFileDialog.getSaveFileName(self, 'Save File', os.path.join(defaultPath, fileName),
-                                                      "Images (*.png *.jpg)", options=options)
-                if name:
-                    fileExtension = os.path.splitext(name)[1]
+                options |= QFileDialog.ReadOnly  # Disable the ability to change the file filter
+                file_dialog = QFileDialog(self, 'Save File', os.path.join(defaultPath, fileName + fileExtension), "Images (*.png *.jpg)", options=options)
+                file_dialog.setAcceptMode(QFileDialog.AcceptSave)
+
+                if file_dialog.exec_():
+                    name = file_dialog.selectedFiles()[0]
                     image = QImage(currentDiagram.sceneRect().size().toSize(), QImage.Format_ARGB32)
                     image.fill(Qt.transparent)
                     painter = QPainter(image)
