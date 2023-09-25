@@ -24,7 +24,8 @@ class FileWindow(QMdiSubWindow):
         super(FileWindow, self).__init__(parent)
         self._sideViewTab = None
         self.index = None
-        
+        self.projectFilePath = ""
+
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         #Uses a custom QTabWidget that houses a custom new Tab Button, used to house the seperate 
         # diagrams inside a file
@@ -218,6 +219,12 @@ class FileWindow(QMdiSubWindow):
         
     def saveProject(self, name = None):
         # called by dialog.saveEvent, saves the current file
+        if(self.projectFilePath):
+            self.setObjectName(path.basename(self.projectFilePath).split(".")[0])
+            self.setWindowTitle(self.objectName())
+            with open(self.projectFilePath,'w') as file: 
+                dump(self, file, indent=4, cls=JSON_Typer)
+            return True
         document_path = path.join(path.expanduser('~/Documents'),'PFDs')
         if(not path.exists(document_path)):
            mkdir(document_path)
