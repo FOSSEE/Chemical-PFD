@@ -1,3 +1,4 @@
+import os
 import sys
 import os
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
@@ -75,7 +76,7 @@ class appWindow(QMainWindow):
         self.menuEdit.addSeparator()
         self.menuEdit.addAction("Add new symbols", self.addSymbolWindow)
         
-        self.menuGenerate = titleMenu.addMenu('Generate') #Generate menu
+        self.menuGenerate = titleMenu.addMenu('Export') #Export menu
         imageAction = self.menuGenerate.addAction("Image", self.saveImage)
         reportAction = self.menuGenerate.addAction("Report", self.generateReport)
         
@@ -173,7 +174,9 @@ class appWindow(QMainWindow):
         if self.mdi.currentSubWindow():
             currentDiagram = self.mdi.currentSubWindow().tabber.currentWidget().painter
             if currentDiagram:
-                name = QFileDialog.getSaveFileName(self, 'Save File', f'New Image {self.counterr}', 'PNG (*.png);;JPEG (*.jpg)')
+                fileName = self.mdi.activeSubWindow().tabber.currentWidget().objectName()
+                defaultPath = os.path.expanduser("~/Documents")
+                name = QFileDialog.getSaveFileName(self, 'Save File', os.path.join(defaultPath, fileName), 'PNG (*.png);;JPEG (*.jpg)')
                 if name[0]:
                     image = QImage(currentDiagram.sceneRect().size().toSize(), QImage.Format_ARGB32)
                     image.fill(Qt.transparent)
