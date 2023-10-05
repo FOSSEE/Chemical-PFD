@@ -3,7 +3,7 @@ import sys
 import os
 from PyQt5.QtSvg import QSvgGenerator
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
-from PyQt5.QtCore import QObject, Qt, pyqtSignal, QSize, QPoint
+from PyQt5.QtCore import QObject, Qt, pyqtSignal, QSize, QPoint, QRectF
 from PyQt5.QtGui import QBrush, QColor, QImage, QPainter, QPalette, QPen, QKeySequence
 from PyQt5.QtWidgets import (QComboBox, QMessageBox, QFileDialog, QFormLayout, QVBoxLayout,
                              QHBoxLayout, QLabel, QMainWindow, QMenu,
@@ -173,8 +173,7 @@ class appWindow(QMainWindow):
 
                 options = QFileDialog.Options()
                 options |= QFileDialog.ReadOnly  # Disable the ability to change the file filter
-                file_dialog = QFileDialog(self, 'Save File', os.path.join(defaultPath, fileName + fileExtension),
-                                          "Images (*.png *.jpg *.svg)", options=options)
+                file_dialog = QFileDialog(self, 'Save File', os.path.join(defaultPath, fileName + fileExtension), "Images (*.png *.jpg *.svg)", options=options)
                 file_dialog.setAcceptMode(QFileDialog.AcceptSave)
 
                 if file_dialog.exec_():
