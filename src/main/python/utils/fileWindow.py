@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, QPoint
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QFileDialog, QHBoxLayout,
                              QMdiSubWindow, QMenu, QPushButton, QSizePolicy,
-                             QSplitter, QWidget, QStyle, QSizePolicy)
+                             QSplitter, QWidget, QStyle, QSizePolicy, QLabel)
 from os import path, mkdir
 from . import dialogs
 from .graphics import CustomView
@@ -65,7 +65,11 @@ class FileWindow(QMdiSubWindow):
         self.setWindowFlag(Qt.WindowMinimizeButtonHint, False)
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
         self.setWindowFlag(Qt.WindowCloseButtonHint, True)
-    
+
+        #creating label to indicate that the file is not saved
+        self.label = QLabel('File not saved.', self)
+        self.label.setGeometry(30, 50, 100, 20)
+
     def createSideViewArea(self):
         #creates the side view widgets and sets them to invisible
         self.sideView = CustomView(parent = self)
@@ -80,6 +84,8 @@ class FileWindow(QMdiSubWindow):
         self.sideView.setContextMenuPolicy(Qt.CustomContextMenu)
         self.sideView.customContextMenuRequested.connect(self.sideViewContextMenu)
         self.sideView.resize(self.width()//2 - self.sideView.frameWidth(), self.height())
+        if(self.property('isEdited')):
+            self.label.setHidden(True)
         
     def resizeHandler(self):
         # resize Handler to handle resize cases.
@@ -176,6 +182,14 @@ class FileWindow(QMdiSubWindow):
         result = dialogs.sideViewSwitchDialog(self.tabber, tabList, initial).exec_() #call dialog box 
         if result != initial:
             self.sideViewTab = self.tabber.widget(result) if result<self.tabCount else None
+
+    def toggleLabel(self):
+        e = self.property("isEdited")
+        if(e):
+            self.label.setHidden(False)
+            self.label.show()
+        else:
+            self.label.setHidden(True)
     
     @property
     def sideViewTab(self):
@@ -198,6 +212,15 @@ class FileWindow(QMdiSubWindow):
         self._sideViewTab = None if tab == self.sideViewTab else tab
         return self.sideViewToggle()
     
+    @property
+    def isEdited(self):
+        return self.isEdited
+    
+    @isEdited.setter
+    def isEdited(self, val):
+        self.isEdited = not(val) if val == self.isEdited else val
+        return self.toggleLabel()
+    
     def changeTab(self, currentIndex):
         #placeholder function to detect tab change
         self.resizeHandler()        
@@ -205,7 +228,7 @@ class FileWindow(QMdiSubWindow):
     
     def closeTab(self, currentIndex):
         #show save alert on tab close
-        if dialogs.saveEvent(self):
+        if(dialogs.saveEvent(self)):
             self.tabber.widget(currentIndex).deleteLater()
             self.tabber.removeTab(currentIndex)
         
@@ -224,6 +247,8 @@ class FileWindow(QMdiSubWindow):
             self.setWindowTitle(self.objectName())
             with open(self.projectFilePath,'w') as file: 
                 dump(self, file, indent=4, cls=JSON_Typer)
+            self.setProperty("isEdited", False)
+            self.label.setHidden(True)
             return True
         document_path = path.join(path.expanduser('~/Documents'),'PFDs')
         if(not path.exists(document_path)):
@@ -234,18 +259,25 @@ class FileWindow(QMdiSubWindow):
             self.setWindowTitle(self.objectName())
             with open(name[0],'w') as file: 
                 dump(self, file, indent=4, cls=JSON_Typer)
+            self.setProperty("isEdited", False)
+            self.label.setHidden(True)
             return True
         else:
             return False
 
     def closeEvent(self, event):
         # handle save alert on file close, check if current file has no tabs aswell.
-        if self.tabCount==0 or dialogs.saveEvent(self):
-            event.accept()
+        print("function called with edit: ", self.property("isEdited"))
+        if(self.property("isEdited")):
+            if self.tabCount==0 or dialogs.saveEvent(self):
+                event.accept()
+                self.deleteLater()
+                self.fileCloseEvent.emit(self.index)
+            else:
+                event.ignore()
+        else:
             self.deleteLater()
             self.fileCloseEvent.emit(self.index)
-        else:
-            event.ignore()
 
     #following 2 methods are defined for correct serialization of the scene.
     def __getstate__(self) -> dict:

@@ -19,7 +19,7 @@ class canvas(CustomView):
         
     def __init__(self, parent=None, size= 'A0', ppi= '72' , parentMdiArea = None, parentFileWindow = None, landscape=True):
         super(canvas, self).__init__(parent=parent)
-        
+        self.isEdited = True
         #Store values for the canvas dimensions for ease of access, these are here just to be
         # manipulated by the setters and getters
         self._ppi = ppi

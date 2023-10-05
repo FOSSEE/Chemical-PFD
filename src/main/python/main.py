@@ -116,6 +116,7 @@ class appWindow(QMainWindow):
             project.newDiagram() #create a new tab in the new file
         project.fileCloseEvent.connect(self.fileClosed) #closed file signal to switch to sub window view
         self.mdi.setViewMode(QMdiArea.TabbedView)
+        project.setProperty("isEdited", True)
         project.show()
                 
     def openProject(self):
@@ -136,8 +137,10 @@ class appWindow(QMainWindow):
                     project.__setstate__(projectData)
                     project.resizeHandler()
                     project.fileCloseEvent.connect(self.fileClosed)
+                    project.setProperty('isEdited', False)
                     project.show()
                     self.activeFiles[-1].setProperty('projectFilePath', file.name)
+                    self.activeFiles[-1].setProperty('isEdited', False)
         self.mdi.setViewMode(QMdiArea.TabbedView)
             
     def saveProject(self):
@@ -152,6 +155,8 @@ class appWindow(QMainWindow):
                 else:
                     name = QFileDialog.getSaveFileName(self, 'Save File', f'{document_path}/Flow_Diagram_{j}.pfd', 'Process Flow Diagram (*.pfd)')
                 i.saveProject(name)
+                i.activeScene.isEdited = False
+                i.setProperty("isEdited", False)
             else:
                 return False
         return True
@@ -165,6 +170,7 @@ class appWindow(QMainWindow):
             if i.tabCount:
                 name = QFileDialog.getSaveFileName(self, 'Save File', f'{document_path}/Flow_Diagram_{j}.pfd', 'Process Flow Diagram (*.pfd)')
                 i.saveProject(name)
+                i.setProperty("isEdited", False)
             else:
                 return False
         return True

@@ -25,6 +25,7 @@ class CustomView(QGraphicsView):
         self._zoom = 1
         self.setDragMode(True) #sets pannable using mouse
         self.setAcceptDrops(True) #sets ability to accept drops
+        self.parent = parent
     
     #following four functions are required to be overridden for drag-drop functionality
     def dragEnterEvent(self, QDragEnterEvent):
@@ -49,11 +50,11 @@ class CustomView(QGraphicsView):
             graphic = getattr(shapes, obj[0])(*map(lambda x: int(x) if x.isdigit() else x, obj[1:]))
             mappedFromGlobal = self.viewport().mapFromGlobal(QCursor.pos())
             graphic.setPos(mappedFromGlobal.x() + self.horizontalScrollBar().value() , mappedFromGlobal.y() + self.verticalScrollBar().value())
-            # graphic.setPos(QDropEvent.pos().x(), QDropEvent.pos().y())
             self.scene().addItemPlus(graphic)
             graphic.setParent(self)
             QDropEvent.acceptProposedAction()
-     
+            self.parent.setProperty("isEdited", True)
+    
     def wheelEvent(self, QWheelEvent):
         #overload wheelevent, to zoom if control is pressed, else scroll normally
         if QWheelEvent.modifiers() & Qt.ControlModifier: #check if control is pressed
