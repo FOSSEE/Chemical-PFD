@@ -23,6 +23,7 @@ class FileWindow(QMdiSubWindow):
     def __init__(self, parent = None, title = 'New Project', size = 'A0', ppi = '72'):
         super(FileWindow, self).__init__(parent)
         self._sideViewTab = None
+        self._isEdited = True
         self.index = None
         self.projectFilePath = ""
 
@@ -68,7 +69,7 @@ class FileWindow(QMdiSubWindow):
 
         #creating label to indicate that the file is not saved
         self.label = QLabel('File not saved.', self)
-        self.label.setGeometry(30, 50, 100, 20)
+        self.label.setGeometry(30, 60, 100, 20)
 
     def createSideViewArea(self):
         #creates the side view widgets and sets them to invisible
@@ -184,7 +185,7 @@ class FileWindow(QMdiSubWindow):
             self.sideViewTab = self.tabber.widget(result) if result<self.tabCount else None
 
     def toggleLabel(self):
-        e = self.property("isEdited")
+        e = self.isEdited
         if(e):
             self.label.setHidden(False)
             self.label.show()
@@ -214,11 +215,11 @@ class FileWindow(QMdiSubWindow):
     
     @property
     def isEdited(self):
-        return self.isEdited
+        return self._isEdited
     
     @isEdited.setter
     def isEdited(self, val):
-        self.isEdited = not(val) if val == self.isEdited else val
+        self._isEdited = val
         return self.toggleLabel()
     
     def changeTab(self, currentIndex):
@@ -238,6 +239,11 @@ class FileWindow(QMdiSubWindow):
         diagram.setObjectName(objectName)
         index = self.tabber.addTab(diagram, objectName)
         self.tabber.setCurrentIndex(index)
+        if(index == 0):
+            if(self.isEdited == False):
+                return diagram
+            else:
+                self.isEdited = True
         return diagram
         
     def saveProject(self, name = None):
@@ -259,7 +265,7 @@ class FileWindow(QMdiSubWindow):
             self.setWindowTitle(self.objectName())
             with open(name[0],'w') as file: 
                 dump(self, file, indent=4, cls=JSON_Typer)
-            self.setProperty("isEdited", False)
+            self.isEdited = False
             self.label.setHidden(True)
             return True
         else:
@@ -267,8 +273,7 @@ class FileWindow(QMdiSubWindow):
 
     def closeEvent(self, event):
         # handle save alert on file close, check if current file has no tabs aswell.
-        print("function called with edit: ", self.property("isEdited"))
-        if(self.property("isEdited")):
+        if(self.isEdited):
             if self.tabCount==0 or dialogs.saveEvent(self):
                 event.accept()
                 self.deleteLater()
@@ -291,6 +296,7 @@ class FileWindow(QMdiSubWindow):
     def __setstate__(self, dict):
         self.setObjectName(dict['ObjectName'])
         self.setWindowTitle(dict['ObjectName'])
+        self.isEdited = dict['isEdited']
         for i in dict['tabs']:
             diagram = self.newDiagram(i['ObjectName'])
             diagram.__setstate__(i)

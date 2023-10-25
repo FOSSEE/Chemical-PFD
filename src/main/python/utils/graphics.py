@@ -53,7 +53,7 @@ class CustomView(QGraphicsView):
             self.scene().addItemPlus(graphic)
             graphic.setParent(self)
             QDropEvent.acceptProposedAction()
-            self.parent.setProperty("isEdited", True)
+            self.parentFileWindow.isEdited = True
     
     def wheelEvent(self, QWheelEvent):
         #overload wheelevent, to zoom if control is pressed, else scroll normally
@@ -89,7 +89,7 @@ class CustomScene(QGraphicsScene):
     labelAdded = pyqtSignal(shapes.QGraphicsItem)
     itemMoved = QtCore.pyqtSignal(QtWidgets.QGraphicsItem, QtCore.QPointF)
 
-    def __init__(self, *args, parent=None):
+    def __init__(self, *args, parent=None, parentFileWindow=None):
         super(CustomScene, self).__init__(*args,  parent=parent)
         self.movingItems = []  # List to store selected items for moving
         self.oldPositions = {}  # Dictionary to store old positions of moved items
@@ -111,6 +111,7 @@ class CustomScene(QGraphicsScene):
         # creates an undo stack view for current QGraphicsScene
         undoView = QUndoView(self.undoStack, parent)
         showUndoDialog(undoView, parent)
+        # self.parentFileWindow.isEdited = True
 
     def deleteItem(self):
         # (slot) used to delete all selected items, and add undo action for each of them
@@ -125,15 +126,18 @@ class CustomScene(QGraphicsScene):
                                 self.count+=1
                                 self.undoStack.push(deleteCommand(j, self))
                     self.undoStack.push(deleteCommand(itemToDelete, self))
+                    # self.parentFileWindow.isEdited = True
 
     def itemMoved(self, movedItem, lastPos):
         #item move event, checks if item is moved
         self.undoStack.push(moveCommand(movedItem, lastPos))
         self.advance()
+        # self.parentFileWindow.isEdited = True
 
     def addItemPlus(self, item):
         # extended add item method, so that a corresponding undo action is also pushed
         self.undoStack.push(addCommand(item, self))
+        # self.parentFileWindow.isEdited = True
 
     """def mousePressEvent(self, event):
         bdsp = event.buttonDownScenePos(Qt.LeftButton)  # Get click position
