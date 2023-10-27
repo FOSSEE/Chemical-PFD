@@ -19,18 +19,19 @@ class canvas(CustomView):
         
     def __init__(self, parent=None, size= 'A0', ppi= '72' , parentMdiArea = None, parentFileWindow = None, landscape=True):
         super(canvas, self).__init__(parent=parent)
-        self.isEdited = True
+        self._isEdited = False
         #Store values for the canvas dimensions for ease of access, these are here just to be
         # manipulated by the setters and getters
         self._ppi = ppi
         self._canvasSize = size
         self._landscape = landscape
         self.streamTable = None
+        self.parentFileWindow = parentFileWindow
         #Create area for the graphic items to be placed, this is just here right now for the future
         # when we will draw items on this, this might be changed if QGraphicScene is subclassed.
         
         #set layout and background color
-        self.painter = CustomScene()
+        self.painter = CustomScene(parentFileWindow=self.parentFileWindow)
         self.painter.labelAdded.connect(self.updateStreamTable)  
         self.painter.setBackgroundBrush(QBrush(Qt.white)) #set white background
         self.setScene(self.painter)
@@ -136,6 +137,15 @@ class canvas(CustomView):
         self._landscape = bool
         if self.painter:
             self.resizeView(*(sorted(paperSizes[self.canvasSize][self.ppi], reverse = self.landscape)))
+
+    @property
+    def isEdited(self):
+        return self._isEdited
+    
+    @isEdited.setter
+    def isEdited(self, val):
+        self._isEdited = val
+        self.parentFileWindow.isEdited = val
 
     #following 2 methods are defined for correct pickling of the scene. may be changed to json or xml later so as
     # to not have a binary file.

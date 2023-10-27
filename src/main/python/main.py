@@ -156,7 +156,8 @@ class appWindow(QMainWindow):
                 else:
                     name = QFileDialog.getSaveFileName(self, 'Save File', f'{document_path}/Flow_Diagram_{j}.pfd', 'Process Flow Diagram (*.pfd)')
                 i.saveProject(name)
-                i.setProperty("isEdited", False)
+                i.setProperty("projectFilePath", name[0])
+                i.isEdited = False
             else:
                 return False
         return True
@@ -170,7 +171,8 @@ class appWindow(QMainWindow):
             if i.tabCount:
                 name = QFileDialog.getSaveFileName(self, 'Save File', f'{document_path}/Flow_Diagram_{j}.pfd', 'Process Flow Diagram (*.pfd)')
                 i.saveProject(name)
-                i.setProperty("isEdited", False)
+                i.setProperty("projectFilePath", name[0])
+                i.isEdited = False
             else:
                 return False
         return True

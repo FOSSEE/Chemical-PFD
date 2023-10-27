@@ -134,7 +134,7 @@ class FileWindow(QMdiSubWindow):
         currentTab = self.tabber.currentWidget()
         result = dialogs.paperDims(self, currentTab._canvasSize, currentTab._ppi, currentTab.objectName(), currentTab.landscape).exec_()
         if result is not None:
-            currentTab.painter.undoStack.push(resizeCommand(result, currentTab, self))
+            currentTab.painter.undoStack.push(resizeCommand(result, currentTab, self, parentFileWindow=self))
         
     def sideViewToggle(self):
         #Function checks if current side view tab is set, and toggles view as required

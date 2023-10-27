@@ -95,6 +95,7 @@ class CustomScene(QGraphicsScene):
         self.oldPositions = {}  # Dictionary to store old positions of moved items
         self.undoStack = QUndoStack(self) #Used to store undo-redo moves
         self.createActions() #creates necessary actions that need to be called for undo-redo
+        self.parentFileWindow = parentFileWindow
 
     def createActions(self):
         # helper function to create delete, undo and redo shortcuts
@@ -111,7 +112,7 @@ class CustomScene(QGraphicsScene):
         # creates an undo stack view for current QGraphicsScene
         undoView = QUndoView(self.undoStack, parent)
         showUndoDialog(undoView, parent)
-        # self.parentFileWindow.isEdited = True
+        self.parentFileWindow.isEdited = True
 
     def deleteItem(self):
         # (slot) used to delete all selected items, and add undo action for each of them
@@ -124,20 +125,20 @@ class CustomScene(QGraphicsScene):
                         for i in itemToDelete.lineGripItems:
                             for j in i.lines:
                                 self.count+=1
-                                self.undoStack.push(deleteCommand(j, self))
-                    self.undoStack.push(deleteCommand(itemToDelete, self))
-                    # self.parentFileWindow.isEdited = True
+                                self.undoStack.push(deleteCommand(j, self, parentFileWindow=self.parentFileWindow))
+                    self.undoStack.push(deleteCommand(itemToDelete, self, parentFileWindow=self.parentFileWindow))
+                    self.parentFileWindow.isEdited = True
 
     def itemMoved(self, movedItem, lastPos):
         #item move event, checks if item is moved
-        self.undoStack.push(moveCommand(movedItem, lastPos))
+        self.undoStack.push(moveCommand(movedItem, lastPos, parentFileWindow=self.parentFileWindow))
         self.advance()
-        # self.parentFileWindow.isEdited = True
+        self.parentFileWindow.isEdited = True
 
     def addItemPlus(self, item):
         # extended add item method, so that a corresponding undo action is also pushed
-        self.undoStack.push(addCommand(item, self))
-        # self.parentFileWindow.isEdited = True
+        self.undoStack.push(addCommand(item, self, parentFileWindow=self.parentFileWindow))
+        self.parentFileWindow.isEdited = True
 
     """def mousePressEvent(self, event):
         bdsp = event.buttonDownScenePos(Qt.LeftButton)  # Get click position
@@ -266,7 +267,9 @@ class CustomScene(QGraphicsScene):
                 index_LineGripEnd = currentCommand.indexLGE
                 startGrip.lineGripItems[index_LineGripStart].lines.append(currentLine)
                 endGrip.lineGripItems[index_LineGripEnd].lines.append(currentLine)
+                self.parentFileWindow.isEdited = True
             else:
                 skipper+=1
             self.undoStack.setIndex(currentIndex-i)
+            self.parentFileWindow.isEdited = True
             i+=1
