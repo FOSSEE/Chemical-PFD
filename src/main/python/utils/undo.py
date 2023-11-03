@@ -22,7 +22,7 @@ class addCommand(QUndoCommand):
     """
     QUndoCommand for add item event
     """
-    def __init__(self, addItem, scene, parent = None):
+    def __init__(self, addItem, scene, parent = None, parentFileWindow = None):
         super(addCommand, self).__init__(parent)
         self.scene = scene
         self.diagramItem = addItem
@@ -32,12 +32,14 @@ class addCommand(QUndoCommand):
             self.endGripItem = addItem.endGripItem.parentItem()
             self.indexLGS,self.indexLGE = self.findLGIndex()
         self.setText(f"Add {objectName(self.diagramItem)} at {self.itemPos.x()}, {self.itemPos.y()}")
+        self.parentFileWindow = parentFileWindow
         
     def undo(self):
         if self.diagramItem in self.scene.items():
             self.scene.removeItem(self.diagramItem)
             self.scene.update()
             self.scene.advance()
+            self.parentFileWindow.isEdited = True
         
     def redo(self):
         if self.diagramItem not in self.scene.items():
@@ -47,6 +49,7 @@ class addCommand(QUndoCommand):
             self.scene.advance()
             if(issubclass(self.diagramItem.__class__,shapes.Line)):
                 self.reconnectLines()
+            self.parentFileWindow.isEdited = True
 
     def findLGIndex(self):
         startIndex = None
@@ -71,7 +74,7 @@ class deleteCommand(QUndoCommand):
     """
     QUndoCommand for delete item event
     """
-    def __init__(self, item, scene,parent = None):
+    def __init__(self, item, scene,parent = None, parentFileWindow = None):
         super(deleteCommand, self).__init__(parent)
         self.scene = scene
         item.setSelected(False)
@@ -81,6 +84,7 @@ class deleteCommand(QUndoCommand):
             self.endGripItem = item.endGripItem.parentItem()
             self.indexLGS,self.indexLGE = self.findLGIndex()
         self.setText(f"Delete {objectName(self.diagramItem)} at {self.diagramItem.pos().x()}, {self.diagramItem.y()}")
+        self.parentFileWindow = parentFileWindow
         
     def undo(self):
         if self.diagramItem not in self.scene.items():
@@ -90,11 +94,13 @@ class deleteCommand(QUndoCommand):
             self.scene.reInsertLines()
             if(issubclass(self.diagramItem.__class__,shapes.Line)):
                 self.reconnectLines()
+            self.parentFileWindow.isEdited = True
             
     def redo(self):
         if self.diagramItem in self.scene.items():
             self.scene.removeItem(self.diagramItem)
             self.scene.advance()
+            self.parentFileWindow.isEdited = True
     
     def findLGIndex(self):
         startIndex = None
@@ -119,20 +125,23 @@ class moveCommand(QUndoCommand):
     """
     QUndoCommand for move item event
     """
-    def __init__(self, item, lastPos, parent = None):
+    def __init__(self, item, lastPos, parent = None, parentFileWindow = None):
         super(moveCommand, self).__init__(parent)
         self.diagramItem = item
         self.lastPos = lastPos
         self.newPos = item.pos()
+        self.parentFileWindow = parentFileWindow
         
     def undo(self):
         self.diagramItem.setPos(self.lastPos)
         self.diagramItem.scene().update()
         self.setText(f"Move {objectName(self.diagramItem)} to {self.newPos.x()}, {self.newPos.y()}")
+        self.parentFileWindow.isEdited = True
         
     def redo(self):
         self.diagramItem.setPos(self.newPos)
         self.setText(f"Move {objectName(self.diagramItem)} to {self.newPos.x()}, {self.newPos.y()}")
+        self.parentFileWindow.isEdited = True
         
     def mergeWith(self, move):
         #merges multiple move commands so that a move event is not added twice.
@@ -143,24 +152,28 @@ class moveCommand(QUndoCommand):
         
         self.newPos = item.pos()
         self.setText(f"Move {objectName(self.diagramItem)} to {self.newPos.x()}, {self.newPos.y()}")
+        self.parentFileWindow.isEdited = True
         return True
     
 class resizeCommand(QUndoCommand):
     """
     Defines the resize event for the custom scene.
     """
-    def __init__(self, new, canvas, widget, parent = None):
+    def __init__(self, new, canvas, widget, parent = None, parentFileWindow = None):
         super(resizeCommand, self).__init__(parent)
         self.parent = canvas
         self.old = self.parent.canvasSize, self.parent.ppi, self.parent.landscape
         self.new = new
         self.widget = widget
         self.setText(f'Change canvas dimensions to {new[0]} at {new[1]} ppi')
+        self.parentFileWindow = parentFileWindow
     
     def undo(self):
         self.parent.canvasSize, self.parent.ppi, self.parent.landscape = self.old
         self.widget.resizeHandler()
+        self.parentFileWindow.isEdited = True
     
     def redo(self):
         self.parent.canvasSize, self.parent.ppi, self.parent.landscape = self.new
         self.widget.resizeHandler()
+        self.parentFileWindow.isEdited = True

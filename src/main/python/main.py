@@ -59,10 +59,12 @@ class appWindow(QMainWindow):
         newAction = self.menuFile.addAction("New", self.newProject)
         openAction = self.menuFile.addAction("Open", self.openProject)
         saveAction = self.menuFile.addAction("Save", self.saveProject)
+        saveAsAction = self.menuFile.addAction("Save As", self.saveAsProject)
         
         newAction.setShortcut(QKeySequence.New)
         openAction.setShortcut(QKeySequence.Open)
         saveAction.setShortcut(QKeySequence.Save)
+        saveAsAction.setShortcut(QKeySequence("Ctrl+Shift+S"))
         
         self.menuEdit = titleMenu.addMenu('Edit')
         undoAction = self.undo = self.menuEdit.addAction("Undo", lambda x=self: x.activeScene.painter.undoAction.trigger())
@@ -115,6 +117,7 @@ class appWindow(QMainWindow):
             project.newDiagram() #create a new tab in the new file
         project.fileCloseEvent.connect(self.fileClosed) #closed file signal to switch to sub window view
         self.mdi.setViewMode(QMdiArea.TabbedView)
+        project.setProperty("isEdited", True)
         project.show()
                 
     def openProject(self):
@@ -123,17 +126,22 @@ class appWindow(QMainWindow):
         if(not os.path.exists(document_path)):
            document_path = os.path.expanduser('~/Documents')
         name = QFileDialog.getOpenFileNames(self, 'Open File(s)', f'{document_path}', 'Process Flow Diagram (*pfd)')
+        self.projectFilePath = name[0][0]
         if name:
             for files in name[0]:
                 with open(files,'r') as file:
                     projectData = load(file)
                     project = FileWindow(self.mdi)
                     self.mdi.addSubWindow(project)
+                    project.projectFilePath = file.name
+                    projectData["isEdited"] = False
                     #create blank window and set its state
                     project.__setstate__(projectData)
                     project.resizeHandler()
                     project.fileCloseEvent.connect(self.fileClosed)
+                    project.setProperty('isEdited', False)
                     project.show()
+                    self.activeFiles[-1].setProperty('projectFilePath', file.name)
         self.mdi.setViewMode(QMdiArea.TabbedView)
             
     def saveProject(self):
@@ -143,8 +151,28 @@ class appWindow(QMainWindow):
            os.mkdir(document_path)
         for j, i in enumerate(self.activeFiles): #get list of all windows with atleast one tab
             if i.tabCount:
+                if(i.property('projectFilePath')):
+                    name = (i.property('projectFilePath'), 'Process Flow Diagram (*.pfd)')
+                else:
+                    name = QFileDialog.getSaveFileName(self, 'Save File', f'{document_path}/Flow_Diagram_{j}.pfd', 'Process Flow Diagram (*.pfd)')
+                i.saveProject(name)
+                i.setProperty("projectFilePath", name[0])
+                i.isEdited = False
+            else:
+                return False
+        return True
+    
+    def saveAsProject(self):
+        #serialize all files in mdi area
+        document_path = os.path.join(os.path.expanduser('~/Documents'),'PFDs')
+        if(not os.path.exists(document_path)):
+           os.mkdir(document_path)
+        for j, i in enumerate(self.activeFiles): #get list of all windows with atleast one tab
+            if i.tabCount:
                 name = QFileDialog.getSaveFileName(self, 'Save File', f'{document_path}/Flow_Diagram_{j}.pfd', 'Process Flow Diagram (*.pfd)')
                 i.saveProject(name)
+                i.setProperty("projectFilePath", name[0])
+                i.isEdited = False
             else:
                 return False
         return True

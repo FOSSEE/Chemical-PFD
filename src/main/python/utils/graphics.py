@@ -25,6 +25,7 @@ class CustomView(QGraphicsView):
         self._zoom = 1
         self.setDragMode(True) #sets pannable using mouse
         self.setAcceptDrops(True) #sets ability to accept drops
+        self.parent = parent
     
     #following four functions are required to be overridden for drag-drop functionality
     def dragEnterEvent(self, QDragEnterEvent):
@@ -49,11 +50,11 @@ class CustomView(QGraphicsView):
             graphic = getattr(shapes, obj[0])(*map(lambda x: int(x) if x.isdigit() else x, obj[1:]))
             mappedFromGlobal = self.viewport().mapFromGlobal(QCursor.pos())
             graphic.setPos(mappedFromGlobal.x() + self.horizontalScrollBar().value() , mappedFromGlobal.y() + self.verticalScrollBar().value())
-            # graphic.setPos(QDropEvent.pos().x(), QDropEvent.pos().y())
             self.scene().addItemPlus(graphic)
             graphic.setParent(self)
             QDropEvent.acceptProposedAction()
-     
+            self.parentFileWindow.isEdited = True
+    
     def wheelEvent(self, QWheelEvent):
         #overload wheelevent, to zoom if control is pressed, else scroll normally
         if QWheelEvent.modifiers() & Qt.ControlModifier: #check if control is pressed
@@ -88,12 +89,13 @@ class CustomScene(QGraphicsScene):
     labelAdded = pyqtSignal(shapes.QGraphicsItem)
     itemMoved = QtCore.pyqtSignal(QtWidgets.QGraphicsItem, QtCore.QPointF)
 
-    def __init__(self, *args, parent=None):
+    def __init__(self, *args, parent=None, parentFileWindow=None):
         super(CustomScene, self).__init__(*args,  parent=parent)
         self.movingItems = []  # List to store selected items for moving
         self.oldPositions = {}  # Dictionary to store old positions of moved items
         self.undoStack = QUndoStack(self) #Used to store undo-redo moves
         self.createActions() #creates necessary actions that need to be called for undo-redo
+        self.parentFileWindow = parentFileWindow
 
     def createActions(self):
         # helper function to create delete, undo and redo shortcuts
@@ -110,6 +112,7 @@ class CustomScene(QGraphicsScene):
         # creates an undo stack view for current QGraphicsScene
         undoView = QUndoView(self.undoStack, parent)
         showUndoDialog(undoView, parent)
+        self.parentFileWindow.isEdited = True
 
     def deleteItem(self):
         # (slot) used to delete all selected items, and add undo action for each of them
@@ -122,17 +125,20 @@ class CustomScene(QGraphicsScene):
                         for i in itemToDelete.lineGripItems:
                             for j in i.lines:
                                 self.count+=1
-                                self.undoStack.push(deleteCommand(j, self))
-                    self.undoStack.push(deleteCommand(itemToDelete, self))
+                                self.undoStack.push(deleteCommand(j, self, parentFileWindow=self.parentFileWindow))
+                    self.undoStack.push(deleteCommand(itemToDelete, self, parentFileWindow=self.parentFileWindow))
+                    self.parentFileWindow.isEdited = True
 
     def itemMoved(self, movedItem, lastPos):
         #item move event, checks if item is moved
-        self.undoStack.push(moveCommand(movedItem, lastPos))
+        self.undoStack.push(moveCommand(movedItem, lastPos, parentFileWindow=self.parentFileWindow))
         self.advance()
+        self.parentFileWindow.isEdited = True
 
     def addItemPlus(self, item):
         # extended add item method, so that a corresponding undo action is also pushed
-        self.undoStack.push(addCommand(item, self))
+        self.undoStack.push(addCommand(item, self, parentFileWindow=self.parentFileWindow))
+        self.parentFileWindow.isEdited = True
 
     """def mousePressEvent(self, event):
         bdsp = event.buttonDownScenePos(Qt.LeftButton)  # Get click position
@@ -261,7 +267,9 @@ class CustomScene(QGraphicsScene):
                 index_LineGripEnd = currentCommand.indexLGE
                 startGrip.lineGripItems[index_LineGripStart].lines.append(currentLine)
                 endGrip.lineGripItems[index_LineGripEnd].lines.append(currentLine)
+                self.parentFileWindow.isEdited = True
             else:
                 skipper+=1
             self.undoStack.setIndex(currentIndex-i)
+            self.parentFileWindow.isEdited = True
             i+=1

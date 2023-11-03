@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, QPoint
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QFileDialog, QHBoxLayout,
                              QMdiSubWindow, QMenu, QPushButton, QSizePolicy,
-                             QSplitter, QWidget, QStyle, QSizePolicy)
+                             QSplitter, QWidget, QStyle, QSizePolicy, QLabel)
 from os import path, mkdir
 from . import dialogs
 from .graphics import CustomView
@@ -23,8 +23,10 @@ class FileWindow(QMdiSubWindow):
     def __init__(self, parent = None, title = 'New Project', size = 'A0', ppi = '72'):
         super(FileWindow, self).__init__(parent)
         self._sideViewTab = None
+        self._isEdited = True
         self.index = None
-        
+        self.projectFilePath = ""
+
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         #Uses a custom QTabWidget that houses a custom new Tab Button, used to house the seperate 
         # diagrams inside a file
@@ -64,7 +66,11 @@ class FileWindow(QMdiSubWindow):
         self.setWindowFlag(Qt.WindowMinimizeButtonHint, False)
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
         self.setWindowFlag(Qt.WindowCloseButtonHint, True)
-    
+
+        #creating label to indicate that the file is not saved
+        self.label = QLabel('File not saved.', self)
+        self.label.setGeometry(30, 60, 100, 20)
+
     def createSideViewArea(self):
         #creates the side view widgets and sets them to invisible
         self.sideView = CustomView(parent = self)
@@ -79,6 +85,8 @@ class FileWindow(QMdiSubWindow):
         self.sideView.setContextMenuPolicy(Qt.CustomContextMenu)
         self.sideView.customContextMenuRequested.connect(self.sideViewContextMenu)
         self.sideView.resize(self.width()//2 - self.sideView.frameWidth(), self.height())
+        if(self.property('isEdited')):
+            self.label.setHidden(True)
         
     def resizeHandler(self):
         # resize Handler to handle resize cases.
@@ -126,7 +134,7 @@ class FileWindow(QMdiSubWindow):
         currentTab = self.tabber.currentWidget()
         result = dialogs.paperDims(self, currentTab._canvasSize, currentTab._ppi, currentTab.objectName(), currentTab.landscape).exec_()
         if result is not None:
-            currentTab.painter.undoStack.push(resizeCommand(result, currentTab, self))
+            currentTab.painter.undoStack.push(resizeCommand(result, currentTab, self, parentFileWindow=self))
         
     def sideViewToggle(self):
         #Function checks if current side view tab is set, and toggles view as required
@@ -175,6 +183,14 @@ class FileWindow(QMdiSubWindow):
         result = dialogs.sideViewSwitchDialog(self.tabber, tabList, initial).exec_() #call dialog box 
         if result != initial:
             self.sideViewTab = self.tabber.widget(result) if result<self.tabCount else None
+
+    def toggleLabel(self):
+        e = self.isEdited
+        if(e):
+            self.label.setHidden(False)
+            self.label.show()
+        else:
+            self.label.setHidden(True)
     
     @property
     def sideViewTab(self):
@@ -197,6 +213,15 @@ class FileWindow(QMdiSubWindow):
         self._sideViewTab = None if tab == self.sideViewTab else tab
         return self.sideViewToggle()
     
+    @property
+    def isEdited(self):
+        return self._isEdited
+    
+    @isEdited.setter
+    def isEdited(self, val):
+        self._isEdited = val
+        return self.toggleLabel()
+    
     def changeTab(self, currentIndex):
         #placeholder function to detect tab change
         self.resizeHandler()        
@@ -204,7 +229,7 @@ class FileWindow(QMdiSubWindow):
     
     def closeTab(self, currentIndex):
         #show save alert on tab close
-        if dialogs.saveEvent(self):
+        if(dialogs.saveEvent(self)):
             self.tabber.widget(currentIndex).deleteLater()
             self.tabber.removeTab(currentIndex)
         
@@ -214,10 +239,23 @@ class FileWindow(QMdiSubWindow):
         diagram.setObjectName(objectName)
         index = self.tabber.addTab(diagram, objectName)
         self.tabber.setCurrentIndex(index)
+        if(index == 0):
+            if(self.isEdited == False):
+                return diagram
+            else:
+                self.isEdited = True
         return diagram
         
     def saveProject(self, name = None):
         # called by dialog.saveEvent, saves the current file
+        if(self.projectFilePath):
+            self.setObjectName(path.basename(self.projectFilePath).split(".")[0])
+            self.setWindowTitle(self.objectName())
+            with open(self.projectFilePath,'w') as file: 
+                dump(self, file, indent=4, cls=JSON_Typer)
+            self.setProperty("isEdited", False)
+            self.label.setHidden(True)
+            return True
         document_path = path.join(path.expanduser('~/Documents'),'PFDs')
         if(not path.exists(document_path)):
            mkdir(document_path)
@@ -227,18 +265,24 @@ class FileWindow(QMdiSubWindow):
             self.setWindowTitle(self.objectName())
             with open(name[0],'w') as file: 
                 dump(self, file, indent=4, cls=JSON_Typer)
+            self.isEdited = False
+            self.label.setHidden(True)
             return True
         else:
             return False
 
     def closeEvent(self, event):
         # handle save alert on file close, check if current file has no tabs aswell.
-        if self.tabCount==0 or dialogs.saveEvent(self):
-            event.accept()
+        if(self.isEdited):
+            if self.tabCount==0 or dialogs.saveEvent(self):
+                event.accept()
+                self.deleteLater()
+                self.fileCloseEvent.emit(self.index)
+            else:
+                event.ignore()
+        else:
             self.deleteLater()
             self.fileCloseEvent.emit(self.index)
-        else:
-            event.ignore()
 
     #following 2 methods are defined for correct serialization of the scene.
     def __getstate__(self) -> dict:
@@ -252,6 +296,7 @@ class FileWindow(QMdiSubWindow):
     def __setstate__(self, dict):
         self.setObjectName(dict['ObjectName'])
         self.setWindowTitle(dict['ObjectName'])
+        self.isEdited = dict['isEdited']
         for i in dict['tabs']:
             diagram = self.newDiagram(i['ObjectName'])
             diagram.__setstate__(i)
