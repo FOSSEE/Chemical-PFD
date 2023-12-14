@@ -269,6 +269,22 @@
             "class": "Valves",
             "object": "GateValve",
             "args": []
+        },
+
+        "Float Valve": {
+            "name": "Float Valve",
+            "icon": "./Valves/Float Valve.png",
+            "class": "Valves",
+            "object": "FloatValve",
+            "args": []
+        },
+
+        "Butterfly Valve": {
+            "name": "Butterfly Valve",
+            "icon": "./Valves/Butterfly Valve.png",
+            "class": "Valves",
+            "object": "ButterflyValve",
+            "args": []
         }
 
     },

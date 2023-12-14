@@ -1,6 +1,5 @@
 import os
 import sys
-import os
 from PyQt5.QtSvg import QSvgGenerator
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtCore import QObject, Qt, pyqtSignal, QSize, QPoint, QRectF
