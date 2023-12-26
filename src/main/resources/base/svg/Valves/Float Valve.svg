@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="11.976523mm"
+   height="8.7486286mm"
+   viewBox="0 0 11.976523 8.7486286"
+   version="1.1"
+   id="svg970"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   sodipodi:docname="Float Valve.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview972"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.79285915"
+     inkscape:cx="130.54021"
+     inkscape:cy="-44.774662"
+     inkscape:window-width="1920"
+     inkscape:window-height="1051"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs967">
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect5481"
+       is_visible="true"
+       lpeversion="0" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-70.764547,-160.47737)">
+    <g
+       id="g5492"
+       transform="matrix(0.26458333,0,0,0.26458333,-200.57137,-14.50664)">
+      <g
+         transform="translate(-174.10791,37.64787)"
+         id="g5475">
+        <path
+           sodipodi:nodetypes="ccccc"
+           inkscape:connector-curvature="0"
+           id="path5437"
+           d="m 1209.7857,641.66935 25,14.125 -0.029,-14.14775 -24.9786,14.26647 z"
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path5439"
+           d="m 1210.2545,648.8256 h -10.625"
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.683398px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.683398px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 1244.8951,648.84122 h -10.625"
+           id="path5441"
+           inkscape:connector-curvature="0" />
+      </g>
+      <path
+         inkscape:connector-curvature="0"
+         id="path5477"
+         d="M 1048.1779,686.42886 V 661.8569 h 13.0815 v 5.12652"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         sodipodi:nodetypes="ccccc"
+         inkscape:original-d="m 1056.3748,667.91058 c 0.3546,0.82396 0.5987,2.18017 0.9513,3.00613 0.3525,0.82595 2.358,1.17751 3.5355,1.76776 1.1775,0.59026 2.9473,-1.41521 4.4194,-2.12132 1.4722,-0.7061 0.5903,-2.12232 0.8839,-3.18198"
+         inkscape:path-effect="#path-effect5481"
+         inkscape:connector-curvature="0"
+         id="path5479"
+         d="m 1056.3748,667.91058 c -0.062,1.07283 0.2834,2.16425 0.9513,3.00613 0.844,1.06392 2.1793,1.69817 3.5355,1.76776 0.8516,0.0437 1.7141,-0.1248 2.4837,-0.49179 0.7697,-0.367 1.4447,-0.93234 1.9357,-1.62953 0.6464,-0.9179 0.9642,-2.06221 0.8839,-3.18198"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path5483"
+         d="m 1055.8815,667.4593 h 10.7834"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    </g>
+  </g>
+</svg>

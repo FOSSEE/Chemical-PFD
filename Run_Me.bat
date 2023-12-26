@@ -9,6 +9,7 @@ if not exist env_python36 (
 :: Activate the environment
 call env_python36\Scripts\activate.bat
 
+python -m pip install --upgrade pip
 
 :: Check for required libraries and install if needed
 pip install pyqt5 fbs || (

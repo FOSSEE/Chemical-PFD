@@ -1081,6 +1081,22 @@ class GateValve(NodeItem):
             [100, 50, "right"]
         ]
 
+class FloatValve(NodeItem):
+    def __init__(self):
+        super(FloatValve, self).__init__("svg/Valves/Float Valve")
+        self.grips = [
+            [100, 26.5, 'top'],
+            [0, 26.5, 'top']
+        ]
+
+class ButterflyValve(NodeItem):
+    def __init__(self):
+        super(ButterflyValve, self).__init__("svg/Valves/Butterfly Valve")
+        self.grips = [
+            [100, 53.5, 'top'],
+            [0, 53.5, 'top']
+        ]
+
 class CentrifugalPump(NodeItem):
     def __init__(self):
         super(CentrifugalPump, self).__init__("svg/Pumps/Centrifugal Pump")
