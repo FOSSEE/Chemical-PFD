@@ -6,3 +6,6 @@ src/main/python/experimental/*
 .idea/*
 target/*
 src/main/python/PFD-Tool.exe
+venv36
+venv311
+env_python36

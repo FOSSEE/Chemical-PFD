@@ -1,0 +1,17 @@
+section 4.8
+table
+name -> section name
+
+nomenclature -> label of each element
+
+
+columns for the excel file
+
+- s. no.
+- parent
+- legend
+- suffix
+- name
+- svg
+- png
+- grip
