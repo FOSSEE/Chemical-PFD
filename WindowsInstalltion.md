@@ -17,7 +17,7 @@ After successfully installing the python, you need to download the code which yo
 
 [Click Me to Download](https://github.com/frg-fossee/Chemical-PFD)
 
-![Download Zip File](https://github.com/aum-singhal/Chemical-PFD/blob/9c5419c5af495f4a68f41d82e65a62cba6bb0f4f/download.png)
+![Download Zip File](https://github.com/aum-singhal/Chemical-PFD/blob/8ec73276c8a3eba93f67b62b61c1e4e62e09a9f2/images/download.png)
 
 
 ## Step 3 (Run the Project)
@@ -26,7 +26,7 @@ If you are reading this then first of all, CONGRATULATIONS!! 🎉🎉
 
 For this last step, all you need to do is extract the zip file
 
-![Extraction of zip file](https://github.com/aum-singhal/Chemical-PFD/blob/9c5419c5af495f4a68f41d82e65a62cba6bb0f4f/extract.png)
+![Extraction of zip file](https://github.com/aum-singhal/Chemical-PFD/blob/8ec73276c8a3eba93f67b62b61c1e4e62e09a9f2/images/extract.png)
 
 open the folder and run Run_Me.bat file.
 
