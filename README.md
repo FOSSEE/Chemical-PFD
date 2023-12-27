@@ -8,7 +8,10 @@ Repository for a Process Flow Diagram Software
 [![python-mixedCase-style](https://img.shields.io/badge/code%20style-mixed-brightgreen.svg?style=flat)](https://wiki.c2.com/?CamelCase)
 [![Dependencies](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen.svg)](https://github.com/FOSSEE/Chemical-PFD/network/dependencies)
 [![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://opensource.org/licenses/GPL-3.0)
- 
+
+## Installation
+* Windows Users: Refer to the steps given here
+
 ## Screenshots
 > Main window
 <p align="center"><img width="95%" src="https://i.imgur.com/YHBTTHE.png"></p>
@@ -42,7 +45,7 @@ Repository for a Process Flow Diagram Software
 > contains the sub window definitions along with various utility methods.
 
 
-## Installation
+## Installation (for Developers)
 #### clone this repository by running
 ```bash
 git clone https://github.com/FOSSEE/Chemical-PFD.git
