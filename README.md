@@ -10,7 +10,8 @@ Repository for a Process Flow Diagram Software
 [![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://opensource.org/licenses/GPL-3.0)
 
 ## Installation
-* Windows Users: Refer to the steps given here
+* Windows Users: Refer to the steps given [here](WindowsInstallation.md)
+
 
 ## Screenshots
 > Main window
