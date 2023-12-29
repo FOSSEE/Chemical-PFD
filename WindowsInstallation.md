@@ -18,7 +18,7 @@ Installation steps for Windows
 * Click [here](https://github.com/frg-fossee/Chemical-PFD) to view
 * Click the green color Code button and click Download ZIP as shown in the figure given below
 
-![Download Zip File](https://github.com/aum-singhal/Chemical-PFD/blob/8ec73276c8a3eba93f67b62b61c1e4e62e09a9f2/images/download.png)
+![Download Zip File](images/download.png)
 
 
 ## Step 3 (Run the Project)
@@ -26,7 +26,7 @@ Installation steps for Windows
 * If you are reading this then first of all, CONGRATULATIONS!! 🎉🎉
 * For this last step, all you need to do is extract the zip file
 
-![Extraction of zip file](https://github.com/aum-singhal/Chemical-PFD/blob/8ec73276c8a3eba93f67b62b61c1e4e62e09a9f2/images/extract.png)
+![Extraction of zip file](images/extract.png)
 
 * Open the folder and run WindowsRunMe.bat file.
 
