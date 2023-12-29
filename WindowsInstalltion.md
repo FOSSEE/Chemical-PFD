@@ -28,6 +28,6 @@ For this last step, all you need to do is extract the zip file
 
 ![Extraction of zip file](https://github.com/aum-singhal/Chemical-PFD/blob/8ec73276c8a3eba93f67b62b61c1e4e62e09a9f2/images/extract.png)
 
-open the folder and run Run_Me.bat file.
+open the folder and run WindowsRunMe.bat file.
 
 And you are ready to roll ✌🤘
