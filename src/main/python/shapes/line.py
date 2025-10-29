@@ -1,21 +1,31 @@
+﻿import os
 import math
-from PyQt5.QtGui import QPen, QPainterPath, QBrush, QPainterPathStroker, QPainter, QCursor, QPolygonF
-from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPathItem, QGraphicsTextItem, QMenu, QGraphicsLineItem
-from PyQt5.QtCore import Qt, QPointF, QRectF, QLineF, pyqtSignal
+import sys
 
-from collections import defaultdict
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and PyInstaller """
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
-#For extending Lines for repositioned Rectangular Line Grips
-rLGPlus = {}
-f = open('./shapes/rLGPlus.txt','r')
-dataRead = f.readlines()[1:]
-for line in dataRead:
-
-    if not line.__contains__(',') :
-        rLGPlus[line.strip()] = []
-    else:
-        grips = line.strip().split(',')
-        rLGPlus[list(rLGPlus.keys())[-1]].append(grips)
+from PyQt5.QtWidgets import (
+    QGraphicsPathItem,
+    QGraphicsItem,
+    QGraphicsLineItem,
+    QGraphicsEllipseItem,
+    QGraphicsTextItem 
+)
+from PyQt5.QtGui import QCursor
+from PyQt5.QtCore import QLineF
+from PyQt5.QtGui import QPainterPathStroker
+from utils.app import fileImporter
+from PyQt5.QtCore import Qt, QPointF, QRectF, pyqtSignal
+from PyQt5.QtGui import QPainterPath, QPen
+from PyQt5.QtCore import Qt, QPointF, QRectF, QLineF
+from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QPolygonF, QPainterPath, QPainterPathStroker
+from utils.config import rLGPlus
 
 class Grabber(QGraphicsPathItem):
     """
@@ -288,6 +298,7 @@ class LineLabel(QGraphicsTextItem):
         else:
             self.line.setLine(center.x(), center.y(), center.x(), point.y())
 
+
     def mouseDoubleClickEvent(self, event):
         # set text editable
         self.setTextInteractionFlags(Qt.TextEditorInteraction)
@@ -349,6 +360,10 @@ def findIndex(line, pos):
     return index
 
 
+from PyQt5.QtCore import QPointF, QLineF
+from PyQt5.QtGui import QPainterPath, QPen, QBrush
+from PyQt5.QtWidgets import QGraphicsLineItem
+
 class Line(QGraphicsPathItem):
     """
     Extends QGraphicsPathItem to draw zig-zag line consisting of multiple points
@@ -384,6 +399,7 @@ class Line(QGraphicsPathItem):
         rect = self.shape().boundingRect()
         rect.adjust(-10, -10, 10, 10)
         return rect
+
 
     def advance(self, phase):
         """ called by scene when item moves or updates on scene
@@ -421,6 +437,7 @@ class Line(QGraphicsPathItem):
                         else:
                             self.commonPathsCenters.append(center)
         self.update()
+
 
     def paint(self, painter, option, widget):
         color = Qt.red if self.isSelected() else Qt.black
@@ -805,6 +822,9 @@ class Line(QGraphicsPathItem):
         if self.endGripItem:
             self.addGrabber()
 
+
+
+
     def updatePath(self):
         """ update path when svg item moves
         """
@@ -822,6 +842,7 @@ class Line(QGraphicsPathItem):
             label.updateLabel()
         # update line have end point on this line
         self.updateMidLines()
+
 
     def updatePoints(self):
         """
@@ -910,12 +931,15 @@ class Line(QGraphicsPathItem):
             else:
                 self.hideGripItem()
             return
+    
         if change == QGraphicsItem.ItemSceneHasChanged and not self.scene():
             # if line is removed from scene
-            for line in self.midLines:
-                # remove lines connected to it
-                if line.scene():
-                    line.scene().removeItem(line)
+            if hasattr(self, 'midLines') and self.midLines:
+                for line in self.midLines:
+                    # remove lines connected to it
+                    if line.scene():
+                        line.scene().removeItem(line)
+
             if self.startGripItem and self.startGripItem.lines and not self.startGripItem.tempLine:
                 # remove line reference from grips
                 if self in self.startGripItem.lines: self.startGripItem.lines.remove(self)
@@ -990,6 +1014,7 @@ class Line(QGraphicsPathItem):
         # end point on other line
         elif self.refLine:
             self.updatePath()
+
 
     def updateMidLines(self):
         """ Updates all lines connecting to it
@@ -1068,10 +1093,3 @@ class Line(QGraphicsPathItem):
             "startGap": self.startGap,
             "endGap": self.endGap
         }
-
-    def __setstate__(self, dict):
-        self.points = [QPointF(x, y) for x, y in dict["points"]]
-        self.startPoint = QPointF(*dict['startPoint'])
-        self.endPoint = QPointF(*dict['endPoint'])
-        self.startGap = dict['startGap']
-        self.endGap = dict['endGap']

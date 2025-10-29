@@ -1,3 +1,4 @@
+﻿import os
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtCore import QSize, Qt, pyqtSignal, QMimeData
 from PyQt5.QtGui import QIcon, QDrag
@@ -6,7 +7,8 @@ from PyQt5.QtWidgets import (QBoxLayout, QDockWidget, QGridLayout, QLineEdit,
 from re import search, IGNORECASE
 
 from .data import toolbarItems
-from .app import fileImporter, app
+from .app import fileImporter
+from PyQt5.QtWidgets import QApplication
 from .layout import flowLayout
 
 class toolbar(QDockWidget):
@@ -59,14 +61,26 @@ class toolbar(QDockWidget):
             self.diagAreaLayout.itemAt(i).widget().setParent(self)
             
     def populateToolbar(self, filterFunc=None):
-        #called everytime the button box needs to be updated(incase of a filter)
-        self.clearLayout() #clears layout
+        self.clearLayout()
+
         for itemClass in self.toolbarButtonDict.keys():
             self.diagAreaLayout.addWidget(self.toolbarLabelDict[itemClass])
+
+            added_any = False
             for item in filter(filterFunc, self.toolbarButtonDict[itemClass].keys()):
-                self.diagAreaLayout.addWidget(self.toolbarButtonDict[itemClass][item])
+                button = self.toolbarButtonDict[itemClass].get(item)
+                if button:
+                    self.diagAreaLayout.addWidget(button)
+                    added_any = True
+                else:
+                    print(f"  ⚠️ Button not found for: {item}")
+
+            if not added_any:
+                print(f"  ❌ No buttons added for class: {itemClass}")
+
         self.resize()
-            
+
+       
     def searchQuery(self):
         # shorten toolbaritems list with search items
         # self.populateToolbar() # populate with toolbar items
@@ -87,7 +101,7 @@ class toolbar(QDockWidget):
         scrollBar = self.diagArea.verticalScrollBar()
         height = self.diagAreaLayout.heightForWidth(width)
         if scrollBar.isVisible():
-            width -= app.app.style().pixelMetric(QStyle.PM_ScrollBarExtent)
+            width -= QApplication.instance().style().pixelMetric(QStyle.PM_ScrollBarExtent)
         
         # the following line, sets the required height for the current width, so that blank space doesnt occur
         self.diagAreaWidget.setMinimumHeight(height)
@@ -120,21 +134,38 @@ class toolbar(QDockWidget):
             yield  i
             
 class toolbarButton(QToolButton):
-    """
-    Custom buttons for components that implements drag and drop functionality
-    item -> dict from toolbarItems dict, had 4 properties, name, object, icon and default arguments.
-    """
-    def __init__(self, parent = None, item = None):
+    def __init__(self, parent=None, item=None):
         super(toolbarButton, self).__init__(parent)
-        #uses fbs resource manager to get icons
-        self.setIcon(QIcon(fileImporter('toolbar', item['icon'])))
-        self.setIconSize(QSize(64, 64)) #unecessary but left for future references
-        self.dragStartPosition = None #intialize value for drag event
-        self.itemObject = item['object'] #refer current item object, to handle drag mime
+        
+        # Load icon
+        icon_rel_path = item["icon"]
+        icon_path = fileImporter("resources", "base", "svg", *os.path.normpath(icon_rel_path).split(os.sep))
+        icon = QIcon(icon_path)
+        self.setIcon(icon)
+        self.setIconSize(QSize(64, 64))
+
+        self.setCheckable(False)
+        self.setAutoRaise(True)
+        self.setStyleSheet("""
+        QToolButton {
+            background-color: #e8e8e8;
+            border: none;
+        }
+        QToolButton:hover {
+            background-color: #e8e8e8;
+        }
+        QToolButton:pressed {
+            background-color: #e8e8e8;
+        }
+        """)
+
+        # Assign item info
+        self.itemObject = item['object']
         for i in item['args']:
             self.itemObject += f"/{i}"
-        self.setText(item["name"]) #button text
-        self.setToolTip(item["name"]) #button tooltip
+        self.setText(item["name"])
+        self.setToolTip(item["name"])
+
 
     def mousePressEvent(self, event):
         #check if button was pressed or there was a drag intent
@@ -146,7 +177,7 @@ class toolbarButton(QToolButton):
         #handles drag
         if not (event.buttons() and Qt.LeftButton):
             return #ignore if left click is not held
-        if (event.pos() - self.dragStartPosition).manhattanLength() < app.app.startDragDistance():
+        if (event.pos() - self.dragStartPosition).manhattanLength() < QApplication.startDragDistance():
             return #check if mouse was dragged enough, manhattan length is a rough and quick method in qt
         
         drag = QDrag(self) #create drag object

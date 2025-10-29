@@ -1,68 +1,53 @@
-"""
-Declare fbs application and various contextual variables so that it can be imported in other modules.
-"""
+﻿import os
+import sys
+from PyQt5.QtCore import QSettings
+from PyQt5.QtWidgets import QApplication
+from json import JSONEncoder
 
-from fbs_runtime.application_context.PyQt5 import ApplicationContext
-from PyQt5.QtCore import QSettings, pyqtProperty, QResource
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QWidget
-from json import JSONEncoder, dumps, loads, dump, load
-from os.path import join
+# ✅ Smart path importer (PyInstaller/dev compatible)
+def fileImporter(*paths, ext=None):
+    if hasattr(sys, '_MEIPASS'):
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 
-from resources import resources #application resources defined in resources.qrc
+    full_path = os.path.join(base_path, *paths)
+    if ext and not full_path.lower().endswith(ext.lower()):
+        full_path += ext
 
-app = ApplicationContext()
-settings = QSettings(QSettings.IniFormat, QSettings.UserScope ,"FOSSEE", "Chemical-PFD")
-version = app.build_settings['version']
+    exists = os.path.exists(full_path)
+    return full_path
 
-def fileImporter(*file):
-    # Helper function to fetch files from src/main/resources
-    return app.get_resource(join(*file))
+app = QApplication.instance()
+if app is not None:
+    qss_path = fileImporter("app.qss")
+    if os.path.exists(qss_path):
+        with open(qss_path, "r") as f:
+            app.setStyleSheet(f.read())
+    else:
+        print("Stylesheet not found:", qss_path)
 
-#set application stylesheet
-with open(fileImporter("app.qss"), "r") as stylesheet:
-    app.app.setStyleSheet(stylesheet.read())
+settings = QSettings(QSettings.IniFormat, QSettings.UserScope, "FOSSEE", "Chemical-PFD")
+version = "1.0.0"
+settings.setValue("version", version)
 
 class JSON_Encoder:
-    """
-    Defines serialization methods for differnt data types for json module
-    """
-    def _encode(obj):
+    @staticmethod
+    def encode(obj):
         if isinstance(obj, dict):
-            ## We'll need to iterate not just the value that default() usually gets passed
-            ## But also iterate manually over each key: value pair in order to trap the keys.
-
-            for key, val in list(obj.items()):
-                if isinstance(val, dict):
-                    val = loads(dumps(val, cls=JSON_Typer)) # This, is a EXTREMELY ugly hack..
-                                                            # But it's the only quick way I can think of to 
-                                                            # trigger a encoding of sub-dictionaries. (I'm also very tired, yolo!)
-                else:
-                    val = JSON_Encoder._encode(val)
-                del(obj[key])
-                obj[JSON_Encoder._encode(key)] = val
-            return obj
+            return {JSON_Encoder.encode(k): JSON_Encoder.encode(v) for k, v in obj.items()}
         elif hasattr(obj, '__getstate__'):
             return obj.__getstate__()
         elif isinstance(obj, (list, set, tuple)):
-            r = []
-            for item in obj:
-                r.append(loads(dumps(item, cls=JSON_Typer)))
-            return r
+            return [JSON_Encoder.encode(i) for i in obj]
         else:
             return obj
 
 class JSON_Typer(JSONEncoder):
-    """
-    derived class for redirecting encode calls
-    """
     def default(self, o):
-        return o.__getstate__()
-    
-    def _encode(self, obj):
-        return JSON_Encoder._encode(obj)
+        return getattr(o, '__getstate__', lambda: str(o))()
 
     def encode(self, obj):
-        return super(JSON_Typer, self).encode(self._encode(obj))
+        return super().encode(JSON_Encoder.encode(obj))
 
-memMap = {} #memory map for id references for loading projects
+memMap = {}

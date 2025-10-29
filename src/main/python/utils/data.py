@@ -1,18 +1,25 @@
-"""
-Imports data from json configs, so that they can be imported from this module.
-"""
-
+﻿import os
 from json import load
-from .app import fileImporter
+from utils.pathutils import resource_path  
 
-paperSizes = load(open(fileImporter("config/paperSizes.json")))
+try:
+    paperSizesPath = resource_path("resources/base/config/paperSizes.json")
+    with open(paperSizesPath, "r") as f:
+        paperSizes = load(f)
 
-sheetDimensionList = list(paperSizes.keys())
+    toolbarItemsPath = resource_path("resources/base/config/items.json")
+    with open(toolbarItemsPath, "r") as f:
+        toolbarItems = load(f)
 
-ppiList = list(paperSizes[sheetDimensionList[0]].keys())
+    # Extract keys
+    sheetDimensionList = list(paperSizes.keys())
+    ppiList = list(paperSizes[sheetDimensionList[0]].keys())
+    defaultToolbarItems = toolbarItems.keys()
 
-toolbarItems = load(open(fileImporter("config/items.json")))
-
-defaultToolbarItems = toolbarItems.keys()
-
-
+except FileNotFoundError as e:
+   
+    paperSizes = {}
+    toolbarItems = {}
+    sheetDimensionList = []
+    ppiList = []
+    defaultToolbarItems = []

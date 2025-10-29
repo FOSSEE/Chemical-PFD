@@ -9,7 +9,10 @@ from .graphics import CustomView
 from .canvas import canvas
 from .tabs import CustomTabWidget
 from .undo import resizeCommand
-from .app import dump, loads, JSON_Typer, version
+from .app import JSON_Typer, version
+from json import loads, dump
+from .graphics import CustomView, CustomScene   # relative import (recommended inside package)
+from PyQt5.QtWidgets import QUndoStack
 
 
 class FileWindow(QMdiSubWindow):
@@ -27,30 +30,27 @@ class FileWindow(QMdiSubWindow):
         self.index = None
         self.projectFilePath = ""
 
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        #Uses a custom QTabWidget that houses a custom new Tab Button, used to house the seperate 
-        # diagrams inside a file
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
         self.tabber = CustomTabWidget(self)
-        self.tabber.setObjectName(title) #store title as object name for pickling
-        self.tabber.tabCloseRequested.connect(self.closeTab) # Show save alert on tab close
-        self.tabber.currentChanged.connect(self.changeTab) # placeholder just to detect tab change
-        self.tabber.plusClicked.connect(self.newDiagram) #connect the new tab button to add a new tab
-        
-        #assign layout to widget
+        self.tabber.setObjectName(title)
+        self.tabber.tabCloseRequested.connect(self.closeTab)
+        self.tabber.currentChanged.connect(self.changeTab)
+        self.tabber.plusClicked.connect(self.newDiagram)
+
         self.mainWidget = QWidget(self)
-        layout = QHBoxLayout(self.mainWidget)
-        self.createSideViewArea() #create the side view objects
-        
-        # set size policies for window
+        layout = QHBoxLayout(self.mainWidget)  # ✅ Correct placement
+
+        self.createSideViewArea()
+
         left = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         left.setHorizontalStretch(1)
         self.tabber.setSizePolicy(left)
-        
+
         right = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         right.setHorizontalStretch(1)
         self.sideView.setSizePolicy(right)
-        
-        #build widget layout
+
         layout.addWidget(self.tabber)
         layout.addWidget(self.sideView)
         self.mainWidget.setLayout(layout)
@@ -72,46 +72,57 @@ class FileWindow(QMdiSubWindow):
         self.label.setGeometry(30, 60, 100, 20)
 
     def createSideViewArea(self):
-        #creates the side view widgets and sets them to invisible
-        self.sideView = CustomView(parent = self)
+        # First, create the side view widget
+        self.sideView = CustomView(parent=self)
         self.sideView.setInteractive(False)
+
+        # Now safely set properties
+        self.sideView.setVisible(False)
+        self.sideView.setMinimumSize(0, 0)
+
+        # Close button setup
         self.sideViewCloseButton = QPushButton('×', self.sideView)
         self.sideViewCloseButton.setObjectName("sideViewCloseButton")
         self.sideViewCloseButton.setFlat(True)
         self.sideViewCloseButton.setFixedSize(20, 20)
         self.moveSideViewCloseButton()
         self.sideViewCloseButton.clicked.connect(lambda: setattr(self, 'sideViewTab', None))
-        self.sideView.setVisible(False)
+
+        # Context menu
         self.sideView.setContextMenuPolicy(Qt.CustomContextMenu)
         self.sideView.customContextMenuRequested.connect(self.sideViewContextMenu)
-        self.sideView.resize(self.width()//2 - self.sideView.frameWidth(), self.height())
-        if(self.property('isEdited')):
+
+        # Size setup
+        self.sideView.resize(self.width() // 2 - self.sideView.frameWidth(), self.height())
+
+        # Hide the label if the file is marked edited
+        if self.property('isEdited'):
             self.label.setHidden(True)
+
         
     def resizeHandler(self):
         # resize Handler to handle resize cases.
         parentRect = self.mdiArea().size()
         current = self.tabber.currentWidget()
-        width, height = 0,0
-        if(current):
-            width,height=current.dimensions
-        
+        width, height = 0, 0
+
+        if current:
+            width, height = current.dimensions
+
         if self.sideViewTab:
             width2, height2 = self.sideViewTab.dimensions
             width = min(parentRect.width(), width + width2)
             height = min(parentRect.height(), height + height2)
         else:
-            # width = min(parentRect.width(), width + 100)
             width = parentRect.width()
-            # height = min(parentRect.height(), height + 150)
             height = parentRect.height()
-        
+
         if len(self.parent().parent().subWindowList()) > 1:
             height -= 20
-        
-        # set element dimensions
+
         self.setFixedSize(width, height)
-        if(current):
+
+        if current:
             current.adjustView()
          
     def contextMenu(self, point):
@@ -245,6 +256,7 @@ class FileWindow(QMdiSubWindow):
             else:
                 self.isEdited = True
         return diagram
+
         
     def saveProject(self, name = None):
         # called by dialog.saveEvent, saves the current file
