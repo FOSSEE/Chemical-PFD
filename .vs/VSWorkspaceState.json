@@ -1,0 +1,17 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\main",
+    "\\src\\main\\python",
+    "\\src\\main\\python\\shapes",
+    "\\src\\main\\python\\utils",
+    "\\src\\main\\resources",
+    "\\src\\main\\resources\\grips",
+    "\\src\\main\\ui",
+    "\\tests",
+    "\\tests\\utils"
+  ],
+  "SelectedNode": "\\tests\\utils\\test_canvas.py",
+  "PreviewInSolutionExplorer": false
+}

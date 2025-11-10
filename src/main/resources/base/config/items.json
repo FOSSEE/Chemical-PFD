@@ -1,323 +1,310 @@
-  {
+{
     "Compressors": {
-      "Centrifugal Compressor": {
-        "name": "Centrifugal Compressor",
-        "icon": "Compressors/Centrifugal Compressor.svg",
-        "class": "Compressors",
-        "object": "CentrifugalCompressor",
-        "args": []
-      },
-      "Ejector Compressor": {
-        "name": "Ejector Compressor",
-        "icon": "Compressors/Ejector Compressor.svg",
-        "class": "Compressors",
-        "object": "EjectorCompressor",
-        "args": []
-      },
-      "Fan": {
-        "name": "Fan",
-        "icon": "Compressors/Fan.svg",
-        "class": "Compressors",
-        "object": "Fan",
-        "args": []
-      },
-      "Positive Displacement Compressor": {
-        "name": "Positive Displacement Compressor",
-        "icon": "Compressors/Positive Displacement Compressor.svg",
-        "class": "Compressors",
-        "object": "PositiveDisplacementCompressor",
-        "args": []
-      },
-      "Reciprocating Compressor": {
-        "name": "Reciprocating Compressor",
-        "icon": "Compressors/Reciprocating Compressor.svg",
-        "class": "Compressors",
-        "object": "ReciprocatingCompressor",
-        "args": []
-      },
-      "Turbine": {
-        "name": "Turbine",
-        "icon": "Compressors/Turbine.svg",
-        "class": "Compressors",
-        "object": "Turbine",
-        "args": []
-      }
+        "Centrifugal Compressor": {
+            "name": "Centrifugal Compressor",
+            "icon": "./Compressors/Centrifugal Compressor.png",
+            "class": "Compressors",
+            "object": "CentrifugalCompressor",
+            "args": []
+        },
+        "Ejector Compressor": {
+            "name": "Ejector Compressor",
+            "icon": "./Compressors/Ejector Compressor.png",
+            "class": "Compressors",
+            "object": "EjectorCompressor",
+            "args": []
+        },
+        "Fan": {
+            "name": "Fan",
+            "icon": "./Compressors/Fan.png",
+            "class": "Compressors",
+            "object": "Fan",
+            "args": []
+        },
+        "Positive Displacement Compressor": {
+            "name": "Positive Displacement Compressor",
+            "icon": "./Compressors/Positive Displacement Compressor.png",
+            "class": "Compressors",
+            "object": "PositiveDisplacementCompressor",
+            "args": []
+        },
+        "Reciprocating Compressor": {
+            "name": "Reciprocating Compressor",
+            "icon": "./Compressors/Reciprocating Compressor.png",
+            "class": "Compressors",
+            "object": "ReciprocatingCompressor",
+            "args": []
+        },
+        "Turbine": {
+            "name": "Turbine",
+            "icon": "./Compressors/Turbine.png",
+            "class": "Compressors",
+            "object": "Turbine",
+            "args": []
+        }
     },
     "Furnaces and Boilers": {
-      "Oil Gas or Pulverized Fuel Furnace": {
-        "name": "Oil Gas or Pulverized Fuel Furnace",
-        "icon": "Furnaces and Boilers/Oil Gas or Pulverized Fuel Furnace.svg",
-        "class": "Furnaces and Boilers",
-        "object": "OilGasOrPulverizedFuelFurnace",
-        "args": []
-      },
-      "Solid Fuel Furnace": {
-        "name": "Solid Fuel Furnace",
-        "icon": "Furnaces and Boilers/Solid Fuel Furnace.svg",
-        "class": "Furnaces and Boilers",
-        "object": "SolidFuelFurnace",
-        "args": []
-      },
-      "One Cell Fired Heater Furnace": {
-        "name": "One Cell Fired Heater, Furnace",
-        "icon": "Furnaces and Boilers/One Cell Fired Heater, Furnace.svg",
-        "class": "Furnaces and Boilers",
-        "object": "OneCellFiredHeater,Furnace",
-        "args": []
-      },
-      "Two Cell Fired Heater Furnace": {
-        "name": "Two Cell Fired Heater, Furnace",
-        "icon": "Furnaces and Boilers/Two Cell Fired Heater, Furnace.svg",
-        "class": "Furnaces and Boilers",
-        "object": "TwoCellFiredHeater,Furnace",
-        "args": []
-      }
+        "Oil Gas or Pulverized Fuel Furnace": {
+            "name": "Oil Gas or Pulverized Fuel Furnace",
+            "icon": "./Furnaces and Boilers/Oil Gas or Pulverized Fuel Furnace.png",
+            "class": "Furnaces and Boilers",
+            "object": "OilGasOrPulverizedFuelFurnace",
+            "args": []
+        },
+        "Solid Fuel Furnace": {
+            "name": "Solid Fuel Furnace",
+            "icon": "./Furnaces and Boilers/Solid Fuel Furnace.png",
+            "class": "Furnaces and Boilers",
+            "object": "SolidFuelFurnace",
+            "args": []
+        },
+        "One Cell Fired Heater, Furnace": {
+            "name": "One Cell Fired Heater, Furnace",
+            "icon": "./Furnaces and Boilers/One Cell Fired Heater, Furnace.png",
+            "class": "Furnaces and Boilers",
+            "object": "OneCellFiredHeater,Furnace",
+            "args": []
+        },
+        "Two Cell Fired Heater, Furnace": {
+            "name": "Two Cell Fired Heater, Furnace",
+            "icon": "./Furnaces and Boilers/Two Cell Fired Heater, Furnace.png",
+            "class": "Furnaces and Boilers",
+            "object": "TwoCellFiredHeater,Furnace",
+            "args": []
+        }
     },
     "Heating or Cooling Arrangements": {
-      "905Exchanger": {
-        "name": "Exchanger",
-        "icon": "Heating or Cooling Arrangements/905Exchanger.svg",
-        "class": "Heating or Cooling Arrangements",
-        "object": "Exchanger905",
-        "args": []
-      },
-      "907Kettle Reboiler": {
-        "name": "Kettle Reboiler",
-        "icon": "Heating or Cooling Arrangements/907Kettle Reboiler.svg",
-        "class": "Heating or Cooling Arrangements",
-        "object": "KettleReboiler907",
-        "args": []
-      },
-      "Exchanger": {
-        "name": "Exchanger",
-        "icon": "Heating or Cooling Arrangements/Exchanger.svg",
-        "class": "Heating or Cooling Arrangements",
-        "object": "Exchanger",
-        "args": []
-      },
-      "Heat Exchanger": {
-        "name": "Heat Exchanger",
-        "icon": "Heating or Cooling Arrangements/Heat Exchanger.svg",
-        "class": "Heating or Cooling Arrangements",
-        "object": "HeatExchanger",
-        "args": []
-      },
-      "Immersion Coil": {
-        "name": "Immersion Coil",
-        "icon": "Heating or Cooling Arrangements/Immersion Coil.svg",
-        "class": "Heating or Cooling Arrangements",
-        "object": "ImmersionCoil",
-        "args": []
-      },
-      "Kettle Reboiler": {
-        "name": "Kettle Reboiler",
-        "icon": "Heating or Cooling Arrangements/Kettle Reboiler.svg",
-        "class": "Heating or Cooling Arrangements",
-        "object": "KettleReboiler",
-        "args": []
-      }
+        "905Exchanger": {
+            "name": "Exchanger",
+            "icon": "./Heating or Cooling Arrangements/905Exchanger.png",
+            "class": "Heating or Cooling Arrangements",
+            "object": "Exchanger905",
+            "args": []
+        },
+        "907Kettle Reboiler": {
+            "name": "Kettle Reboiler",
+            "icon": "./Heating or Cooling Arrangements/907Kettle Reboiler.png",
+            "class": "Heating or Cooling Arrangements",
+            "object": "KettleReboiler907",
+            "args": []
+        },
+        "Exchanger": {
+            "name": "Exchanger",
+            "icon": "./Heating or Cooling Arrangements/Exchanger.png",
+            "class": "Heating or Cooling Arrangements",
+            "object": "Exchanger",
+            "args": []
+        },
+        "Heat Exchanger": {
+            "name": "Heat Exchanger",
+            "icon": "./Heating or Cooling Arrangements/Heat Exchanger.png",
+            "class": "Heating or Cooling Arrangements",
+            "object": "HeatExchanger",
+            "args": []
+        },
+        "Immersion Coil": {
+            "name": "Immersion Coil",
+            "icon": "./Heating or Cooling Arrangements/Immersion Coil.png",
+            "class": "Heating or Cooling Arrangements",
+            "object": "ImmersionCoil",
+            "args": []
+        },
+        "Kettle Reboiler": {
+            "name": "Kettle Reboiler",
+            "icon": "./Heating or Cooling Arrangements/Kettle Reboiler.png",
+            "class": "Heating or Cooling Arrangements",
+            "object": "KettleReboiler",
+            "args": []
+        }
     },
-
-      "Piping": {
+    "Piping": {
         "Inflow Line": {
-          "name": "Inflow Line",
-          "icon": "Piping/Inflow Line.svg",
-          "class": "Piping",
-          "object": "InflowLine",
-          "args": []
+            "name": "Inflow Line",
+            "icon": "./Piping/Inflow Line.png",
+            "class": "Piping",
+            "object": "InflowLine",
+            "args": []
         },
         "Outflow Line": {
-          "name": "Outflow Line",
-          "icon": "Piping/Outflow Line.svg",
-          "class": "Piping",
-          "object": "OutflowLine",
-          "args": []
+            "name": "Outflow Line",
+            "icon": "./Piping/Outflow Line.png",
+            "class": "Piping",
+            "object": "OutflowLine",
+            "args": []
         }
-      },
-      "Fittings": {
-        "Reducer Expander": {
-          "name": "Reducer, Expander",
-          "icon": "Fittings/Reducer, Expander.svg",
-          "class": "Fittings",
-          "object": "ReducerExpander",
-          "args": []
+    },
+    "Fittings": {
+        "Reducer, Expander": {
+            "name": "Reducer, Expander",
+            "icon": "./Fittings/Reducer, Expander.png",
+            "class": "Fittings",
+            "object": "ReducerExpander",
+            "args": []
         },
         "Filter": {
-          "name": "Filter",
-          "icon": "Fittings/Filter.svg",
-          "class": "Filter",
-          "object": "Filter",
-          "args": []
+            "name": "Filter",
+            "icon": "./Fittings/Filter.png",
+            "class": "Filter",
+            "object": "Filter",
+            "args": []
         }
-      },
-      "Process Vessels": {
+    },
+    "Process Vessels": {
         "Horizontal Vessel": {
-          "name": "Horizontal Vessel",
-          "icon": "Process Vessels/Horizontal Vessel.svg",
-          "class": "Process Vessels",
-          "object": "HorizontalVessel",
-          "args": []
+            "name": "Horizontal Vessel",
+            "icon": "./Process Vessels/Horizontal Vessel.png",
+            "class": "Process Vessels",
+            "object": "HorizontalVessel",
+            "args": []
         },
         "Packed Vessel": {
-          "name": "Packed Vessel",
-          "icon": "Process Vessels/Packed Vessel.svg",
-          "class": "Process Vessels",
-          "object": "PackedVessel",
-          "args": []
+            "name": "Packed Vessel",
+            "icon": "./Process Vessels/Packed Vessel.png",
+            "class": "Process Vessels",
+            "object": "PackedVessel",
+            "args": []
         },
         "Trays or plates": {
-          "name": "Trays or plates",
-          "icon": "Process Vessels/Trays or plates.svg",
-          "class": "Process Vessels",
-          "object": "TraysOrPlates",
-          "args": []
+            "name": "Trays or plates",
+            "icon": "./Process Vessels/Trays or plates.png",
+            "class": "Process Vessels",
+            "object": "TraysOrPlates",
+            "args": []
         },
         "Vertical Vessel": {
-          "name": "Vertical Vessel",
-          "icon": "Process Vessels/Vertical Vessel.svg",
-          "class": "Process Vessels",
-          "object": "VerticalVessel",
-          "args": []
+            "name": "Vertical Vessel",
+            "icon": "./Process Vessels/Vertical Vessel.png",
+            "class": "Process Vessels",
+            "object": "VerticalVessel",
+            "args": []
         }
-      },
-      "Pumps": {
+    },
+    "Pumps": {
         "Blowing Egg": {
-          "name": "Blowing Egg",
-          "icon": "Pumps/Blowing Egg.svg",
-          "class": "Pumps",
-          "object": "BlowingEgg",
-          "args": []
+            "name": "Blowing Egg",
+            "icon": "./Pumps/Blowing Egg.png",
+            "class": "Pumps",
+            "object": "BlowingEgg",
+            "args": []
         },
         "Duplex Pump": {
-          "name": "Duplex Pump",
-          "icon": "Pumps/Duplex Pump.svg",
-          "class": "Pumps",
-          "object": "DuplexPump",
-          "args": []
+            "name": "Duplex Pump",
+            "icon": "./Pumps/Duplex Pump.png",
+            "class": "Pumps",
+            "object": "DuplexPump",
+            "args": []
         },
         "Ejector(Vapor Service)": {
-          "name": "EjectorVapor Service",
-          "icon": "Pumps/Ejector(Vapor Service).svg",
-          "class": "Pumps",
-          "object": "EjectorVaporService",
-          "args": []
+            "name": "EjectorVapor Service",
+            "icon": "./Pumps/Ejector(Vapor Service).png",
+            "class": "Pumps",
+            "object": "EjectorVaporService",
+            "args": []
         },
         "Hand Pump with Drum": {
-          "name": "Hand Pump with Drum",
-          "icon": "Pumps/Hand Pump with Drum.svg",
-          "class": "Pumps",
-          "object": "HandPumpWithDrum",
-          "args": []
+            "name": "Hand Pump with Drum",
+            "icon": "./Pumps/Hand Pump with Drum.png",
+            "class": "Pumps",
+            "object": "HandPumpWithDrum",
+            "args": []
         },
         "Plunger Pump": {
-          "name": "Plunger Pump",
-          "icon": "Pumps/Plunger Pump.svg",
-          "class": "Pumps",
-          "object": "PlungerPump",
-          "args": []
+            "name": "Plunger Pump",
+            "icon": "./Pumps/Plunger Pump.png",
+            "class": "Pumps",
+            "object": "PlungerPump",
+            "args": []
         },
         "Proportioning Pump": {
-          "name": "Proportioning Pump",
-          "icon": "Pumps/Proportioning Pump.svg",
-          "class": "Pumps",
-          "object": "ProportioningPump",
-          "args": []
+            "name": "Proportioning Pump",
+            "icon": "./Pumps/Proportioning Pump.png",
+            "class": "Pumps",
+            "object": "ProportioningPump",
+            "args": []
         },
         "Reciprocating Pump": {
-          "name": "Reciprocating Pump",
-          "icon": "Pumps/Reciprocating Pump.svg",
-          "class": "Pumps",
-          "object": "ReciprocatingPump",
-          "args": []
+            "name": "Reciprocating Pump",
+            "icon": "./Pumps/Reciprocating Pump.png",
+            "class": "Pumps",
+            "object": "ReciprocatingPump",
+            "args": []
         },
         "Centrifugal Pump": {
-          "name": "Centrifugal Pump",
-          "icon": "Pumps/Centrifugal Pump.svg",
-          "class": "Pumps",
-          "object": "CentrifugalPump",
-          "args": []
+            "name": "Centrifugal Pump",
+            "icon": "./Pumps/Centrifugal Pump.png",
+            "class": "Pumps",
+            "object": "CentrifugalPump",
+            "args": []
         }
-      },
-      "Separators": {
+    },
+    "Separators": {
         "Separators for Liquids, Decanter": {
-          "name": "Separators for Liquids, Decanter",
-          "icon": "Separators/Separators for Liquids, Decanter.svg",
-          "class": "Separators",
-          "object": "SeparatorsForLiquids,Decanter",
-          "args": []
+            "name": "Separators for Liquids, Decanter",
+            "icon": "./Separators/Separators for Liquids, Decanter.png",
+            "class": "Separators",
+            "object": "SeparatorsForLiquids,Decanter",
+            "args": []
         }
-      },
-      "Storage Vessels Tanks": {
+    },
+    "Storage Vessels Tanks": {
         "Fixed Roof Tank": {
-          "name": "Fixed Roof Tank",
-          "icon": "Storage Vessels Tanks/Fixed Roof Tank.svg",
-          "class": "Storage Vessels Tanks",
-          "object": "FixedRoofTank",
-          "args": []
+            "name": "Fixed Roof Tank",
+            "icon": "./Storage Vessels Tanks/Fixed Roof Tank.png",
+            "class": "Storage Vessels Tanks",
+            "object": "FixedRoofTank",
+            "args": []
         },
         "Floating Roof Tank": {
-          "name": "Floating Roof Tank",
-          "icon": "Storage Vessels Tanks/Floating Roof Tank.svg",
-          "class": "Storage Vessels Tanks",
-          "object": "FloatingRoofTank",
-          "args": []
+            "name": "Floating Roof Tank",
+            "icon": "./Storage Vessels Tanks/Floating Roof Tank.png",
+            "class": "Storage Vessels Tanks",
+            "object": "FloatingRoofTank",
+            "args": []
         }
-      },
-      "Valves": {
+    },
+    "Valves": {
         "Gate Valve": {
-          "name": "Gate Valve",
-          "icon": "Valves/Gate Valve.svg",
-          "class": "Valves",
-          "object": "GateValve",
-          "args": []
-        },
-        "Float Valve": {
-          "name": "Float Valve",
-          "icon": "Valves/Float Valve.svg",
-          "class": "Valves",
-          "object": "FloatValve",
-          "args": []
-        },
-        "Butterfly Valve": {
-          "name": "Butterfly Valve",
-          "icon": "Valves/Butterfly Valve.svg",
-          "class": "Valves",
-          "object": "ButterflyValve",
-          "args": []
+            "name": "Gate Valve",
+            "icon": "./Valves/Gate Valve.png",
+            "class": "Valves",
+            "object": "GateValve",
+            "args": []
         }
-      },
-      "Dryers": {
+
+    },
+     "Dryers": {
         "Continuos Dryer": {
-          "name": "Continuos Dryer",
-          "icon": "Dryers/Continuous Dryer.svg",
-          "class": "Dryers",
-          "object": "ContinuousDryer",
-          "args": []
+            "name": "Continuos Dryer",
+            "icon": "./Dryers/Continuous Dryer.png",
+            "class": "Dryers",
+            "object": "ContinuousDryer",
+            "args": []
         }
-      },
-      "Size Reduction Equipements": {
+
+    },
+     "Size Reduction Equipements": {
         "Jaw Crusher": {
-          "name": "Jaw Crusher",
-          "icon": "Size Reduction Equipements/Jaw Crusher.svg",
-          "class": "Size Reduction Equipements",
-          "object": "JawCrusher",
-          "args": []
+            "name": "Jaw Crusher",
+            "icon": "./Size Reduction Equipements/Jaw Crusher.png",
+            "class": "Size Reduction Equipements",
+            "object": "JawCrusher",
+            "args": []
         },
         "Roller Crusher": {
-          "name": "Roller Crusher",
-          "icon": "Size Reduction Equipements/Roller Crusher.svg",
-          "class": "Size Reduction Equipements",
-          "object": "RollerCrusher",
-          "args": []
+            "name": "Roller Crusher",
+            "icon": "./Size Reduction Equipements/Roller Crusher.png",
+            "class": "Size Reduction Equipements",
+            "object": "RollerCrusher",
+            "args": []
         }
-      },
-      "Feeders": {
+    },
+    "Feeders": {
         "General Symbol": {
-          "name": "General Symbol",
-          "icon": "Feeders/General Symbol.svg",
-          "class": "Feeders",
-          "object": "GeneralSymbol",
-          "args": []
+            "name": "General Symbol",
+            "icon": "./Feeders/General Symbol.png",
+            "class": "Feeders",
+            "object": "GeneralSymbol",
+            "args": []
         }
-      }
     }
+}

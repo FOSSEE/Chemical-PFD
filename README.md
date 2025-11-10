@@ -106,6 +106,20 @@ can be done, by using build.py build
 python3 build.py build
 ```
 
+#### Building with PyInstaller (Recommended for GUI Release)
+
+You can also build a standalone Windows .exe using PyInstaller:
+
+pyinstaller --onefile --windowed --name Chemical-PFD ^
+--add-data "src/main/resources/grips/rLGPlus.json;resources/grips" ^
+--add-data "src/main/resources/base/config;resources/base/config" ^
+--add-data "src/main/resources/base/svg;resources/base/svg" ^
+--add-data "src/main/resources/base/toolbar;resources/base/toolbar" ^
+--add-data "src/main/resources/base/app.qss;resources/base" ^
+--add-data "Component_Details.csv;." ^
+src/main/python/main.py
+
+
 #### TODO
 
 ## Adding symbols

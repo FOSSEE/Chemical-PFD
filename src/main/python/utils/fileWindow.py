@@ -2,17 +2,14 @@ from PyQt5.QtCore import Qt, pyqtSignal, QPoint
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QFileDialog, QHBoxLayout,
                              QMdiSubWindow, QMenu, QPushButton, QSizePolicy,
-                             QSplitter, QWidget, QStyle, QSizePolicy, QLabel)
-from os import path, mkdir
+                             QSplitter, QWidget, QStyle, QSizePolicy)
+from os import path
 from . import dialogs
 from .graphics import CustomView
 from .canvas import canvas
 from .tabs import CustomTabWidget
 from .undo import resizeCommand
-from .app import JSON_Typer, version
-from json import loads, dump
-from .graphics import CustomView, CustomScene   # relative import (recommended inside package)
-from PyQt5.QtWidgets import QUndoStack
+from .app import dump, loads, JSON_Typer, version
 
 
 class FileWindow(QMdiSubWindow):
@@ -26,31 +23,32 @@ class FileWindow(QMdiSubWindow):
     def __init__(self, parent = None, title = 'New Project', size = 'A0', ppi = '72'):
         super(FileWindow, self).__init__(parent)
         self._sideViewTab = None
-        self._isEdited = True
         self.index = None
-        self.projectFilePath = ""
-
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
+        
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        #Uses a custom QTabWidget that houses a custom new Tab Button, used to house the seperate 
+        # diagrams inside a file
         self.tabber = CustomTabWidget(self)
-        self.tabber.setObjectName(title)
-        self.tabber.tabCloseRequested.connect(self.closeTab)
-        self.tabber.currentChanged.connect(self.changeTab)
-        self.tabber.plusClicked.connect(self.newDiagram)
-
+        self.tabber.setObjectName(title) #store title as object name for pickling
+        self.tabber.tabCloseRequested.connect(self.closeTab) # Show save alert on tab close
+        self.tabber.currentChanged.connect(self.changeTab) # placeholder just to detect tab change
+        self.tabber.plusClicked.connect(self.newDiagram) #connect the new tab button to add a new tab
+        
+        #assign layout to widget
         self.mainWidget = QWidget(self)
-        layout = QHBoxLayout(self.mainWidget)  # ✅ Correct placement
-
-        self.createSideViewArea()
-
+        layout = QHBoxLayout(self.mainWidget)
+        self.createSideViewArea() #create the side view objects
+        
+        # set size policies for window
         left = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         left.setHorizontalStretch(1)
         self.tabber.setSizePolicy(left)
-
+        
         right = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         right.setHorizontalStretch(1)
         self.sideView.setSizePolicy(right)
-
+        
+        #build widget layout
         layout.addWidget(self.tabber)
         layout.addWidget(self.sideView)
         self.mainWidget.setLayout(layout)
@@ -66,64 +64,42 @@ class FileWindow(QMdiSubWindow):
         self.setWindowFlag(Qt.WindowMinimizeButtonHint, False)
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
         self.setWindowFlag(Qt.WindowCloseButtonHint, True)
-
-        #creating label to indicate that the file is not saved
-        self.label = QLabel('File not saved.', self)
-        self.label.setGeometry(30, 60, 100, 20)
-
+    
     def createSideViewArea(self):
-        # First, create the side view widget
-        self.sideView = CustomView(parent=self)
+        #creates the side view widgets and sets them to invisible
+        self.sideView = CustomView(parent = self)
         self.sideView.setInteractive(False)
-
-        # Now safely set properties
-        self.sideView.setVisible(False)
-        self.sideView.setMinimumSize(0, 0)
-
-        # Close button setup
         self.sideViewCloseButton = QPushButton('×', self.sideView)
         self.sideViewCloseButton.setObjectName("sideViewCloseButton")
         self.sideViewCloseButton.setFlat(True)
         self.sideViewCloseButton.setFixedSize(20, 20)
         self.moveSideViewCloseButton()
         self.sideViewCloseButton.clicked.connect(lambda: setattr(self, 'sideViewTab', None))
-
-        # Context menu
+        self.sideView.setVisible(False)
         self.sideView.setContextMenuPolicy(Qt.CustomContextMenu)
         self.sideView.customContextMenuRequested.connect(self.sideViewContextMenu)
-
-        # Size setup
-        self.sideView.resize(self.width() // 2 - self.sideView.frameWidth(), self.height())
-
-        # Hide the label if the file is marked edited
-        if self.property('isEdited'):
-            self.label.setHidden(True)
-
+        self.sideView.resize(self.width()//2 - self.sideView.frameWidth(), self.height())
         
     def resizeHandler(self):
         # resize Handler to handle resize cases.
         parentRect = self.mdiArea().size()
         current = self.tabber.currentWidget()
-        width, height = 0, 0
-
-        if current:
-            width, height = current.dimensions
-
+        width, height = current.dimensions
+        
         if self.sideViewTab:
             width2, height2 = self.sideViewTab.dimensions
             width = min(parentRect.width(), width + width2)
             height = min(parentRect.height(), height + height2)
         else:
-            width = parentRect.width()
-            height = parentRect.height()
-
+            width = min(parentRect.width(), width + 100)
+            height = min(parentRect.height(), height + 150)
+        
         if len(self.parent().parent().subWindowList()) > 1:
             height -= 20
-
+        
+        # set element dimensions
         self.setFixedSize(width, height)
-
-        if current:
-            current.adjustView()
+        current.adjustView()
          
     def contextMenu(self, point):
         #function to display the right click menu at point of right click
@@ -145,7 +121,7 @@ class FileWindow(QMdiSubWindow):
         currentTab = self.tabber.currentWidget()
         result = dialogs.paperDims(self, currentTab._canvasSize, currentTab._ppi, currentTab.objectName(), currentTab.landscape).exec_()
         if result is not None:
-            currentTab.painter.undoStack.push(resizeCommand(result, currentTab, self, parentFileWindow=self))
+            currentTab.painter.undoStack.push(resizeCommand(result, currentTab, self))
         
     def sideViewToggle(self):
         #Function checks if current side view tab is set, and toggles view as required
@@ -194,14 +170,6 @@ class FileWindow(QMdiSubWindow):
         result = dialogs.sideViewSwitchDialog(self.tabber, tabList, initial).exec_() #call dialog box 
         if result != initial:
             self.sideViewTab = self.tabber.widget(result) if result<self.tabCount else None
-
-    def toggleLabel(self):
-        e = self.isEdited
-        if(e):
-            self.label.setHidden(False)
-            self.label.show()
-        else:
-            self.label.setHidden(True)
     
     @property
     def sideViewTab(self):
@@ -224,15 +192,6 @@ class FileWindow(QMdiSubWindow):
         self._sideViewTab = None if tab == self.sideViewTab else tab
         return self.sideViewToggle()
     
-    @property
-    def isEdited(self):
-        return self._isEdited
-    
-    @isEdited.setter
-    def isEdited(self, val):
-        self._isEdited = val
-        return self.toggleLabel()
-    
     def changeTab(self, currentIndex):
         #placeholder function to detect tab change
         self.resizeHandler()        
@@ -240,7 +199,7 @@ class FileWindow(QMdiSubWindow):
     
     def closeTab(self, currentIndex):
         #show save alert on tab close
-        if(dialogs.saveEvent(self)):
+        if dialogs.saveEvent(self):
             self.tabber.widget(currentIndex).deleteLater()
             self.tabber.removeTab(currentIndex)
         
@@ -250,51 +209,28 @@ class FileWindow(QMdiSubWindow):
         diagram.setObjectName(objectName)
         index = self.tabber.addTab(diagram, objectName)
         self.tabber.setCurrentIndex(index)
-        if(index == 0):
-            if(self.isEdited == False):
-                return diagram
-            else:
-                self.isEdited = True
         return diagram
-
         
     def saveProject(self, name = None):
         # called by dialog.saveEvent, saves the current file
-        if(self.projectFilePath):
-            self.setObjectName(path.basename(self.projectFilePath).split(".")[0])
-            self.setWindowTitle(self.objectName())
-            with open(self.projectFilePath,'w') as file: 
-                dump(self, file, indent=4, cls=JSON_Typer)
-            self.setProperty("isEdited", False)
-            self.label.setHidden(True)
-            return True
-        document_path = path.join(path.expanduser('~/Documents'),'PFDs')
-        if(not path.exists(document_path)):
-           mkdir(document_path)
-        name = QFileDialog.getSaveFileName(self, 'Save File', f'{document_path}/Flow_Diagram.pfd', 'Process Flow Diagram (*.pfd)') if not name else name
+        name = QFileDialog.getSaveFileName(self, 'Save File', f'New Diagram', 'Process Flow Diagram (*.pfd)') if not name else name
         if name[0]:
             self.setObjectName(path.basename(name[0]).split(".")[0])
             self.setWindowTitle(self.objectName())
             with open(name[0],'w') as file: 
                 dump(self, file, indent=4, cls=JSON_Typer)
-            self.isEdited = False
-            self.label.setHidden(True)
             return True
         else:
             return False
 
     def closeEvent(self, event):
         # handle save alert on file close, check if current file has no tabs aswell.
-        if(self.isEdited):
-            if self.tabCount==0 or dialogs.saveEvent(self):
-                event.accept()
-                self.deleteLater()
-                self.fileCloseEvent.emit(self.index)
-            else:
-                event.ignore()
-        else:
+        if self.tabCount==0 or dialogs.saveEvent(self):
+            event.accept()
             self.deleteLater()
             self.fileCloseEvent.emit(self.index)
+        else:
+            event.ignore()
 
     #following 2 methods are defined for correct serialization of the scene.
     def __getstate__(self) -> dict:
@@ -308,7 +244,6 @@ class FileWindow(QMdiSubWindow):
     def __setstate__(self, dict):
         self.setObjectName(dict['ObjectName'])
         self.setWindowTitle(dict['ObjectName'])
-        self.isEdited = dict['isEdited']
         for i in dict['tabs']:
             diagram = self.newDiagram(i['ObjectName'])
             diagram.__setstate__(i)
