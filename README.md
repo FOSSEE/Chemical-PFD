@@ -2,12 +2,17 @@
 Repository for a Process Flow Diagram Software 
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[![CodeFactor](https://www.codefactor.io/repository/github/frg-fossee/chemical-pfd/badge/master)](https://www.codefactor.io/repository/github/frg-fossee/chemical-pfd/overview/master)
 ![Python](https://img.shields.io/badge/python-v3.6-blue.svg)
 ![version](https://img.shields.io/badge/version-0.0.1-blue)
 [![python-mixedCase-style](https://img.shields.io/badge/code%20style-mixed-brightgreen.svg?style=flat)](https://wiki.c2.com/?CamelCase)
 [![Dependencies](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen.svg)](https://github.com/FOSSEE/Chemical-PFD/network/dependencies)
 [![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://opensource.org/licenses/GPL-3.0)
- 
+
+## Installation
+* Windows Users: Refer to the steps given [here](WindowsInstallation.md)
+
+
 ## Screenshots
 > Main window
 <p align="center"><img width="95%" src="https://i.imgur.com/YHBTTHE.png"></p>
@@ -41,7 +46,7 @@ Repository for a Process Flow Diagram Software
 > contains the sub window definitions along with various utility methods.
 
 
-## Installation
+## Installation (for Developers)
 #### clone this repository by running
 ```bash
 git clone https://github.com/FOSSEE/Chemical-PFD.git
@@ -100,6 +105,20 @@ can be done, by using build.py build
 ```bash
 python3 build.py build
 ```
+
+#### Building with PyInstaller (Recommended for GUI Release)
+
+You can also build a standalone Windows .exe using PyInstaller:
+
+pyinstaller --onefile --windowed --name Chemical-PFD ^
+--add-data "src/main/resources/grips/rLGPlus.json;resources/grips" ^
+--add-data "src/main/resources/base/config;resources/base/config" ^
+--add-data "src/main/resources/base/svg;resources/base/svg" ^
+--add-data "src/main/resources/base/toolbar;resources/base/toolbar" ^
+--add-data "src/main/resources/base/app.qss;resources/base" ^
+--add-data "Component_Details.csv;." ^
+src/main/python/main.py
+
 
 #### TODO
 
